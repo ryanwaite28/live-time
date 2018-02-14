@@ -44,6 +44,9 @@ def login_required(f):
     return decorated_function
 # ---
 
+def logged_in():
+    return 'session_id' in user_session and 'user_id' in user_session
+# ---
 
 
 # --- GET Routes --- #
@@ -53,6 +56,42 @@ def login_required(f):
 @app.route('/', methods=['GET'])
 def welcome():
     return routes_get.welcome(request)
+
+
+@app.route('/signup', methods=['GET'])
+def signup():
+    return routes_get.signup(request)
+
+
+@app.route('/signin', methods=['GET'])
+def signin():
+    return routes_get.signin(request)
+
+
+@app.route('/signout', methods=['GET'])
+def signout():
+    return routes_get.signout(request)
+
+
+
+@app.route('/faq', methods=['GET'])
+def faq():
+    return routes_get.faq(request)
+
+@app.route('/about', methods=['GET'])
+def about():
+    return routes_get.about(request)
+
+
+@app.route('/info', methods=['GET'])
+def info():
+    return routes_get.info(request)
+
+
+
+@app.route('/check_session', methods=['GET'])
+def check_session():
+    return routes_get.check_session(request)
 
 
 

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% include '_dependencies.html' %}
+
+    <title>Live Time | Sign Up!</title>
+  </head>
+  <body>
+
+    {% if session == True %}
+      {% include 'navbar-2.html' %}
+    {% else %}
+      {% include 'navbar-1.html' %}
+    {% endif %}
+
+    <div class="container middle-box">
+      <div class="row">
+        <div class="input-field col s12">
+          <input placeholder="Email" id="sign_up_account_email" type="text" data-bind="textInput: account_email_input">
+          <label for="sign_up_account_email">Email</label>
+        </div>
+        <div class="input-field col s12">
+          <input placeholder="Booking Email" id="sign_up_booking_email" type="text" data-bind="textInput: booking_email_input">
+          <label for="sign_up_booking_email">Booking Email</label>
+        </div>
+
+        <div class="input-field col s12">
+          <input placeholder="Password" id="sign_up_password" type="password" data-bind="textInput: password_input">
+          <label for="sign_up_password">Password</label>
+        </div>
+        <div class="input-field col s12">
+          <input placeholder="Verify Password" id="sign_in_password" type="password" data-bind="textInput: verify_password_input">
+          <label for="sign_up_verify_password">Verify Password</label>
+        </div>
+
+        <div class="input-field col s12">
+          <select class="" data-bind="foreach: account_type_options, attr: { value: account_type_input }, event: { change: update_signup_account_type }">
+            <option data-bind="text: $data || 'Choose...', attr: { value: $data }"></option>
+          </select>
+          <label>Account Type</label>
+        </div>
+
+        <div class="input-field col s12">
+          <button class="blue btn waves-effect waves-light" type="button" name="action" data-bind="click: sign_up">Submit
+            <i class="material-icons right">send</i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    {% include 'footer.html' %}
+
+    <script src="/static/js/view-models/signup-ctrl.js"></script>
+
+  </body>
+</html>
