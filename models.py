@@ -17,6 +17,7 @@ class Accounts(Base):
     __tablename__ = 'accounts'
 
     id                  = Column(Integer, primary_key = True)
+
     type                = Column(String, default = 'USER') # Either: USER, ARTIST, VENUE
     displayname         = Column(String(80), nullable = False, default = '')
     username            = Column(String(80), nullable = False, default = '')
@@ -47,7 +48,6 @@ class Accounts(Base):
 
     @property
     def serialize(self):
-         # Returns Data Object In Proper Format
         return {
             'id': self.id,
             'type': self.type,
@@ -90,7 +90,6 @@ class Featured(Base):
 
     @property
     def serialize(self):
-         # Returns Data Object In Proper Format
         return {
             'id': self.id,
             'account_id': self.account_id,
@@ -113,7 +112,6 @@ class Follows(Base):
 
     @property
     def serialize(self):
-         # Returns Data Object In Proper Format
         return {
             'id': self.id,
             'account_id': self.account_id,
@@ -144,7 +142,6 @@ class Events(Base):
 
     @property
     def serialize(self):
-         # Returns Data Object In Proper Format
         return {
             'id': self.id,
             'title': self.title,
@@ -174,7 +171,6 @@ class EventPerformers(Base):
 
     @property
     def serialize(self):
-         # Returns Data Object In Proper Format
         return {
             'id': self.id,
             'account_id': self.account_id,
@@ -199,7 +195,6 @@ class EventRequests(Base):
 
     @property
     def serialize(self):
-         # Returns Data Object In Proper Format
         return {
             'id': self.id,
             'account_id': self.account_id,
@@ -218,17 +213,18 @@ class Notifications(Base):
     account_id          = Column(Integer, ForeignKey('accounts.id'))
     account_rel         = relationship('Accounts', foreign_keys=[account_id])
     message             = Column(String, nullable = False)
+    link                = Column(String, default = '')
     date_created        = Column(DateTime, server_default=func.now())
     unique_value        = Column(String, default = uniqueValue)
 
     @property
     def serialize(self):
-         # Returns Data Object In Proper Format
         return {
             'id': self.id,
             'account_id': self.account_id,
             'account_rel': self.account_rel.serialize,
             'message': self.message,
+            'link': self.link,
             'date_created': str(self.date_created),
             'unique_value': self.unique_value
         }
@@ -243,13 +239,12 @@ class ChatRooms(Base):
     owner_id            = Column(Integer, ForeignKey('accounts.id'))
     owner_rel           = relationship('Accounts', foreign_keys=[owner_id])
     members             = relationship('ChatRoomMembers', cascade='delete, delete-orphan', backref="ChatRoomMembers")
-    # messages            = relationship('ChatRoomMessages', cascade='delete, delete-orphan', backref="ChatRoomMessages")
+    messages            = relationship('ChatRoomMessages', cascade='delete, delete-orphan', backref="ChatRoomMessages")
     date_created        = Column(DateTime, server_default=func.now())
     unique_value        = Column(String, default = uniqueValue)
 
     @property
     def serialize(self):
-         # Returns Data Object In Proper Format
         return {
             'id': self.id,
             'title': self.title,
@@ -276,7 +271,6 @@ class ChatRoomMembers(Base):
 
     @property
     def serialize(self):
-         # Returns Data Object In Proper Format
         return {
             'id': self.id,
             'chatroom_id': self.chatroom_id,
@@ -302,11 +296,62 @@ class ChatRoomMessages(Base):
 
     @property
     def serialize(self):
-         # Returns Data Object In Proper Format
         return {
             'id': self.id,
             'chatroom_id': self.chatroom_id,
             'chatroom_rel': self.chatroom_rel.serialize,
+            'owner_id': self.owner_id,
+            'owner_rel': self.owner_rel.serialize,
+            'message': self.message,
+            'date_created': str(self.date_created),
+            'unique_value': self.unique_value
+        }
+
+
+class Conversations(Base):
+    __tablename__ = 'conversations'
+
+    id                  = Column(Integer, primary_key = True)
+
+    account_A_id        = Column(Integer, ForeignKey('accounts.id'))
+    account_A_rel       = relationship('Accounts', foreign_keys=[account_A_id])
+    account_B_id        = Column(Integer, ForeignKey('accounts.id'))
+    account_B_rel       = relationship('Accounts', foreign_keys=[account_B_id])
+    date_created        = Column(DateTime, server_default=func.now())
+    unique_value        = Column(String, default = uniqueValue)
+    messages_rel        = relationship('ConversationMessages', cascade='delete, delete-orphan', backref="ConversationMessages")
+
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'account_A_id': self.account_A_id,
+            'account_A_rel': self.account_A_rel.serialize,
+            'account_B_id': self.account_B_id,
+            'account_B_rel': self.account_B_rel.serialize,
+            'date_created': str(self.date_created),
+            'unique_value': self.unique_value
+        }
+
+class ConversationMessages(Base):
+    __tablename__ = 'conversation_messages'
+
+    id                  = Column(Integer, primary_key = True)
+
+    conversation_id     = Column(Integer, ForeignKey('conversations.id'))
+    conversation_rel    = relationship('Conversations')
+    owner_id            = Column(Integer, ForeignKey('accounts.id'))
+    owner_rel           = relationship('Accounts', foreign_keys=[owner_id])
+    message             = Column(String, default = '')
+    date_created        = Column(DateTime, server_default=func.now())
+    unique_value        = Column(String, default = uniqueValue)
+
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'conversation_id': self.conversation_id,
+            'conversation_rel': self.conversation_rel.serialize,
             'owner_id': self.owner_id,
             'owner_rel': self.owner_rel.serialize,
             'message': self.message,

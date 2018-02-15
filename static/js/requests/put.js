@@ -1,3 +1,5 @@
+'use strict';
+
 function Put() {
   var self = this;
 

@@ -32,28 +32,55 @@ from models import ChatRooms, ChatRoomMembers, ChatRoomMessages
 import chamber
 from chamber import uniqueValue
 
-from app import logged_in
+
+
+
+def logged_in():
+    return 'session_id' in user_session and 'account_id' in user_session
+# ---
+
+def Authorize(f):
+    ''' Checks If Client Is Authorized '''
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+
+        if 'auth_key' in user_session:
+            return f(*args, **kwargs)
+        else:
+            return jsonify(error = True, message = 'client is NOT authorized')
+
+    return decorated_function
+# ---
+
+def Check_Authorize():
+    return 'auth_key' in user_session
+# ---
 
 
 
 
 def welcome(request):
+    user_session['auth_key'] = uniqueValue()
     return render_template('welcome.html', session = logged_in())
 
 
 def faq(request):
+    user_session['auth_key'] = uniqueValue()
     return render_template('faq.html', session = logged_in())
 
 
 def about(request):
+    user_session['auth_key'] = uniqueValue()
     return render_template('about.html', session = logged_in())
 
 
 def info(request):
+    user_session['auth_key'] = uniqueValue()
     return render_template('info.html', session = logged_in())
 
 
 def signup(request):
+    user_session['auth_key'] = uniqueValue()
     if 'session_id' in user_session:
         return redirect('/')
 
@@ -61,6 +88,7 @@ def signup(request):
 
 
 def signin(request):
+    user_session['auth_key'] = uniqueValue()
     if 'session_id' in user_session:
         return redirect('/')
 
@@ -69,7 +97,7 @@ def signin(request):
 
 def signout(request):
     if 'session_id' in user_session:
-        you = db_session.query(Users).filter_by(id = user_session['user_id']).one()
+        you = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
 
         you.last_loggedout = func.now()
         db_session.add(you)
@@ -79,10 +107,28 @@ def signout(request):
     return redirect('/')
 
 
+@Authorize
 def check_session(request):
     if 'session_id' in user_session:
-        you = db_session.query(Users).filter_by(id = user_session['user_id']).one()
-        return jsonify(online = True, user = you.serialize)
+        you = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
+        return jsonify(online = True, account = you.serialize)
 
     else:
         return jsonify(online = False)
+
+
+
+def check_auth(request):
+    if 'auth_key' in user_session:
+        return jsonify(auth = True, message = 'client is authorized')
+
+    else:
+        return jsonify(auth = False, message = 'client is NOT authorized')
+
+
+def profile(request):
+    if 'session_id' not in user_session:
+        return redirect('/')
+
+    user_session['auth_key'] = uniqueValue()
+    return render_template('profile.html', session = logged_in())

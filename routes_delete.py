@@ -31,3 +31,27 @@ from models import ChatRooms, ChatRoomMembers, ChatRoomMessages
 
 import chamber
 from chamber import uniqueValue
+
+
+
+
+def logged_in():
+    return 'session_id' in user_session and 'account_id' in user_session
+# ---
+
+def Authorize(f):
+    ''' Checks If Client Is Authorized '''
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+
+        if 'auth_key' in user_session:
+            return f(*args, **kwargs)
+        else:
+            return jsonify(error = True, message = 'client is NOT authorized')
+
+    return decorated_function
+# ---
+
+def Check_Authorize():
+    return 'auth_key' in user_session
+# ---

@@ -16,8 +16,13 @@
     <div class="container middle-box">
       <div class="row">
         <div class="input-field col s12">
-          <input placeholder="Email" id="sign_up_account_email" type="text" data-bind="textInput: account_email_input">
-          <label for="sign_up_account_email">Email</label>
+          <input placeholder="Email" id="sign_up_account_username" type="text" data-bind="textInput: account_username_input">
+          <label for="sign_up_account_username">Username</label>
+        </div>
+
+        <div class="input-field col s12">
+          <input placeholder="Account Email" id="sign_up_account_email" type="text" data-bind="textInput: account_email_input">
+          <label for="sign_up_account_email">Account Email</label>
         </div>
         <div class="input-field col s12">
           <input placeholder="Booking Email" id="sign_up_booking_email" type="text" data-bind="textInput: booking_email_input">
@@ -37,7 +42,7 @@
           <select class="" data-bind="foreach: account_type_options, attr: { value: account_type_input }, event: { change: update_signup_account_type }">
             <option data-bind="text: $data || 'Choose...', attr: { value: $data }"></option>
           </select>
-          <label>Account Type</label>
+          <label>Account Type (This Cannot Be Changed Later)</label>
         </div>
 
         <div class="input-field col s12">

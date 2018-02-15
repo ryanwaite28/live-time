@@ -84,12 +84,12 @@ Date.prototype.backDays = function (number_of_days) {
 // Shuffle Array
 function shuffleArray(array) {
     var input = $.type(array);
-    
-    if( array == undefined || input != "array" ) { 
-    	console.log("Error - Input Is Either Empty Or Not An Array Object."); 
+
+    if( array == undefined || input != "array" ) {
+    	console.log("Error - Input Is Either Empty Or Not An Array Object.");
     	return;
     }
-    
+
     for (var i = array.length - 1; i > 0; i--) {
         var j = Math.floor(Math.random() * (i + 1));
         var temp = array[i];
@@ -181,7 +181,7 @@ function randomValueLong(){
 }
 
 function uniqueValue() {
-    return String(Date.now()) + 
+    return String(Date.now()) +
 	    Math.random().toString(36).substr(2, 34) +
 	    Math.random().toString(36).substr(2, 34) +
 	    Math.random().toString(36).substr(2, 34)
@@ -240,16 +240,11 @@ var numLetters = function(input) {
             value = value + letter
             multi--;
         }
-         
+
         console.log("value:", value)
         console.log("length:", value.length)
-        return value; 
+        return value;
     }
-}
-
-function validateEmail(email) {
-    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(email.toLowerCase());
 }
 
 // Angular interpolation

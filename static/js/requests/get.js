@@ -1,3 +1,5 @@
+'use strict';
+
 function Get() {
   var self = this;
 

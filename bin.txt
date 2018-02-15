@@ -1,0 +1,3 @@
+convoCheck = session.query(Conversations) \
+    .filter( (Conversations.userA_id==you.id) | (Conversations.userB_id==you.id) ) \
+    .filter( (Conversations.userA_id==user.id) | (Conversations.userB_id==user.id) ).first()

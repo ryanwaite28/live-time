@@ -1,3 +1,5 @@
+'use strict';
+
 (function(){
 
   function mvc() {
@@ -18,7 +20,7 @@
 
     //
 
-    
+
 
   }
 

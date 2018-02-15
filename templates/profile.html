@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% include '_dependencies.html' %}
+
+    <title>Live Time | Profile!</title>
+  </head>
+  <body>
+
+    {% if session == True %}
+      {% include 'navbar-2.html' %}
+    {% else %}
+      {% include 'navbar-1.html' %}
+    {% endif %}
+
+    <div class="container middle-box">
+      <div class="row">
+        
+      </div>
+    </div>
+
+    {% include 'footer.html' %}
+
+    <script src="/static/js/view-models/profile-ctrl.js"></script>
+
+  </body>
+</html>

@@ -1,3 +1,5 @@
+'use strict';
+
 function Delete() {
   var self = this;
 

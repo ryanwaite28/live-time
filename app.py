@@ -48,6 +48,23 @@ def logged_in():
     return 'session_id' in user_session and 'user_id' in user_session
 # ---
 
+def Authorize(f):
+    ''' Checks If Client Is Authorized '''
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+
+        if 'auth_key' in user_session:
+            return f(*args, **kwargs)
+        else:
+            return jsonify(error = True, message = 'client is NOT authorized')
+
+    return decorated_function
+# ---
+
+def Check_Authorize():
+    return 'auth_key' in user_session
+# ---
+
 
 # --- GET Routes --- #
 
@@ -59,17 +76,17 @@ def welcome():
 
 
 @app.route('/signup', methods=['GET'])
-def signup():
+def signup_get():
     return routes_get.signup(request)
 
 
 @app.route('/signin', methods=['GET'])
-def signin():
+def signin_get():
     return routes_get.signin(request)
 
 
 @app.route('/signout', methods=['GET'])
-def signout():
+def signout_get():
     return routes_get.signout(request)
 
 
@@ -77,6 +94,7 @@ def signout():
 @app.route('/faq', methods=['GET'])
 def faq():
     return routes_get.faq(request)
+
 
 @app.route('/about', methods=['GET'])
 def about():
@@ -94,10 +112,20 @@ def check_session():
     return routes_get.check_session(request)
 
 
+@app.route('/profile', methods=['GET'])
+def profile():
+    return routes_get.profile(request)
+
+
 
 # --- POST Routes --- #
 
 
+
+
+@app.route('/signup', methods=['POST'])
+def signup_post():
+    return routes_post.signup(request)
 
 
 
@@ -108,6 +136,9 @@ def check_session():
 
 
 
+@app.route('/signin', methods=['PUT'])
+def signin_put():
+    return routes_put.signin(request)
 
 
 

@@ -1,3 +1,5 @@
+'use strict';
+
 const templateFromUrlLoader = {
     loadTemplate: function(name, templateConfig, callback) {
         if (templateConfig.fromUrl) {
@@ -48,28 +50,35 @@ ko.components.loaders.unshift(viewModelCustomLoader);
 
 /* --- */
 
-function validateUsername(username) {
+const validateUsername = function(username) {
   var re = /^[a-z0-9\-\_\.]{3,}$/;
   return re.test(username.toLowerCase());
 }
 
-function validateEmail(email) {
+const validateEmail = function(email) {
   var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return re.test(email.toLowerCase());
 }
 
-function validatePassword(password) {
+const validatePassword = function(password) {
   var re = /^[a-zA-Z0-9\-\_\.\!\@\#\$\%\&\?]{7,}$/;
   return re.test(password);
 }
 
-function headers_json() {
+const headers_json = function() {
   let myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json; charset=UTF-8");
   myHeaders.append("Accept", "application/json");
   return myHeaders;
 }
 
-function getFileName(link) {
+const getFileName = function(link) {
   return link && link.constructor == String ? link.split('?')[0].split('/o/')[1] : '';
+}
+
+const disable_buttons = function() {
+  $('button.btn').addClass("disabled");
+}
+const enable_buttons = function() {
+  $('button.btn').removeClass("disabled");
 }
