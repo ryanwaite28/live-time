@@ -1,6 +1,6 @@
 'use strict';
 
-function Delete() {
+const Delete = function() {
   var self = this;
 
 }

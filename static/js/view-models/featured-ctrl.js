@@ -15,7 +15,7 @@
     .then(function(resp){
       // console.log(resp);
       self.signed_in(resp.online);
-      if(resp.user) { self.you(resp.user) }
+      if(resp.account) { self.you(resp.account) }
     });
 
     //

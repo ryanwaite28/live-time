@@ -117,6 +117,11 @@ def profile():
     return routes_get.profile(request)
 
 
+@app.route('/account_settings', methods=['GET'])
+def account_settings():
+    return routes_get.account_settings(request)
+
+
 
 # --- POST Routes --- #
 

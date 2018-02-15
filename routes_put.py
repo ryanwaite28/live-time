@@ -66,10 +66,12 @@ def signin(request):
         if not data:
             return jsonify( error = True, message = 'request body is empty, check headers/data' )
 
+        print(data)
+
         email      = str(data['email']).encode()
         password   = str(data['password']).encode()
 
-        account    = db_session.query(Users).filter_by(email = email).first()
+        account    = db_session.query(Accounts).filter_by(email = email).first()
 
         if not account:
             return jsonify(error = True, message = 'invalid credentials')

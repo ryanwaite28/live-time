@@ -1,6 +1,6 @@
 'use strict';
 
-function Get() {
+const Get = function() {
   var self = this;
 
   self.check_session = function() {

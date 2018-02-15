@@ -27,8 +27,10 @@ class Accounts(Base):
     paypal_email        = Column(String, nullable = False, unique = True, default = '')
     password            = Column(String, nullable = False)
     icon                = Column(String, default = '/static/img/anon.png')
+    background          = Column(String, default = '/static/img/blank.png')
     link                = Column(String, default = '')
     bio                 = Column(String(250), default = '')
+    categories          = Column(String(250), default = '')
 
     facebook            = Column(String, default = '')
     twitter             = Column(String, default = '')
@@ -58,8 +60,10 @@ class Accounts(Base):
             'booking_email': self.booking_email,
             'paypal_email': self.paypal_email,
             'icon': self.icon,
+            'background': self.background,
             'link': self.link,
             'bio': self.bio,
+            'categories': self.categories,
 
             'facebook': self.facebook,
             'twitter': self.twitter,

@@ -42,7 +42,8 @@
           <select class="" data-bind="foreach: account_type_options, attr: { value: account_type_input }, event: { change: update_signup_account_type }">
             <option data-bind="text: $data || 'Choose...', attr: { value: $data }"></option>
           </select>
-          <label>Account Type (This Cannot Be Changed Later)</label>
+          <label>Account Type</label>
+          <p><a class="modal-trigger" href="#modal1"><i class="material-icons">info</i></a></p>
         </div>
 
         <div class="input-field col s12">
@@ -52,6 +53,33 @@
         </div>
       </div>
     </div>
+
+     <!-- Modal Structure -->
+     <div id="modal1" class="modal">
+       <div class="modal-content">
+        <h4>Account Types</h4>
+        <hr/>
+        <p>
+          <strong><b>Artist</b></strong><br/>
+          If you are looking to get booked and find places to perform, choose ARTIST.
+        </p>
+        <p>
+          <strong><b>Venue</b></strong><br/>
+          If you are looking for artists to perform at your venue, choose VENUE.
+        </p>
+        <p>
+          <strong><b>USER</b></strong><br/>
+          If you are looking for venues to attend and want to keep up to date with events, choose USER.
+        </p>
+
+        <p>
+          You can change your account type at any time.
+          However, doing so may affect how this app works for you.
+          For example, changing from ARTIST/VENUE to USER means people cannot search for your account.
+          See the <a title="Info Page" href="/info">info page</a> for more details.
+        </p>
+       </div>
+     </div>
 
     {% include 'footer.html' %}
 

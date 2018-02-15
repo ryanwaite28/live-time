@@ -66,6 +66,8 @@ def signup(request):
         if not data:
             return jsonify( error = True, message = 'request body is empty, check headers/data' )
 
+        print(data)
+
         username                   = str(data['username']).encode()
         account_email              = str(data['account_email']).encode()
         booking_email              = str(data['booking_email']).encode()

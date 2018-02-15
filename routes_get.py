@@ -132,3 +132,11 @@ def profile(request):
 
     user_session['auth_key'] = uniqueValue()
     return render_template('profile.html', session = logged_in())
+
+
+def account_settings(request):
+    if 'session_id' not in user_session:
+        return redirect('/')
+
+    user_session['auth_key'] = uniqueValue()
+    return render_template('account-settings.html', session = logged_in())

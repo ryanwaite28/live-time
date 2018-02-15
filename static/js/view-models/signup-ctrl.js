@@ -34,9 +34,9 @@
     }
 
     self.sign_up = function() {
-      var account_username_input = self.account_username_input();
-      var account_email_input = self.account_email_input();
-      var booking_email_input = self.booking_email_input();
+      var account_username_input = self.account_username_input().trim().toLowerCase();
+      var account_email_input = self.account_email_input().trim().toLowerCase();
+      var booking_email_input = self.booking_email_input().trim().toLowerCase();
       var account_type_input = self.account_type_input();
       var password_input = self.password_input();
       var verify_password_input = self.verify_password_input();
