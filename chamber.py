@@ -10,22 +10,23 @@ from firebase_admin import credentials
 from firebase_admin import storage
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-# firebase_json_file_dir = os.path.join( current_dir , 'firebase.json' )
-#
+firebase_json_file_dir = os.path.join( current_dir , 'firebase.json' )
+
 # config = {
-#     'apiKey': "AIzaSyB87s7__k7TlWE6d042ygtb21XTUFwALlM",
-#     'authDomain': "travellrs-202.firebaseapp.com",
-#     'databaseURL': "https://travellrs-202.firebaseio.com",
-#     'projectId': "travellrs-202",
-#     'storageBucket': "travellrs-202.appspot.com",
-#     'messagingSenderId': "852877288274",
+#     'apiKey': "AIzaSyAQL_V6IejrtuGmav9VPWKb-Ll0GBU-oQc",
+#     'authDomain': "live-time.firebaseapp.com",
+#     'databaseURL': "https://live-time.firebaseio.com",
+#     'projectId': "live-time",
+#     'storageBucket': "live-time.appspot.com",
+#     'messagingSenderId': "1003960112164"
+#
 #     "serviceAccount": firebase_json_file_dir
 # }
 # firebase = pyrebase.initialize_app(config)
 #
 # cred = credentials.Certificate(firebase_json_file_dir)
 # firebase_admin.initialize_app(cred, {
-#     'storageBucket': 'travellrs-202.appspot.com'
+#     'storageBucket': config['storageBucket']
 # })
 
 
@@ -140,3 +141,35 @@ def allowed_photo(filename):
 def allowed_video(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_VIDEOS
+
+
+
+
+def uploadFile(file, prev_ref):
+    prev = str(prev_ref).encode()
+
+    # print("prev --- ", prev)
+    # print("string type --- ", type(prev) == str)
+    # print("not empty --- ", prev != '')
+    # print("has valid filename --- ", allowed_photo(prev))
+
+    filename = uniqueValue() + secure_filename(file.filename)
+    filepath = os.path.join( current_dir , filename )
+    file.save( filepath )
+
+    storage = firebase.storage()
+
+    if prev and type(prev) == str and prev != '' and allowed_photo(prev):
+        try:
+            storage.delete(prev)
+        except Exception:
+            print("could not delete prev --- ", prev)
+            # pass
+
+    storage.child(filename).put(filepath)
+    link = 'https://firebasestorage.googleapis.com/v0/b/' + config['storageBucket'] + '/o/' + filename + '?alt=media&token=None'
+
+
+    os.remove( filepath )
+
+    return link
