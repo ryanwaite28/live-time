@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% include '_dependencies.html' %}
+
+    <title>Live Time | Shows!</title>
+  </head>
+  <body>
+
+    {% if session == True %}
+      {% include 'navbar-2.html' %}
+    {% else %}
+      {% include 'navbar-1.html' %}
+    {% endif %}
+
+    <div class="container middle-box">
+      <div class="row">
+        <div class="col s12">
+
+        </div>
+      </div>
+    </div>
+
+    {% include 'footer.html' %}
+
+    <!-- <script src="/static/js/view-models/.js"></script> -->
+
+  </body>
+</html>

@@ -66,6 +66,15 @@ def Check_Authorize():
 # ---
 
 
+
+def create_notification(id, msg, link):
+    new_notification = Notifications(account_id = id, message = msg, link = link)
+    db_session.add(new_notification)
+    db_session.commit()
+    return new_notification
+
+
+
 # --- GET Routes --- #
 
 
@@ -144,6 +153,48 @@ def signup_post():
 @app.route('/signin', methods=['PUT'])
 def signin_put():
     return routes_put.signin(request)
+
+
+
+
+@app.route('/user/update_info', methods=['PUT'])
+def update_info():
+    return routes_put.update_info(request)
+
+
+@app.route('/user/update_icon', methods=['PUT'])
+def update_icon():
+    return routes_put.update_icon(request)
+
+
+@app.route('/user/update_background', methods=['PUT'])
+def update_background():
+    return routes_put.update_background(request)
+
+
+@app.route('/user/update_social', methods=['PUT'])
+def update_social():
+    return routes_put.update_social(request)
+
+
+@app.route('/user/update_username', methods=['PUT'])
+def update_username():
+    return routes_put.update_username(request)
+
+
+@app.route('/user/update_account_email', methods=['PUT'])
+def update_account_email():
+    return routes_put.update_account_email(request)
+
+
+@app.route('/user/update_booking_email', methods=['PUT'])
+def update_booking_email():
+    return routes_put.update_booking_email(request)
+
+
+@app.route('/user/update_password', methods=['PUT'])
+def update_password():
+    return routes_put.update_password(request)
 
 
 

@@ -30,7 +30,8 @@ class Accounts(Base):
     background          = Column(String, default = '/static/img/blank.png')
     link                = Column(String, default = '')
     bio                 = Column(String(250), default = '')
-    categories          = Column(String(250), default = '')
+    categories          = Column(String(500), default = '')
+    location            = Column(String(500), default = '')
 
     facebook            = Column(String, default = '')
     twitter             = Column(String, default = '')
@@ -39,9 +40,22 @@ class Accounts(Base):
     soundcloud          = Column(String, default = '')
     snapchat            = Column(String, default = '')
     itunes              = Column(String, default = '')
+    google_play         = Column(String, default = '')
+    last_fm             = Column(String, default = '')
     spotify             = Column(String, default = '')
+    google_plus         = Column(String, default = '')
     tidal               = Column(String, default = '')
     pandora             = Column(String, default = '')
+    spinrilla           = Column(String, default = '')
+    bandcamp            = Column(String, default = '')
+    datpiff             = Column(String, default = '')
+
+    following           = relationship('Follows', foreign_keys="Follows.account_id", cascade='delete, delete-orphan', backref="Following")
+    followers           = relationship('Follows', foreign_keys="Follows.follows_id", cascade='delete, delete-orphan', backref="Followers")
+    events              = relationship('Events', cascade='delete, delete-orphan', backref="EventsOwn")
+    requests            = relationship('EventRequests', foreign_keys="EventRequests.sender_id", cascade='delete, delete-orphan', backref="Requests")
+    performing          = relationship('EventPerformers', cascade='delete, delete-orphan', backref="Performing")
+    chatrooms           = relationship('ChatRooms', cascade='delete, delete-orphan', backref="ChatRoomsOwn")
 
     date_created        = Column(DateTime, server_default=func.now())
     last_loggedin       = Column(DateTime, server_default=func.now())
@@ -58,12 +72,13 @@ class Accounts(Base):
             'phone': self.phone,
             'email': self.email,
             'booking_email': self.booking_email,
-            'paypal_email': self.paypal_email,
+            # 'paypal_email': self.paypal_email,
             'icon': self.icon,
             'background': self.background,
             'link': self.link,
             'bio': self.bio,
             'categories': self.categories,
+            'location': self.location,
 
             'facebook': self.facebook,
             'twitter': self.twitter,
@@ -72,9 +87,18 @@ class Accounts(Base):
             'soundcloud': self.soundcloud,
             'snapchat': self.snapchat,
             'itunes': self.itunes,
+            'google_play': self.google_play,
+            'last_fm': self.last_fm,
             'spotify': self.spotify,
+            'google_plus': self.google_plus,
             'tidal': self.tidal,
             'pandora': self.pandora,
+            'spinrilla': self.spinrilla,
+            'bandcamp': self.bandcamp,
+            'datpiff': self.datpiff,
+
+            'following': len(self.following),
+            'followers': len(self.followers),
 
             'date_created': str(self.date_created),
             'last_loggedin': str(self.last_loggedin),
@@ -121,7 +145,7 @@ class Follows(Base):
             'account_id': self.account_id,
             'account_rel': self.account_rel.serialize,
             'follows_id': self.follows_id,
-            'follows': self.follows_rel.serialize,
+            'follows_rel': self.follows_rel.serialize,
             'date_created': str(self.date_created),
             'unique_value': self.unique_value
         }
@@ -133,11 +157,13 @@ class Events(Base):
     id                  = Column(Integer, primary_key = True)
     title               = Column(String, nullable = False, default = '')
     desc                = Column(String, nullable = False, default = '')
+    categories          = Column(String, nullable = False, default = '')
     location            = Column(String, nullable = False, default = '')
     icon                = Column(String, default = '/static/img/anon.png')
     host_id             = Column(Integer, ForeignKey('accounts.id'))
     host_rel            = relationship('Accounts', foreign_keys=[host_id])
     closed              = Column(Boolean, default = False)
+    over                = Column(Boolean, default = False)
     performers          = relationship('EventPerformers', cascade='delete, delete-orphan', backref="EventPerformers")
     requests            = relationship('EventRequests', cascade='delete, delete-orphan', backref="EventRequests")
     event_date_time     = Column(DateTime)
@@ -150,13 +176,16 @@ class Events(Base):
             'id': self.id,
             'title': self.title,
             'desc': self.desc,
+            'categories': self.categories,
             'location': self.location,
             'icon': self.icon,
             'host_id': self.host_id,
             'host_rel': self.host_rel.serialize,
             'closed': self.closed,
+            'over': self.over,
             'performers': [p.serialize for p in performers],
             # 'requests': [r.serialize for r in requests],
+            'event_date_time': str(self.event_date_time),
             'date_created': str(self.date_created),
             'unique_value': self.unique_value
         }
@@ -177,8 +206,8 @@ class EventPerformers(Base):
     def serialize(self):
         return {
             'id': self.id,
-            'account_id': self.account_id,
-            'account_rel': self.account_rel.serialize,
+            'event_id': self.event_id,
+            'event_rel': self.event_rel.serialize,
             'performer_id': self.performer_id,
             'performer_rel': self.performer_rel.serialize,
             'date_created': str(self.date_created),
@@ -190,8 +219,12 @@ class EventRequests(Base):
     __tablename__ = 'event_requests'
 
     id                  = Column(Integer, primary_key = True)
-    account_id          = Column(Integer, ForeignKey('accounts.id'))
-    account_rel         = relationship('Accounts', foreign_keys=[account_id])
+
+    sender_id           = Column(Integer, ForeignKey('accounts.id'))
+    sender_rel          = relationship('Accounts', foreign_keys=[sender_id])
+    receiver_id         = Column(Integer, ForeignKey('accounts.id'))
+    receiver_rel        = relationship('Accounts', foreign_keys=[receiver_id])
+
     event_id            = Column(Integer, ForeignKey('events.id'))
     event_rel           = relationship('Events', foreign_keys=[event_id])
     date_created        = Column(DateTime, server_default=func.now())
@@ -201,8 +234,12 @@ class EventRequests(Base):
     def serialize(self):
         return {
             'id': self.id,
-            'account_id': self.account_id,
-            'account_rel': self.account_rel.serialize,
+
+            'sender_id': self.account_id,
+            'sender_rel': self.sender_rel.serialize,
+            'receiver_id': self.receiver_id,
+            'receiver_rel': self.receiver_rel.serialize,
+
             'event_id': self.event_id,
             'event_rel': self.event_rel.serialize,
             'date_created': str(self.date_created),
@@ -218,6 +255,7 @@ class Notifications(Base):
     account_rel         = relationship('Accounts', foreign_keys=[account_id])
     message             = Column(String, nullable = False)
     link                = Column(String, default = '')
+    viewed              = Column(Boolean, default = False)
     date_created        = Column(DateTime, server_default=func.now())
     unique_value        = Column(String, default = uniqueValue)
 
@@ -229,6 +267,7 @@ class Notifications(Base):
             'account_rel': self.account_rel.serialize,
             'message': self.message,
             'link': self.link,
+            'viewed': self.viewed,
             'date_created': str(self.date_created),
             'unique_value': self.unique_value
         }
@@ -358,6 +397,67 @@ class ConversationMessages(Base):
             'conversation_rel': self.conversation_rel.serialize,
             'owner_id': self.owner_id,
             'owner_rel': self.owner_rel.serialize,
+            'message': self.message,
+            'date_created': str(self.date_created),
+            'unique_value': self.unique_value
+        }
+
+
+
+
+class EventReviews(Base):
+    __tablename__ = 'event_reviews'
+
+    id                  = Column(Integer, primary_key = True)
+
+    event_id            = Column(Integer, ForeignKey('events.id'))
+    event_rel           = relationship('Events', foreign_keys=[event_id])
+    owner_id            = Column(Integer, ForeignKey('accounts.id'))
+    owner_rel           = relationship('Accounts', foreign_keys=[owner_id])
+    rating              = Column(Integer, default = 0)
+    message             = Column(String, default = '')
+    date_created        = Column(DateTime, server_default=func.now())
+    unique_value        = Column(String, default = uniqueValue)
+
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'event_id': self.event_id,
+            'event_rel': self.event_rel.serialize,
+            'owner_id': self.owner_id,
+            'owner_rel': self.owner_rel.serialize,
+            'rating': self.rating,
+            'message': self.message,
+            'date_created': str(self.date_created),
+            'unique_value': self.unique_value
+        }
+
+
+
+class ArtistReviews(Base):
+    __tablename__ = 'artist_reviews'
+
+    id                  = Column(Integer, primary_key = True)
+
+    account_id          = Column(Integer, ForeignKey('accounts.id'))
+    account_rel         = relationship('Accounts', foreign_keys=[account_id])
+    owner_id            = Column(Integer, ForeignKey('accounts.id'))
+    owner_rel           = relationship('Accounts', foreign_keys=[owner_id])
+    rating              = Column(Integer, default = 0)
+    message             = Column(String, default = '')
+    date_created        = Column(DateTime, server_default=func.now())
+    unique_value        = Column(String, default = uniqueValue)
+
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'account_id': self.account_id,
+            'account_rel': self.account_rel.serialize,
+            'owner_id': self.owner_id,
+            'owner_rel': self.owner_rel.serialize,
+            'rating': self.rating,
             'message': self.message,
             'date_created': str(self.date_created),
             'unique_value': self.unique_value

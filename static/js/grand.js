@@ -82,3 +82,27 @@ const disable_buttons = function() {
 const enable_buttons = function() {
   $('button.btn').removeClass("disabled");
 }
+
+const get_image_file = function(elem_id = '') {
+  if(!elem_id || elem_id.constructor !== String) {
+    console.log('string is required...', elem_id);
+    return null;
+  }
+
+  var file = document.getElementById(elem_id).files[0];
+
+  if(file) {
+    var accepted_file_types = ['jpg', 'jpeg', 'png', 'gif'];
+    var type = file.type.split("/");
+    if (type[0] !== "image" || accepted_file_types.indexOf(type[1]) === -1) {
+      console.log("File must be an image: jpg, png, or gif", elem_id, file);
+      return null;
+    }
+    else {
+      return file;
+    }
+  }
+  else {
+    return null;
+  }
+}

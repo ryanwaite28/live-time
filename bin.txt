@@ -1,3 +1,15 @@
 convoCheck = session.query(Conversations) \
     .filter( (Conversations.userA_id==you.id) | (Conversations.userB_id==you.id) ) \
     .filter( (Conversations.userA_id==user.id) | (Conversations.userB_id==user.id) ).first()
+
+
+
+
+.strftime('%B %d, %Y (%A)')
+
+
+
+--- reset password setup
+1. user submits email
+2. find account with that email
+3. reset password: use the uniqueValue() function ---> send that value to user's email ---> update account's password to the hashed version (bcrypt)

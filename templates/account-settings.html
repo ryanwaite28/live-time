@@ -16,14 +16,327 @@
     <div class="container middle-box">
       <div class="row">
         <div class="col s12">
+          <h5 class="text-center">Update Account</h5>
+          <br/>
 
-          <h5 data-bind="text: you().displayname"></h5>
-          <img class="middlr img-frame-1" data-bind="attr: { src: you().icon }"/>
+          <div class="card">
+            <div class="card-content">
+              <p class="text-center">Info</p>
+            </div>
+            <div class="card-action">
+              <div class="row">
+                <div class="input-field col s12">
+                  <textarea class="materialize-textarea" placeholder="Bio" id="bio_input" type="text" data-bind="textInput: bio"></textarea>
+                  <label for="bio_input">Bio | <span data-bind="text: bio().trim().length + '/250' + ' characters'"></span></label>
+                </div>
 
-          <p class="text-center" data-bind="text: you().username"></p>
-          <p class="text-center" data-bind="text: you().bio"></p>
+                <div class="input-field col s12">
+                  <input placeholder="Displayname" id="displayname_input" type="text" data-bind="textInput: displayname">
+                  <label for="displayname_input">Displayname | <span data-bind="text: displayname().trim().length + '/50' + ' characters'"></span></label>
+                </div>
+
+                <div class="input-field col s12">
+                  <textarea class="materialize-textarea" placeholder="Categories" id="categories_input" type="text" data-bind="textInput: categories"></textarea>
+                  <label for="categories_input">Categories (This is a way for users to find you) | <span data-bind="text: categories().trim().length + '/250' + ' characters'"></span></label>
+                  <p><a class="modal-trigger" href="#modal1"><i class="material-icons">info</i></a></p>
+                </div>
+
+                <div class="input-field col s12">
+                  <input placeholder="Location" id="location_input" type="text" data-bind="textInput: location">
+                  <label for="location_input">Location (Where are you from/based?) | <span data-bind="text: location().trim().length + '/150' + ' characters'"></span></label>
+                </div>
+
+                <div class="input-field col s12">
+                  <input placeholder="Website" id="link_input" type="text" data-bind="textInput: link">
+                  <label for="link_input">Website (Please include the http:// prefix, for example: http://example.com)</label>
+                </div>
+
+                <div class="input-field col s12">
+                  <input placeholder="Phone" id="phone_input" type="text" data-bind="textInput: phone">
+                  <label for="phone_input">Phone</label>
+                </div>
+
+                <div class="input-field col s12">
+                  <select class="" data-bind="foreach: account_type_options, attr: { value: type }, event: { change: update_account_type }">
+                    <option data-bind="text: $data || 'Choose...', attr: { value: $data }"></option>
+                  </select>
+                  <label>Account Type | Current: (<span data-bind="text: you().type"></span><span data-bind="text: type() === you().type ? '' : ' - Unsaved'"></span>)</label>
+                  <p><a class="modal-trigger" href="#modal2"><i class="material-icons">info</i></a></p>
+                </div>
+              </div>
+            </div>
+            <div class="card-action">
+              <button class="blue btn waves-effect waves-light" type="button" name="action" data-bind="click: update_info">Submit
+                <i class="material-icons right">send</i>
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-content">
+              <p class="text-center">Icon</p>
+              <br/>
+              <img class="middlr img-frame-1" data-bind="attr: { src: icon }"/>
+            </div>
+            <div class="card-action">
+              <div class="row">
+                <div class="file-field input-field">
+                  <div class="btn">
+                    <span>File</span>
+                    <input type="file" id="icon-input" accept="image/*">
+                  </div>
+                  <div class="file-path-wrapper">
+                    <input class="file-path validate" type="text" id="icon-input-text">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-action">
+              <button class="blue btn waves-effect waves-light" type="button" name="action" data-bind="click: update_icon">Submit
+                <i class="material-icons right">send</i>
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-content">
+              <p class="text-center">Background</p>
+              <br/>
+              <img class="middlr img-frame-1" data-bind="attr: { src: background }"/>
+            </div>
+            <div class="card-action">
+              <div class="row">
+                <div class="file-field input-field">
+                  <div class="btn">
+                    <span>File</span>
+                    <input type="file" id="background-input" accept="image/*">
+                  </div>
+                  <div class="file-path-wrapper">
+                    <input class="file-path validate" type="text" id="background-input-text">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-action">
+              <button class="blue btn waves-effect waves-light" type="button" name="action" data-bind="click: update_background">Submit
+                <i class="material-icons right">send</i>
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-content">
+              <p class="text-center">Social Links</p>
+            </div>
+            <div class="card-action">
+              <div class="row">
+                <div class="input-field col s12">
+                  <input placeholder="Facebook" id="facebook_input" type="text" data-bind="textInput: facebook">
+                  <label for="facebook_input">Facebook</label>
+                </div>
+                <div class="input-field col s12">
+                  <input placeholder="Twitter" id="twitter_input" type="text" data-bind="textInput: twitter">
+                  <label for="twitter_input">Twitter</label>
+                </div>
+                <div class="input-field col s12">
+                  <input placeholder="YouTube" id="youtube_input" type="text" data-bind="textInput: youtube">
+                  <label for="youtube_input">YouTube</label>
+                </div>
+                <div class="input-field col s12">
+                  <input placeholder="Instagram" id="instagram_input" type="text" data-bind="textInput: instagram">
+                  <label for="instagram_input">Instagram</label>
+                </div>
+                <div class="input-field col s12">
+                  <input placeholder="SoundCloud" id="soundcloud_input" type="text" data-bind="textInput: soundcloud">
+                  <label for="soundcloud_input">SoundCloud</label>
+                </div>
+                <div class="input-field col s12">
+                  <input placeholder="SnapChat" id="snapchat_input" type="text" data-bind="textInput: snapchat">
+                  <label for="snapchat_input">SnapChat</label>
+                </div>
+                <div class="input-field col s12">
+                  <input placeholder="iTunes" id="itunes_input" type="text" data-bind="textInput: itunes">
+                  <label for="itunes_input">iTunes</label>
+                </div>
+                <div class="input-field col s12">
+                  <input placeholder="Google Play" id="google_play_input" type="text" data-bind="textInput: google_play">
+                  <label for="google_play_input">Google Play</label>
+                </div>
+                <div class="input-field col s12">
+                  <input placeholder="Spotify" id="spotify_input" type="text" data-bind="textInput: spotify">
+                  <label for="spotify_input">Spotify</label>
+                </div>
+                <div class="input-field col s12">
+                  <input placeholder="Google Plus" id="google_plus_input" type="text" data-bind="textInput: google_plus">
+                  <label for="google_plus_input">Google Plus</label>
+                </div>
+                <div class="input-field col s12">
+                  <input placeholder="Tidal" id="tidal_input" type="text" data-bind="textInput: tidal">
+                  <label for="tidal_input">Tidal</label>
+                </div>
+                <div class="input-field col s12">
+                  <input placeholder="Pandora" id="pandora_input" type="text" data-bind="textInput: pandora">
+                  <label for="pandora_input">Pandora</label>
+                </div>
+                <div class="input-field col s12">
+                  <input placeholder="Last FM" id="last_fm_input" type="text" data-bind="textInput: last_fm">
+                  <label for="last_fm_input">Last FM</label>
+                </div>
+                <div class="input-field col s12">
+                  <input placeholder="SpinRilla" id="spinrilla_input" type="text" data-bind="textInput: spinrilla">
+                  <label for="spinrilla_input">SpinRilla</label>
+                </div>
+                <div class="input-field col s12">
+                  <input placeholder="BandCamp" id="bandcamp_input" type="text" data-bind="textInput: bandcamp">
+                  <label for="bandcamp_input">BandCamp</label>
+                </div>
+                <div class="input-field col s12">
+                  <input placeholder="DatPiff" id="datpiff_input" type="text" data-bind="textInput: datpiff">
+                  <label for="datpiff_input">DatPiff</label>
+                </div>
+              </div>
+            </div>
+            <div class="card-action">
+              <button class="blue btn waves-effect waves-light" type="button" name="action" data-bind="click: update_social">Submit
+                <i class="material-icons right">send</i>
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-content">
+              <p class="text-center">Username</p>
+            </div>
+            <div class="card-action">
+              <div class="row">
+                <div class="input-field col s12">
+                  <input placeholder="Username" id="username_input" type="text" data-bind="textInput: username">
+                  <label for="username_input">Username<span data-bind="text: you().username === username() ? '' : ' - Changed'"></span></label>
+                </div>
+              </div>
+            </div>
+            <div class="card-action">
+              <button class="blue btn waves-effect waves-light" type="button" name="action" data-bind="click: update_username, css: { disabled: you().username === username() }">Submit
+                <i class="material-icons right">send</i>
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-content">
+              <p class="text-center">Account Email</p>
+            </div>
+            <div class="card-action">
+              <div class="row">
+                <div class="input-field col s12">
+                  <input placeholder="Account Email" id="email_input" type="text" data-bind="textInput: email">
+                  <label for="email_input">Account Email<span data-bind="text: you().email === email() ? '' : ' - Changed'"></span></label>
+                </div>
+              </div>
+            </div>
+            <div class="card-action">
+              <button class="blue btn waves-effect waves-light" type="button" name="action" data-bind="click: update_account_email, css: { disabled: you().email === email() }">Submit
+                <i class="material-icons right">send</i>
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-content">
+              <p class="text-center">Booking Email</p>
+            </div>
+            <div class="card-action">
+              <div class="row">
+                <div class="input-field col s12">
+                  <input placeholder="Booking Email" id="booking_email_input" type="text" data-bind="textInput: booking_email">
+                  <label for="booking_email_input">Booking Email<span data-bind="text: you().booking_email === booking_email() ? '' : ' - Changed'"></span></label>
+                </div>
+              </div>
+            </div>
+            <div class="card-action">
+              <button class="blue btn waves-effect waves-light" type="button" name="action" data-bind="click: update_booking_email, css: { disabled: you().booking_email === booking_email() }">Submit
+                <i class="material-icons right">send</i>
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-content">
+              <p class="text-center">Password</p>
+            </div>
+            <div class="card-action">
+              <div class="row">
+                <div class="input-field col s12">
+                  <input placeholder="Password" id="password_input" type="password" data-bind="textInput: password_input">
+                  <label for="password_input">Password</label>
+                </div>
+                <div class="input-field col s12">
+                  <input placeholder="Verify Password" id="verify_password_input" type="password" data-bind="textInput: verify_password_input">
+                  <label for="verify_password_input">Verify Password</label>
+                </div>
+              </div>
+            </div>
+            <div class="card-action">
+              <button class="blue btn waves-effect waves-light" type="button" name="action" data-bind="click: update_password">Submit
+                <i class="material-icons right">send</i>
+              </button>
+            </div>
+          </div>
+
 
         </div>
+      </div>
+    </div>
+
+    <!-- Modal Structure -->
+    <div id="modal1" class="modal">
+      <div class="modal-content">
+       <h4>Categories/Location</h4>
+       <hr/>
+       <p>
+         Categories are a way for users to find artists, venues and events!
+         To properly enter categories, just make a comma-separated list!
+         For example:
+         <br/><br/>
+         hip-hip, rap, reggae, soul, etc...
+         <br/><br/>
+         It cannot be more than 250 characters.
+       </p>
+       <p>
+         Same thing with location, you can make it a comma-separated list.
+         For example:
+         <br/><br/>
+         Los Angeles, CA, California, etc...
+         <br/><br/>
+         Others can also find you by location!
+       </p>
+      </div>
+    </div>
+
+    <!-- Modal Structure -->
+    <div id="modal2" class="modal">
+      <div class="modal-content">
+       <h4>Account Types</h4>
+       <hr/>
+       <p>
+         <strong><b>Artist</b></strong><br/>
+         If you are looking to get booked and find places to perform, choose ARTIST.
+       </p>
+       <p>
+         <strong><b>Venue</b></strong><br/>
+         If you are looking for artists to perform at your venue, choose VENUE.
+       </p>
+       <p>
+         <strong><b>USER</b></strong><br/>
+         If you are looking for venues to attend and want to keep up to date with events, choose USER.
+       </p>
+
+       <p>
+         You can change your account type at any time.
+         However, doing so may affect how this app works for you.
+         For example, changing from ARTIST/VENUE to USER means people cannot search for your account.
+         See the <a title="Info Page" href="/info">info page</a> for more details.
+       </p>
       </div>
     </div>
 

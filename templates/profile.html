@@ -13,15 +13,76 @@
       {% include 'navbar-1.html' %}
     {% endif %}
 
+    <div class="container middle-box-2">
+      <p class="text-center pos-rel">
+        <a class="cursor-class" title="toggle background view" data-bind="click: toggle_background_view">show/hide background</a>
+      </p>
+      <div class="row fill background-box-1" data-bind="style: { 'background-image': 'url(' + you().background + ')' }">
+        <div class="dim"></div>
+        <div class="col s12 pos-rel" data-bind="visible: background_view() === false">
+          <h5 class="text-center text-white" data-bind="text: you().displayname"></h5>
+          <img class="middlr img-frame-1" data-bind="attr: { src: you().icon }"/>
+          <p class="text-center text-white" data-bind="text: you().username"></p>
+          <p class="text-center text-white" data-bind="text: you().type"></p>
+          <p class="text-center text-white" data-bind="text: you().bio"></p>
+          <p class="text-center text-white">Following: <span data-bind="text: you().following"></span></p>
+          <p class="text-center text-white">Followers: <span data-bind="text: you().followers"></span></p>
+          <p class="text-center">
+            <a class="" data-bind="text: you().link, attr: {href: you().link || '#'}"></a>
+          </p>
+        </div>
+      </div>
+    </div>
+
     <div class="container middle-box">
       <div class="row">
         <div class="col s12">
 
-          <h5 data-bind="text: you().displayname"></h5>
-          <img class="middlr img-frame-1" data-bind="attr: { src: you().icon }"/>
+          <div class="card">
+            <div class="card-content">
+              <div class="collection">
+                <a title="Your Events" href="/profile/events" class="collection-item" data-bind="style: {display: you().type === 'VENUE' ? 'block' : 'none'}">Events</a>
+                <a title="Your Shows" href="/profile/shows" class="collection-item" data-bind="style: {display: you().type === 'ARTIST' ? 'block' : 'none'}">Shows</a>
+                <a title="Your Notifications" href="/profile/notifications" class="collection-item">Notifications</a>
+                <a title="Your Reviews" href="/profile/reviews" class="collection-item">Reviews</a>
+              </div>
+            </div>
+          </div>
 
-          <p class="text-center" data-bind="text: you().username"></p>
-          <p class="text-center" data-bind="text: you().bio"></p>
+          <div class="card">
+            <div class="card-content">
+              <p class="text-center">Info</p>
+            </div>
+            <div class="card-action">
+              <p><b>Categories</b><br/><span data-bind="text: you().categories || '...'"></span></p>
+              <p><b>Location</b><br/><span data-bind="text: you().location || '...'"></span></p>
+              <p><b>Phone</b><br/><span data-bind="text: you().phone || '...'"></span></p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-content">
+              <p class="text-center">Social</p>
+            </div>
+            <div class="card-action">
+              <p><b>Facebook</b><br/><span data-bind="text: you().facebook || '...'"></span></p>
+              <p><b>Twitter</b><br/><span data-bind="text: you().twitter || '...'"></span></p>
+              <p><b>YouTube</b><br/><span data-bind="text: you().youtube || '...'"></span></p>
+              <p><b>Instagram</b><br/><span data-bind="text: you().instagram || '...'"></span></p>
+              <p><b>Soundcloud</b><br/><span data-bind="text: you().soundcloud || '...'"></span></p>
+              <p><b>Snapchat</b><br/><span data-bind="text: you().snapchat || '...'"></span></p>
+              <p><b>iTunes</b><br/><span data-bind="text: you().itunes || '...'"></span></p>
+              <p><b>Google Play</b><br/><span data-bind="text: you().google_play || '...'"></span></p>
+              <p><b>Last FM</b><br/><span data-bind="text: you().last_fm || '...'"></span></p>
+              <p><b>Spotify</b><br/><span data-bind="text: you().spotify || '...'"></span></p>
+              <p><b>Google Plus</b><br/><span data-bind="text: you().google_plus || '...'"></span></p>
+              <p><b>Tidal</b><br/><span data-bind="text: you().tidal || '...'"></span></p>
+              <p><b>Pandora</b><br/><span data-bind="text: you().pandora || '...'"></span></p>
+              <p><b>Spinrilla</b><br/><span data-bind="text: you().spinrilla || '...'"></span></p>
+              <p><b>Bandcamp</b><br/><span data-bind="text: you().bandcamp || '...'"></span></p>
+              <p><b>Datpiff</b><br/><span data-bind="text: you().datpiff || '...'"></span></p>
+            </div>
+          </div>
 
         </div>
       </div>
