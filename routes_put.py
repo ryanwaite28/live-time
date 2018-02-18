@@ -105,6 +105,7 @@ def update_info(request):
         displayname        = str(data['displayname']).encode()
         phone              = str(data['phone']).encode()
         account_type       = str(data['type']).encode()
+        eventbrite        = str(data['eventbrite']).encode()
 
         you                = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
 
@@ -115,6 +116,7 @@ def update_info(request):
         you.displayname    = displayname
         you.phone          = phone
         you.type           = account_type
+        you.eventbrite     = eventbrite
 
         db_session.add(you)
         db_session.commit()

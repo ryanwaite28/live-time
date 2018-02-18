@@ -32,6 +32,7 @@ class Accounts(Base):
     bio                 = Column(String(250), default = '')
     categories          = Column(String(500), default = '')
     location            = Column(String(500), default = '')
+    eventbrite          = Column(String(500), default = '')
 
     facebook            = Column(String, default = '')
     twitter             = Column(String, default = '')
@@ -79,6 +80,7 @@ class Accounts(Base):
             'bio': self.bio,
             'categories': self.categories,
             'location': self.location,
+            'eventbrite': self.eventbrite,
 
             'facebook': self.facebook,
             'twitter': self.twitter,
@@ -160,6 +162,7 @@ class Events(Base):
     categories          = Column(String, nullable = False, default = '')
     location            = Column(String, nullable = False, default = '')
     icon                = Column(String, default = '/static/img/anon.png')
+    link                = Column(String, default = '')
     host_id             = Column(Integer, ForeignKey('accounts.id'))
     host_rel            = relationship('Accounts', foreign_keys=[host_id])
     closed              = Column(Boolean, default = False)
@@ -179,6 +182,7 @@ class Events(Base):
             'categories': self.categories,
             'location': self.location,
             'icon': self.icon,
+            'link': self.link,
             'host_id': self.host_id,
             'host_rel': self.host_rel.serialize,
             'closed': self.closed,

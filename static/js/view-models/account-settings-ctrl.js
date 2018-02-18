@@ -17,6 +17,7 @@
     self.link = ko.observable('');
     self.location = ko.observable('');
     self.phone = ko.observable('');
+    self.eventbrite = ko.observable('');
 
     self.icon = ko.observable('');
 
@@ -101,6 +102,7 @@
         type: self.type().trim(),
         phone: self.phone().trim(),
         link: self.link().trim(),
+        eventbrite: self.eventbrite().trim()
       }
 
       disable_buttons();
