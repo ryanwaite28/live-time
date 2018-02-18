@@ -9,25 +9,28 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import storage
 
+
+
+
 current_dir = os.path.dirname(os.path.abspath(__file__))
 firebase_json_file_dir = os.path.join( current_dir , 'firebase.json' )
 
-# config = {
-#     'apiKey': "AIzaSyAQL_V6IejrtuGmav9VPWKb-Ll0GBU-oQc",
-#     'authDomain': "live-time.firebaseapp.com",
-#     'databaseURL': "https://live-time.firebaseio.com",
-#     'projectId': "live-time",
-#     'storageBucket': "live-time.appspot.com",
-#     'messagingSenderId': "1003960112164"
-#
-#     "serviceAccount": firebase_json_file_dir
-# }
-# firebase = pyrebase.initialize_app(config)
-#
-# cred = credentials.Certificate(firebase_json_file_dir)
-# firebase_admin.initialize_app(cred, {
-#     'storageBucket': config['storageBucket']
-# })
+config = {
+    'apiKey': "AIzaSyAQL_V6IejrtuGmav9VPWKb-Ll0GBU-oQc",
+    'authDomain': "live-time.firebaseapp.com",
+    'databaseURL': "https://live-time.firebaseio.com",
+    'projectId': "live-time",
+    'storageBucket': "live-time.appspot.com",
+    'messagingSenderId': "1003960112164",
+
+    "serviceAccount": firebase_json_file_dir
+}
+
+firebase = pyrebase.initialize_app(config)
+cred = credentials.Certificate(firebase_json_file_dir)
+firebase_admin.initialize_app(cred, {
+    'storageBucket': config['storageBucket']
+})
 
 
 
