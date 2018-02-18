@@ -247,6 +247,39 @@ class EventRequests(Base):
         }
 
 
+
+class EventInvites(Base):
+    __tablename__ = 'event_invites'
+
+    id                  = Column(Integer, primary_key = True)
+
+    sender_id           = Column(Integer, ForeignKey('accounts.id'))
+    sender_rel          = relationship('Accounts', foreign_keys=[sender_id])
+    receiver_id         = Column(Integer, ForeignKey('accounts.id'))
+    receiver_rel        = relationship('Accounts', foreign_keys=[receiver_id])
+
+    event_id            = Column(Integer, ForeignKey('events.id'))
+    event_rel           = relationship('Events', foreign_keys=[event_id])
+    date_created        = Column(DateTime, server_default=func.now())
+    unique_value        = Column(String, default = uniqueValue)
+
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+
+            'sender_id': self.account_id,
+            'sender_rel': self.sender_rel.serialize,
+            'receiver_id': self.receiver_id,
+            'receiver_rel': self.receiver_rel.serialize,
+
+            'event_id': self.event_id,
+            'event_rel': self.event_rel.serialize,
+            'date_created': str(self.date_created),
+            'unique_value': self.unique_value
+        }
+
+
 class Notifications(Base):
     __tablename__ = 'notifications'
 
