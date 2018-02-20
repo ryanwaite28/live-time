@@ -60,14 +60,6 @@
                   <input placeholder="Phone" id="phone_input" type="text" data-bind="textInput: phone">
                   <label for="phone_input">Phone</label>
                 </div>
-
-                <div class="input-field col s12">
-                  <select class="" data-bind="foreach: account_type_options, attr: { value: type }, event: { change: update_account_type }">
-                    <option data-bind="text: $data || 'Choose...', attr: { value: $data }"></option>
-                  </select>
-                  <label>Account Type | Current: (<span data-bind="text: you().type"></span><span data-bind="text: type() === you().type ? '' : ' - Unsaved'"></span>)</label>
-                  <p><a class="modal-trigger" href="#modal2"><i class="material-icons">info</i></a></p>
-                </div>
               </div>
             </div>
             <div class="card-action">

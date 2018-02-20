@@ -26,8 +26,11 @@ from models import Base, db_session
 
 from models import Accounts, Featured, Follows
 from models import Events, EventPerformers, EventRequests
+from models import EventInvites, EventAttendees
+from models import ArtistReviews, EventReviews
 from models import Notifications
 from models import ChatRooms, ChatRoomMembers, ChatRoomMessages
+from models import Conversations, ConversationMessages
 
 import chamber
 from chamber import uniqueValue
@@ -37,23 +40,6 @@ from chamber import uniqueValue
 
 def logged_in():
     return 'session_id' in user_session and 'account_id' in user_session
-# ---
-
-def Authorize(f):
-    ''' Checks If Client Is Authorized '''
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-
-        if 'auth_key' in user_session:
-            return f(*args, **kwargs)
-        else:
-            return jsonify(error = True, message = 'client is NOT authorized')
-
-    return decorated_function
-# ---
-
-def Check_Authorize():
-    return 'auth_key' in user_session
 # ---
 
 
@@ -87,11 +73,130 @@ def signup(request):
     return render_template('signup.html', session = logged_in())
 
 
+def profile_events(request):
+    user_session['auth_key'] = uniqueValue()
+
+    if 'session_id' not in user_session:
+        return render_template('error-page.html', session = logged_in(), message = 'Not logged in...')
+
+    you = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
+    if you.type != 'VENUE':
+        message = '''Your account is not of type: VENUE.
+        Only Venues can have events.'''
+        return render_template('error-page.html', session = logged_in(), message = message)
+
+    return render_template('profile-events.html', session = logged_in())
+
+
+def profile_shows(request):
+    user_session['auth_key'] = uniqueValue()
+
+    if 'session_id' not in user_session:
+        return render_template('error-page.html', session = logged_in(), message = 'Not logged in...')
+
+    you = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
+    if you.type != 'ARTIST':
+        message = '''Your account is not of type: ARTIST.
+        Only Artists can have shows.'''
+        return render_template('error-page.html', session = logged_in(), message = message)
+
+    return render_template('profile-shows.html', session = logged_in())
+
+
+def profile_attending(request):
+    user_session['auth_key'] = uniqueValue()
+
+    if 'session_id' not in user_session:
+        return render_template('error-page.html', session = logged_in(), message = 'Not logged in...')
+
+    you = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
+    if you.type != 'USER':
+        message = '''Your account is not of type: USER.
+        Only Users can attend events.'''
+        return render_template('error-page.html', session = logged_in(), message = message)
+
+    return render_template('profile-attending.html', session = logged_in())
+
+
+
+def account_page(request, username):
+    user_session['auth_key'] = uniqueValue()
+
+    account = db_session.query(Accounts).filter_by(username = username).first()
+
+    if account == None:
+        message = '''No account exists with this username'''
+        return render_template('error-page.html', session = logged_in(), message = message)
+
+    return render_template('user-page.html', session = logged_in())
+
+
+def account_events(request, username):
+    user_session['auth_key'] = uniqueValue()
+
+    account = db_session.query(Accounts).filter_by(username = username).first()
+
+    if account == None:
+        message = '''No account exists with this username'''
+        return render_template('error-page.html', session = logged_in(), message = message)
+
+    if account.type != 'VENUE':
+        message = '''This account is not of type: VENUE. Only Venues can have events.'''
+        return render_template('error-page.html', session = logged_in(), message = message)
+
+    return render_template('user-events.html', session = logged_in())
+
+
+def account_shows(request, username):
+    user_session['auth_key'] = uniqueValue()
+
+    account = db_session.query(Accounts).filter_by(username = username).first()
+
+    if account == None:
+        message = '''No account exists with this username'''
+        return render_template('error-page.html', session = logged_in(), message = message)
+
+    if account.type != 'ARTIST':
+        message = '''This account is not of type: ARTIST. Only Artists can have shows.'''
+        return render_template('error-page.html', session = logged_in(), message = message)
+
+    return render_template('user-shows.html', session = logged_in())
+
+
+def account_attending(request, username):
+    user_session['auth_key'] = uniqueValue()
+
+    account = db_session.query(Accounts).filter_by(username = username).first()
+
+    if account == None:
+        message = '''No account exists with this username'''
+        return render_template('error-page.html', session = logged_in(), message = message)
+
+    if account.type != 'USER':
+        message = '''This account is not of type: USER. Only Users can attend events.'''
+        return render_template('error-page.html', session = logged_in(), message = message)
+
+    return render_template('user-attending.html', session = logged_in())
+
+
+
+def create_event(request):
+    user_session['auth_key'] = uniqueValue()
+
+    if 'session_id' not in user_session:
+        return render_template('error-page.html', session = logged_in(), message = 'Not logged in...')
+
+    you = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
+    if you.type != 'VENUE':
+        message = '''Your account is not of type: VENUE.
+        Only Venues can create events.'''
+        return render_template('error-page.html', session = logged_in(), message = message)
+
+    return render_template('create-event.html', session = logged_in())
+
+
 def signin(request):
     user_session['auth_key'] = uniqueValue()
-    if 'session_id' in user_session:
-        return redirect('/')
-
     return render_template('signin.html', session = logged_in())
 
 
@@ -107,7 +212,7 @@ def signout(request):
     return redirect('/')
 
 
-@Authorize
+
 def check_session(request):
     if 'session_id' in user_session:
         you = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
@@ -140,3 +245,79 @@ def account_settings(request):
 
     user_session['auth_key'] = uniqueValue()
     return render_template('account-settings.html', session = logged_in())
+
+
+
+
+
+def get_event(request, event_id):
+    event = db_session.query(Events).filter_by(id = event_id).first()
+    if event:
+        return jsonify(message = 'venue event', event = event.serialize)
+    else:
+        return jsonify(message = 'no venue event found', event = False)
+
+
+def get_account_by_username(request, username):
+    account = db_session.query(Accounts).filter_by(username = username).first()
+    if account:
+        return jsonify(message = 'account found', account = account.serialize)
+    else:
+        return jsonify(message = 'no account found', account = False)
+
+
+def get_venue_events(request, account_id, event_id):
+    if event_id == 0:
+        events = db_session.query(Events) \
+        .filter(Events.host_id == account_id) \
+        .order_by(desc(Events.date_created)) \
+        .limit(5) \
+        .all()
+
+    else:
+        events = db_session.query(Events) \
+        .filter(Events.host_id == account_id) \
+        .filter(Events.id < event_id) \
+        .order_by(desc(Events.date_created)) \
+        .limit(5) \
+        .all()
+
+    return jsonify(message = 'venue events', events = [e.serialize for e in events])
+
+
+def get_artist_shows(request, account_id, event_performer_id):
+    if event_performer_id == 0:
+        shows = db_session.query(EventPerformers) \
+        .filter(EventPerformers.performer_id == account_id) \
+        .order_by(desc(EventPerformers.date_created)) \
+        .limit(5) \
+        .all()
+
+    else:
+        shows = db_session.query(EventPerformers) \
+        .filter(EventPerformers.performer_id == account_id) \
+        .filter(EventPerformers.id < event_performer_id) \
+        .order_by(desc(EventPerformers.date_created)) \
+        .limit(5) \
+        .all()
+
+    return jsonify(message = 'artist shows', shows = [s.serialize for s in shows])
+
+
+def get_user_attending(request, account_id, attend_id):
+    if attend_id == 0:
+        attending = db_session.query(EventAttendees) \
+        .filter(EventAttendees.account_id == account_id) \
+        .order_by(desc(EventAttendees.date_created)) \
+        .limit(5) \
+        .all()
+
+    else:
+        attending = db_session.query(EventAttendees) \
+        .filter(EventAttendees.account_id == account_id) \
+        .filter(EventAttendees.id < attend_id) \
+        .order_by(desc(EventAttendees.date_created)) \
+        .limit(5) \
+        .all()
+
+    return jsonify(message = 'user attending', attending = [a.serialize for a in attending])

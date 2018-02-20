@@ -65,6 +65,11 @@ const validatePassword = function(password) {
   return re.test(password);
 }
 
+const validateLink = function(link) {
+  var re = /(^|[\s\n]|<[A-Za-z]*\/?>)((?:https?|ftp):\/\/[\-A-Z0-9+\u0026\u2019@#\/%?=()~_|!:,.;]*[\-A-Z0-9+\u0026@#\/%=~()_|])/gi;
+  return re.test(link);
+}
+
 const headers_json = function() {
   let myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json; charset=UTF-8");

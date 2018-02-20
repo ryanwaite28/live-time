@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% include '_dependencies.html' %}
+
+    <title>Live Time | User!</title>
+  </head>
+  <body>
+
+    {% if session == True %}
+      {% include 'navbar-2.html' %}
+    {% else %}
+      {% include 'navbar-1.html' %}
+    {% endif %}
+
+    <div class="container middle-box-2">
+      <p class="text-center pos-rel">
+        <a class="cursor-class" title="toggle background view" data-bind="click: toggle_background_view">show/hide background</a>
+      </p>
+      <div class="row fill background-box-1" data-bind="style: { 'background-image': 'url(' + user().background + ')' }">
+        <div class="dim"></div>
+        <div class="col s12 pos-rel" data-bind="visible: background_view() === false">
+          <h5 class="text-center text-white" data-bind="text: user().displayname"></h5>
+          <img class="middlr img-frame-1" data-bind="attr: { src: user().icon }"/>
+          <p class="text-center text-white" data-bind="text: user().username"></p>
+          <p class="text-center text-white" data-bind="text: user().type"></p>
+          <p class="text-center text-white" data-bind="text: user().bio"></p>
+          <p class="text-center text-white">Following: <span data-bind="text: user().following"></span></p>
+          <p class="text-center text-white">Followers: <span data-bind="text: user().followers"></span></p>
+          <p class="text-center">
+            <a class="" data-bind="text: user().link, attr: {href: user().link || '#'}"></a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="container middle-box">
+      <div class="row">
+        <div class="col s12">
+
+
+
+        </div>
+      </div>
+    </div>
+
+    {% include 'footer.html' %}
+
+    <script src="/static/js/view-models/user-page-ctrl.js"></script>
+
+  </body>
+</html>

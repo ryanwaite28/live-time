@@ -13,9 +13,32 @@
       {% include 'navbar-1.html' %}
     {% endif %}
 
+    <div class="container middle-box-2">
+      <p class="text-center pos-rel">
+        <a class="cursor-class" title="toggle background view" data-bind="click: toggle_background_view">show/hide background</a>
+      </p>
+      <div class="row fill background-box-1" data-bind="style: { 'background-image': 'url(' + you().background + ')' }">
+        <div class="dim"></div>
+        <div class="col s12 pos-rel" data-bind="visible: background_view() === false">
+          <h5 class="text-center text-white" data-bind="text: you().displayname"></h5>
+          <img class="middlr img-frame-1" data-bind="attr: { src: you().icon }"/>
+          <p class="text-center text-white" data-bind="text: you().username"></p>
+          <p class="text-center text-white" data-bind="text: you().type"></p>
+          <p class="text-center text-white" data-bind="text: you().bio"></p>
+          <p class="text-center text-white">Following: <span data-bind="text: you().following"></span></p>
+          <p class="text-center text-white">Followers: <span data-bind="text: you().followers"></span></p>
+          <p class="text-center">
+            <a class="" data-bind="text: you().link, attr: {href: you().link || '#'}"></a>
+          </p>
+        </div>
+      </div>
+    </div>
+
     <div class="container middle-box">
       <div class="row">
         <div class="col s12">
+
+
 
         </div>
       </div>
@@ -23,7 +46,7 @@
 
     {% include 'footer.html' %}
 
-    <!-- <script src="/static/js/view-models/.js"></script> -->
+    <script src="/static/js/view-models/profile-shows-ctrl.js"></script>
 
   </body>
 </html>

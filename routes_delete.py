@@ -26,8 +26,11 @@ from models import Base, db_session
 
 from models import Accounts, Featured, Follows
 from models import Events, EventPerformers, EventRequests
+from models import EventInvites, EventAttendees
+from models import ArtistReviews, EventReviews
 from models import Notifications
 from models import ChatRooms, ChatRoomMembers, ChatRoomMessages
+from models import Conversations, ConversationMessages
 
 import chamber
 from chamber import uniqueValue
@@ -39,19 +42,35 @@ def logged_in():
     return 'session_id' in user_session and 'account_id' in user_session
 # ---
 
-def Authorize(f):
-    ''' Checks If Client Is Authorized '''
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
 
-        if 'auth_key' in user_session:
-            return f(*args, **kwargs)
-        else:
-            return jsonify(error = True, message = 'client is NOT authorized')
 
-    return decorated_function
-# ---
 
-def Check_Authorize():
-    return 'auth_key' in user_session
-# ---
+
+def delete_account(request):
+    try:
+        you = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
+        db_session.delete(you)
+        db_session.comit()
+
+        user_session.clear()
+        return jsonify(error = False, message = 'Account Deleted')
+
+    except Exception as err:
+        print(err)
+        return jsonify(error = True, errorMessage = str(err), message = 'error processing...')
+
+
+def delete_event(request, event_id):
+    try:
+        event = db_session.query(Accounts).filter_by(id = event_id).first()
+        if event == None:
+            return jsonify(error = True, message = 'Event not found')
+
+        db_session.delete(you)
+        db_session.comit()
+
+        return jsonify(error = False, message = 'Event Deleted')
+
+    except Exception as err:
+        print(err)
+        return jsonify(error = True, errorMessage = str(err), message = 'error processing...')

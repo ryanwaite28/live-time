@@ -38,11 +38,12 @@
           <label for="sign_up_verify_password">Verify Password</label>
         </div>
 
-        <div class="input-field col s12">
+        <div class="col s12">
+          <label>Account Type</label>
           <select class="" data-bind="foreach: account_type_options, attr: { value: account_type_input }, event: { change: update_signup_account_type }">
             <option data-bind="text: $data || 'Choose...', attr: { value: $data }"></option>
           </select>
-          <label>Account Type</label>
+
           <p><a class="modal-trigger" href="#modal1"><i class="material-icons">info</i></a></p>
         </div>
 

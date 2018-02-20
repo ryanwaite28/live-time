@@ -19,6 +19,7 @@ class Accounts(Base):
     id                  = Column(Integer, primary_key = True)
 
     type                = Column(String, default = 'USER') # Either: USER, ARTIST, VENUE
+    verified            = Column(Boolean, default = False) # Either: True or False
     displayname         = Column(String(80), nullable = False, default = '')
     username            = Column(String(80), nullable = False, default = '')
     phone               = Column(String(80), nullable = False, default = '')
@@ -68,6 +69,7 @@ class Accounts(Base):
         return {
             'id': self.id,
             'type': self.type,
+            'verified': self.verified,
             'displayname': self.displayname,
             'username': self.username,
             'phone': self.phone,
@@ -157,19 +159,23 @@ class Events(Base):
     __tablename__ = 'events'
 
     id                  = Column(Integer, primary_key = True)
+
     title               = Column(String, nullable = False, default = '')
     desc                = Column(String, nullable = False, default = '')
     categories          = Column(String, nullable = False, default = '')
     location            = Column(String, nullable = False, default = '')
-    icon                = Column(String, default = '/static/img/anon.png')
     link                = Column(String, default = '')
+    event_date_time     = Column(DateTime)
+    icon                = Column(String, default = '/static/img/blank.png')
+
     host_id             = Column(Integer, ForeignKey('accounts.id'))
     host_rel            = relationship('Accounts', foreign_keys=[host_id])
+
     closed              = Column(Boolean, default = False)
     over                = Column(Boolean, default = False)
     performers          = relationship('EventPerformers', cascade='delete, delete-orphan', backref="EventPerformers")
     requests            = relationship('EventRequests', cascade='delete, delete-orphan', backref="EventRequests")
-    event_date_time     = Column(DateTime)
+
     date_created        = Column(DateTime, server_default=func.now())
     unique_value        = Column(String, default = uniqueValue)
 
@@ -187,8 +193,8 @@ class Events(Base):
             'host_rel': self.host_rel.serialize,
             'closed': self.closed,
             'over': self.over,
-            'performers': [p.serialize for p in performers],
-            # 'requests': [r.serialize for r in requests],
+            'performers': [p.serialize for p in self.performers],
+            'requests': len(self.requests),
             'event_date_time': str(self.event_date_time),
             'date_created': str(self.date_created),
             'unique_value': self.unique_value
@@ -272,13 +278,41 @@ class EventInvites(Base):
         return {
             'id': self.id,
 
-            'sender_id': self.account_id,
+            'sender_id': self.sender_id,
             'sender_rel': self.sender_rel.serialize,
             'receiver_id': self.receiver_id,
             'receiver_rel': self.receiver_rel.serialize,
 
             'event_id': self.event_id,
             'event_rel': self.event_rel.serialize,
+            'date_created': str(self.date_created),
+            'unique_value': self.unique_value
+        }
+
+
+class EventAttendees(Base):
+    __tablename__ = 'event_attendees'
+
+    id                  = Column(Integer, primary_key = True)
+
+    account_id          = Column(Integer, ForeignKey('accounts.id'))
+    account_rel         = relationship('Accounts', foreign_keys=[account_id])
+    event_id            = Column(Integer, ForeignKey('events.id'))
+    event_rel           = relationship('Events', foreign_keys=[event_id])
+
+    date_created        = Column(DateTime, server_default=func.now())
+    unique_value        = Column(String, default = uniqueValue)
+
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+
+            'account_id': self.account_id,
+            'account_rel': self.account_rel.serialize,
+            'event_id': self.event_id,
+            'event_rel': self.event_rel.serialize,
+
             'date_created': str(self.date_created),
             'unique_value': self.unique_value
         }

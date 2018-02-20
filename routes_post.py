@@ -5,7 +5,7 @@ import logging, dateutil, sqlite3, urllib, httplib2, json, psycopg2
 import random, string, bcrypt
 
 from functools import wraps
-from datetime import timedelta
+from datetime import datetime, timedelta
 from threading import Timer
 from dateutil import parser
 
@@ -26,8 +26,11 @@ from models import Base, db_session
 
 from models import Accounts, Featured, Follows
 from models import Events, EventPerformers, EventRequests
+from models import EventInvites, EventAttendees
+from models import ArtistReviews, EventReviews
 from models import Notifications
 from models import ChatRooms, ChatRoomMembers, ChatRoomMessages
+from models import Conversations, ConversationMessages
 
 import chamber
 from chamber import uniqueValue
@@ -39,27 +42,10 @@ def logged_in():
     return 'session_id' in user_session and 'account_id' in user_session
 # ---
 
-def Authorize(f):
-    ''' Checks If Client Is Authorized '''
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-
-        if 'auth_key' in user_session:
-            return f(*args, **kwargs)
-        else:
-            return jsonify(error = True, message = 'client is NOT authorized')
-
-    return decorated_function
-# ---
-
-def Check_Authorize():
-    return 'auth_key' in user_session
-# ---
 
 
 
 
-@Authorize
 def signup(request):
     try:
         data = json.loads(request.data)
@@ -102,3 +88,49 @@ def signup(request):
     except Exception as err:
         print(err)
         return jsonify(error = True, errorMessage = str(err), message = 'error signing up...')
+
+
+
+
+def create_event(request):
+    try:
+        if logged_in() == False:
+            return jsonify(error = True, message = 'no session found with this request.')
+
+        if not request.form:
+            return jsonify(error = True, message = 'no request form was sent')
+
+        print(request.form)
+
+        you = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
+        if you.type != "VENUE":
+            return jsonify(error = True, message = 'current user is not a VENUE')
+
+        title             = str(request.form['title']).encode()
+        desc              = str(request.form['desc']).encode()
+        categories        = str(request.form['categories']).encode()
+        location          = str(request.form['location']).encode()
+        link              = str(request.form['link']).encode()
+        date_concat       = str(request.form['date_concat']).encode()
+        event_date_time   = datetime.strptime(date_concat, '%Y-%m-%d %H:%M:%S')
+
+        if 'event_photo' not in request.files:
+            icon = ''
+        else:
+            file = request.files['event_photo']
+            if file and file.filename != '' and chamber.allowed_photo(file.filename):
+                icon = chamber.uploadFile(file = file, prev_ref = '')
+            else:
+                icon = ''
+
+        new_event = Events(title = title, desc = desc, categories = categories, location = location,
+                            link = link, icon = icon, event_date_time = event_date_time, host_id = you.id)
+        db_session.add(new_event)
+        db_session.commit()
+
+        return jsonify(message = 'Event Created Successfully!', event = new_event.serialize)
+
+
+    except Exception as err:
+        print(err)
+        return jsonify(error = True, errorMessage = str(err), message = 'error processing...')

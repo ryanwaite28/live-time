@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% include '_dependencies.html' %}
+
+    <title>Live Time | Create Event!</title>
+  </head>
+  <body>
+
+    {% if session == True %}
+      {% include 'navbar-2.html' %}
+    {% else %}
+      {% include 'navbar-1.html' %}
+    {% endif %}
+
+    <div class="container middle-box">
+      <div class="row">
+        <div class="col s12">
+          <div class="card">
+            <div class="card-content">
+              <p class="text-center">Create Event</p>
+            </div>
+            <div class="card-action">
+              <div class="row">
+                <div class="input-field col s12">
+                  <input placeholder="Title" id="title_input" type="text" data-bind="textInput: title">
+                  <label for="title_input">Title | <span data-bind="text: title().trim().length + '/125' + ' characters'"></span></label>
+                </div>
+
+                <div class="input-field col s12">
+                  <textarea class="materialize-textarea" placeholder="Description" id="desc_input" type="text" data-bind="textInput: desc"></textarea>
+                  <label for="desc_input">Description | <span data-bind="text: desc().trim().length + '/250' + ' characters'"></span></label>
+                </div>
+
+                <div class="input-field col s12">
+                  <textarea class="materialize-textarea" placeholder="Categories" id="categories_input" type="text" data-bind="textInput: categories"></textarea>
+                  <label for="categories_input">Categories (This is a way for users to find this event) | <span data-bind="text: categories().trim().length + '/250' + ' characters'"></span></label>
+                  <p><a class="modal-trigger" href="#modal1"><i class="material-icons">info</i></a></p>
+                </div>
+
+                <div class="input-field col s12">
+                  <textarea class="materialize-textarea" placeholder="Location" id="location_input" type="text" data-bind="textInput: location"></textarea>
+                  <label for="location_input">Location (This is a way for users to find you) | <span data-bind="text: location().trim().length + '/250' + ' characters'"></span></label>
+                </div>
+
+                <div class="input-field col s12">
+                  <input placeholder="Website" id="link_input" type="text" data-bind="textInput: link">
+                  <label for="link_input">Website (link to another website)</label>
+                </div>
+
+                <div class="col s6">
+                  <label for="event_date_input">Date</label>
+                  <input type="date" id="event_date_input">
+                  <p><a class="modal-trigger" href="#modal2"><i class="material-icons">info</i></a></p>
+                </div>
+
+                <div class="col s3">
+                  <label for="event_hours_input">Hours (00-23)</label>
+                  <input type="number" min="0" max="23" id="event_hours_input">
+                </div>
+                <div class="col s3">
+                  <label for="event_minutes_input">Minutes (00-59)</label>
+                  <input type="number" min="0" max="59" id="event_minutes_input">
+                </div>
+
+
+                <div class="input-field col s12">
+                  <p>Event Icon</p>
+                  <div class="file-field input-field">
+                    <div class="btn">
+                      <span>File</span>
+                      <input type="file" id="event-icon-input" accept="image/*">
+                    </div>
+                    <div class="file-path-wrapper">
+                      <input class="file-path validate" type="text" id="event-icon-input-text">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-action">
+              <button class="blue btn waves-effect waves-light" type="button" name="action" data-bind="click: create_event">Submit
+                <i class="material-icons right">send</i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Structure -->
+    <div id="modal1" class="modal">
+      <div class="modal-content">
+       <h4>Categories/Location</h4>
+       <hr/>
+       <p>
+         Categories are a way for users to find artists, venues and events!
+         To properly enter categories, just make a comma-separated list!
+         For example:
+         <br/><br/>
+         hip-hip, rap, reggae, soul, etc...
+         <br/><br/>
+         It cannot be more than 250 characters.
+       </p>
+       <p>
+         Same thing with location, you can make it a comma-separated list.
+         For example:
+         <br/><br/>
+         Los Angeles, CA, California, etc...
+         <br/><br/>
+         Others can also find you by location!
+       </p>
+      </div>
+    </div>
+
+    <!-- Modal Structure -->
+    <div id="modal2" class="modal">
+      <div class="modal-content">
+       <h4>Time Input</h4>
+       <hr/>
+       <p>
+         The hours input uses the 24-hour format for international use. The allowed values are from 0-23.
+         Basically any number above 12, subtract by 12 to get the hour.
+         For example:
+         <br/><br/>
+         00 = 12:00 AM, 04 = 4:00 AM, 11 = 11:00 AM, 13 = 1:00 PM, 15 = 3:00 PM, etc...
+       </p>
+       <p>
+         Here is a link that better explains/depicts this format: <a title="Military Time Chart" href="http://militarytimechart.com/">Military Time</a>
+       </p>
+      </div>
+    </div>
+
+    {% include 'footer.html' %}
+
+    <script src="/static/js/view-models/create-event-ctrl.js"></script>
+
+  </body>
+</html>

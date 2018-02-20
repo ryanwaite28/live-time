@@ -13,3 +13,14 @@ convoCheck = session.query(Conversations) \
 1. user submits email
 2. find account with that email
 3. reset password: use the uniqueValue() function ---> send that value to user's email ---> update account's password to the hashed version (bcrypt)
+
+
+
+// account: update type markup
+<div class="input-field col s12">
+  <select class="" data-bind="foreach: account_type_options, attr: { value: type }, event: { change: update_account_type }">
+    <option data-bind="text: $data || 'Choose...', attr: { value: $data }"></option>
+  </select>
+  <label>Account Type | Current: (<span data-bind="text: you().type"></span><span data-bind="text: type() === you().type ? '' : ' - Unsaved'"></span>)</label>
+  <p><a class="modal-trigger" href="#modal2"><i class="material-icons">info</i></a></p>
+</div>

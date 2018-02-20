@@ -26,8 +26,11 @@ from models import Base, db_session
 
 from models import Accounts, Featured, Follows
 from models import Events, EventPerformers, EventRequests
+from models import EventInvites, EventAttendees
+from models import ArtistReviews, EventReviews
 from models import Notifications
 from models import ChatRooms, ChatRoomMembers, ChatRoomMessages
+from models import Conversations, ConversationMessages
 
 import chamber
 from chamber import uniqueValue
@@ -39,27 +42,10 @@ def logged_in():
     return 'session_id' in user_session and 'account_id' in user_session
 # ---
 
-def Authorize(f):
-    ''' Checks If Client Is Authorized '''
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-
-        if 'auth_key' in user_session:
-            return f(*args, **kwargs)
-        else:
-            return jsonify(error = True, message = 'client is NOT authorized')
-
-    return decorated_function
-# ---
-
-def Check_Authorize():
-    return 'auth_key' in user_session
-# ---
 
 
 
 
-@Authorize
 def signin(request):
     try:
         data = json.loads(request.data)
@@ -91,7 +77,7 @@ def signin(request):
 
 
 
-@Authorize
+
 def update_info(request):
     try:
         data = json.loads(request.data)
@@ -104,7 +90,7 @@ def update_info(request):
         link               = str(data['link']).encode()
         displayname        = str(data['displayname']).encode()
         phone              = str(data['phone']).encode()
-        account_type       = str(data['type']).encode()
+        # account_type       = str(data['type']).encode()
         eventbrite        = str(data['eventbrite']).encode()
 
         you                = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
@@ -115,7 +101,7 @@ def update_info(request):
         you.link           = link
         you.displayname    = displayname
         you.phone          = phone
-        you.type           = account_type
+        # you.type           = account_type
         you.eventbrite     = eventbrite
 
         db_session.add(you)
@@ -129,7 +115,7 @@ def update_info(request):
 
 
 
-@Authorize
+
 def update_icon(request):
     try:
         if 'icon_photo' not in request.files:
@@ -159,7 +145,7 @@ def update_icon(request):
 
 
 
-@Authorize
+
 def update_background(request):
     try:
         if 'background_photo' not in request.files:
@@ -189,7 +175,7 @@ def update_background(request):
 
 
 
-@Authorize
+
 def update_social(request):
     try:
         data = json.loads(request.data)
@@ -243,7 +229,7 @@ def update_social(request):
 
 
 
-@Authorize
+
 def update_username(request):
     try:
         data = json.loads(request.data)
@@ -256,10 +242,8 @@ def update_username(request):
         if check_username:
             return jsonify(error = True, message = 'username is already in use')
 
-
         you               = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
         you.username      = username
-
         db_session.add(you)
         db_session.commit()
 
@@ -271,7 +255,7 @@ def update_username(request):
 
 
 
-@Authorize
+
 def update_account_email(request):
     try:
         data = json.loads(request.data)
@@ -284,10 +268,8 @@ def update_account_email(request):
         if check_email:
             return jsonify(error = True, message = 'account email is already in use')
 
-
         you            = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
         you.email      = email
-
         db_session.add(you)
         db_session.commit()
 
@@ -299,7 +281,7 @@ def update_account_email(request):
 
 
 
-@Authorize
+
 def update_booking_email(request):
     try:
         data = json.loads(request.data)
@@ -312,10 +294,8 @@ def update_booking_email(request):
         if check_email:
             return jsonify(error = True, message = 'booking account email is already in use')
 
-
         you                    = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
         you.booking_email      = booking_email
-
         db_session.add(you)
         db_session.commit()
 
@@ -326,7 +306,7 @@ def update_booking_email(request):
         return jsonify(error = True, errorMessage = str(err), message = 'error processing...')
 
 
-@Authorize
+
 def update_password(request):
     try:
         data = json.loads(request.data)
@@ -336,14 +316,74 @@ def update_password(request):
         password               = str(data['password']).encode()
         hashed                 = bcrypt.hashpw(password, bcrypt.gensalt())
 
-
         you                    = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
         you.password           = hashed
-
         db_session.add(you)
         db_session.commit()
 
         return jsonify(account = you.serialize, message = 'Password Updated Successfully!')
+
+    except Exception as err:
+        print(err)
+        return jsonify(error = True, errorMessage = str(err), message = 'error processing...')
+
+
+
+
+
+def update_event(request, event_id):
+    try:
+        if not request.form:
+            return jsonify(error = True, message = 'no request form was sent')
+
+        print(request.form)
+
+        you = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
+        if you.type != "VENUE":
+            message = '''current user is not a VENUE.
+            Change type to venue to add/edit/delete your events'''
+            return jsonify(error = True, message = message)
+
+        event = db_session.query(Events).filter(Event.id == event_id).filter(host_id = user_session['account_id']).first()
+        if event == None:
+            message = '''event not found.
+            either id is incorrect or current user does not own it'''
+            return jsonify(error = True,  message = message)
+
+        title                    = str(request.form['title']).encode()
+        desc                     = str(request.form['desc']).encode()
+        categories               = str(request.form['categories']).encode()
+        location                 = str(request.form['location']).encode()
+        link                     = str(request.form['link']).encode()
+        prev_ref                 = str(request.form['prev_ref']).encode()
+        date_concat              = str(request.form['date_concat']).encode()
+        event_date_time          = datetime.strptime(date_concat, '%Y-%m-%d %H:%M:%S')
+
+        event.title              = title
+        event.desc               = desc
+        event.categories         = categories
+        event.location           = location
+        event.link               = link
+        event.event_date_time    = event_date_time
+
+        if 'event_photo' not in request.files:
+            db_session.add(event)
+            db_session.commit()
+            return jsonify(message = 'Event Updated Successfully!', event = event.serialize)
+
+        else:
+            file = request.files['event_photo']
+            if file and file.filename != '' and chamber.allowed_photo(file.filename):
+                icon = chamber.uploadFile(file = file, prev_ref = prev_ref)
+                event.icon = icon
+                db_session.add(event)
+                db_session.commit()
+                return jsonify(message = 'Event Updated Successfully!', event = event.serialize)
+
+            else:
+                db_session.add(event)
+                db_session.commit()
+                return jsonify(message = 'Event Updated Successfully!', event = event.serialize)
 
     except Exception as err:
         print(err)
