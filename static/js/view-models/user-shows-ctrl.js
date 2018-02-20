@@ -82,6 +82,12 @@
       })
     }
 
+    self.delete_event = function(event_id) {
+      self.showsList.remove(function(show){
+        return show.event_rel.id == event_id;
+      });
+    }
+
   }
 
   ko.applyBindings(new mvc());

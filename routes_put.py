@@ -5,7 +5,7 @@ import logging, dateutil, sqlite3, urllib, httplib2, json, psycopg2
 import random, string, bcrypt
 
 from functools import wraps
-from datetime import timedelta
+from datetime import datetime, timedelta
 from threading import Timer
 from dateutil import parser
 
@@ -26,6 +26,7 @@ from models import Base, db_session
 
 from models import Accounts, Featured, Follows
 from models import Events, EventPerformers, EventRequests
+from models import EventLikes, EventComments, CommentLikes
 from models import EventInvites, EventAttendees
 from models import ArtistReviews, EventReviews
 from models import Notifications
@@ -336,19 +337,20 @@ def update_event(request, event_id):
         if not request.form:
             return jsonify(error = True, message = 'no request form was sent')
 
-        print(request.form)
+        # print('update event form ------- ', request.form)
+        # print('event_id --- ', event_id)
 
-        you = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
-        if you.type != "VENUE":
-            message = '''current user is not a VENUE.
-            Change type to venue to add/edit/delete your events'''
-            return jsonify(error = True, message = message)
-
-        event = db_session.query(Events).filter(Event.id == event_id).filter(host_id = user_session['account_id']).first()
+        event = db_session.query(Events).filter_by(id = event_id).first()
         if event == None:
             message = '''event not found.
             either id is incorrect or current user does not own it'''
             return jsonify(error = True,  message = message)
+
+        if event.host_id != user_session['account_id']:
+            message = '''Current account does not own this event'''
+            return jsonify(error = True,  message = message)
+
+
 
         title                    = str(request.form['title']).encode()
         desc                     = str(request.form['desc']).encode()
@@ -381,10 +383,34 @@ def update_event(request, event_id):
                 return jsonify(message = 'Event Updated Successfully!', event = event.serialize)
 
             else:
-                db_session.add(event)
-                db_session.commit()
-                return jsonify(message = 'Event Updated Successfully!', event = event.serialize)
+                return jsonify(error = True, message = 'file was not of type: image')
 
     except Exception as err:
         print(err)
         return jsonify(error = True, errorMessage = str(err), message = 'error processing...')
+
+
+
+def edit_comment(request, comment_id):
+    comment = db_session.query(EventComments) \
+    .filter(EventComments.id == comment_id) \
+    .filter(EventComments.owner_id == user_session['account_id']) \
+    .first()
+    if not comment:
+        return jsonify(error = True, message = 'comment not found')
+
+
+    data = json.loads(request.data)
+    if not data:
+        return jsonify( error = True, message = 'request body is empty, check headers/data' )
+    if 'text' not in data:
+        return jsonify( error = True, message = 'no text key/value pair in request body' )
+
+
+    text = str(data['text']).encode()
+
+    comment.text = text
+    db_session.add(comment)
+    db_session.commit()
+
+    return jsonify(message = 'event comment created', comment = comment.serialize)

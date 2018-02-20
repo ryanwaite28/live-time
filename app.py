@@ -163,22 +163,22 @@ def profile_attending():
     return routes_get.profile_attending(request)
 
 
-@app.route('/users/<username>', methods=['GET'])
+@app.route('/accounts/<username>', methods=['GET'])
 def account_page(username):
     return routes_get.account_page(request, username)
 
 
-@app.route('/users/<username>/events', methods=['GET'])
+@app.route('/venue/<username>/events', methods=['GET'])
 def account_events(username):
     return routes_get.account_events(request, username)
 
 
-@app.route('/users/<username>/shows', methods=['GET'])
+@app.route('/artist/<username>/shows', methods=['GET'])
 def account_shows(username):
     return routes_get.account_shows(request, username)
 
 
-@app.route('/users/<username>/attending', methods=['GET'])
+@app.route('/user/<username>/attending', methods=['GET'])
 def account_attending(username):
     return routes_get.account_attending(request, username)
 
@@ -186,6 +186,12 @@ def account_attending(username):
 @app.route('/create/event', methods=['GET'])
 def create_event_get():
     return routes_get.create_event(request)
+
+
+
+@app.route('/event/<int:event_id>/edit', methods=['GET'])
+def edit_event(event_id):
+    return routes_get.edit_event(request, event_id)
 
 
 @Authorize
@@ -218,6 +224,28 @@ def get_user_attending(account_id, attend_id):
     return routes_get.get_user_attending(request, account_id, attend_id)
 
 
+@Authorize
+@SessionRequired
+@app.route('/event/<int:event_id>/account_like/<int:account_id>', methods=['GET'])
+def check_event_account_like(event_id, account_id):
+    return routes_get.check_event_account_like(request, event_id, account_id)
+
+
+@Authorize
+@SessionRequired
+@app.route('/comment/<int:comment_id>/account_like/<int:account_id>', methods=['GET'])
+def check_comment_account_like(comment_id, account_id):
+    return routes_get.check_comment_account_like(request, comment_id, account_id)
+
+
+# the comment_id is used as a starting point for the query:
+# filter comments by IDs greater than the comment id given
+@Authorize
+@app.route('/event/<int:event_id>/comments/<int:comment_id>', methods=['GET'])
+def get_event_comments(event_id, comment_id):
+    return routes_get.get_event_comments(request, event_id, comment_id)
+
+
 
 # --- POST Routes --- #
 
@@ -236,6 +264,26 @@ def create_event_post():
     return routes_post.create_event(request)
 
 
+@Authorize
+@SessionRequired
+@app.route('/event/<int:event_id>/create_comment', methods=['POST'])
+def create_event_comment(event_id):
+    return routes_post.create_event_comment(request, event_id)
+
+
+@Authorize
+@SessionRequired
+@app.route('/event/<int:event_id>/toggle_like', methods=['POST'])
+def toggle_event_like(event_id):
+    return routes_post.toggle_event_like(request, event_id)
+
+
+@Authorize
+@SessionRequired
+@app.route('/comment/<int:comment_id>/toggle_like', methods=['POST'])
+def toggle_comment_like(comment_id):
+    return routes_post.toggle_comment_like(request, comment_id)
+
 
 
 
@@ -252,65 +300,72 @@ def signin_put():
 
 @Authorize
 @SessionRequired
-@app.route('/user/update_info', methods=['PUT'])
+@app.route('/account/update_info', methods=['PUT'])
 def update_info():
     return routes_put.update_info(request)
 
 
 @Authorize
 @SessionRequired
-@app.route('/user/update_icon', methods=['PUT'])
+@app.route('/account/update_icon', methods=['PUT'])
 def update_icon():
     return routes_put.update_icon(request)
 
 
 @Authorize
 @SessionRequired
-@app.route('/user/update_background', methods=['PUT'])
+@app.route('/account/update_background', methods=['PUT'])
 def update_background():
     return routes_put.update_background(request)
 
 
 @Authorize
 @SessionRequired
-@app.route('/user/update_social', methods=['PUT'])
+@app.route('/account/update_social', methods=['PUT'])
 def update_social():
     return routes_put.update_social(request)
 
 
 @Authorize
 @SessionRequired
-@app.route('/user/update_username', methods=['PUT'])
+@app.route('/account/update_username', methods=['PUT'])
 def update_username():
     return routes_put.update_username(request)
 
 
 @Authorize
 @SessionRequired
-@app.route('/user/update_account_email', methods=['PUT'])
+@app.route('/account/update_account_email', methods=['PUT'])
 def update_account_email():
     return routes_put.update_account_email(request)
 
 
 @Authorize
 @SessionRequired
-@app.route('/user/update_booking_email', methods=['PUT'])
+@app.route('/account/update_booking_email', methods=['PUT'])
 def update_booking_email():
     return routes_put.update_booking_email(request)
 
 
 @Authorize
 @SessionRequired
-@app.route('/user/update_password', methods=['PUT'])
+@app.route('/account/update_password', methods=['PUT'])
 def update_password():
     return routes_put.update_password(request)
 
 
 @Authorize
 @SessionRequired
-@app.route('/events/<int:event_id>/update_event', methods=['PUT'])
+@app.route('/event/<int:event_id>/update', methods=['PUT'])
 def update_event(event_id):
     return routes_put.update_event(request, event_id)
+
+
+@Authorize
+@SessionRequired
+@app.route('/comment/<int:comment_id>/edit', methods=['PUT'])
+def edit_comment(comment_id):
+    return routes_put.edit_comment(request, comment_id)
 
 
 
@@ -328,9 +383,16 @@ def delete_account():
 
 @Authorize
 @SessionRequired
-@app.route('/events/<int:event_id>/delete_event', methods=['DELETE'])
+@app.route('/event/<int:event_id>/delete', methods=['DELETE'])
 def delete_event(event_id):
     return routes_delete.delete_event(request, event_id)
+
+
+@Authorize
+@SessionRequired
+@app.route('/comment/<int:comment_id>/delete', methods=['DELETE'])
+def delete_comment(comment_id):
+    return routes_delete.delete_comment(request, comment_id)
 
 
 

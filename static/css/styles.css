@@ -106,3 +106,29 @@ nav {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.60);
 }
+
+.space-1 {
+    margin: 15px 0px;
+    padding: 10px;
+    background: #fbfbfb;
+    border: 1px solid lightgrey;
+}
+
+.text-grey {
+    color: grey;
+}
+
+.caption-1 {
+    font-size: 11px;
+}
+
+.info-text {
+    color: #039be5;
+}
+
+.action-item:hover {
+    opacity: 0.7;
+}
+.action-item {
+    cursor: pointer;
+}

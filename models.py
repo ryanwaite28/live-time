@@ -176,6 +176,9 @@ class Events(Base):
     performers          = relationship('EventPerformers', cascade='delete, delete-orphan', backref="EventPerformers")
     requests            = relationship('EventRequests', cascade='delete, delete-orphan', backref="EventRequests")
 
+    likes_rel           = relationship('EventLikes', cascade='delete, delete-orphan', backref="EventLikes")
+    comments_rel        = relationship('EventComments', cascade='delete, delete-orphan', backref="EventComments")
+
     date_created        = Column(DateTime, server_default=func.now())
     unique_value        = Column(String, default = uniqueValue)
 
@@ -195,6 +198,8 @@ class Events(Base):
             'over': self.over,
             'performers': [p.serialize for p in self.performers],
             'requests': len(self.requests),
+            'likes': len(self.likes_rel),
+            'comments': len(self.comments_rel),
             'event_date_time': str(self.event_date_time),
             'date_created': str(self.date_created),
             'unique_value': self.unique_value
@@ -316,6 +321,102 @@ class EventAttendees(Base):
             'date_created': str(self.date_created),
             'unique_value': self.unique_value
         }
+
+
+
+class EventLikes(Base):
+    __tablename__ = 'event_likes'
+
+    id                  = Column(Integer, nullable = False, primary_key = True)
+
+    event_id            = Column(Integer, ForeignKey('events.id'))
+    event_rel           = relationship('Events', foreign_keys=[event_id])
+    owner_id            = Column(Integer, ForeignKey('accounts.id'))
+    owner_rel           = relationship('Accounts', foreign_keys=[owner_id])
+
+    date_created        = Column(DateTime, server_default=func.now())
+    unique_value        = Column(String, default = uniqueValue)
+
+
+    @property
+    def serialize(self):
+        # Returns Data Object In Proper Format
+        return {
+            'id': self.id,
+
+            'event_id': self.event_id,
+            'owner_id': self.owner_id,
+            'owner_rel': self.owner_rel.serialize,
+
+            'date_created': str(self.date_created),
+            'unique_value': self.unique_value
+        }
+# ---
+
+class EventComments(Base):
+    __tablename__ = 'event_comments'
+
+    id                  = Column(Integer, nullable = False, primary_key = True)
+
+    event_id            = Column(Integer, ForeignKey('events.id'))
+    event_rel           = relationship('Events', foreign_keys=[event_id])
+    owner_id            = Column(Integer, ForeignKey('accounts.id'))
+    owner_rel           = relationship('Accounts', foreign_keys=[owner_id])
+
+    text                = Column(String, nullable = False)
+    likes_rel           = relationship('CommentLikes', cascade='delete, delete-orphan', backref="CommentLikes")
+
+    date_created        = Column(DateTime, server_default=func.now())
+    unique_value        = Column(String, default = uniqueValue)
+
+
+    @property
+    def serialize(self):
+        # Returns Data Object In Proper Format
+        return {
+            'id': self.id,
+
+            'event_id': self.event_id,
+            'owner_id': self.owner_id,
+            'owner_rel': self.owner_rel.serialize,
+
+            'text': self.text,
+            'likes': len(self.likes_rel),
+
+            'date_created': str(self.date_created),
+            'unique_value': self.unique_value
+        }
+# ---
+
+class CommentLikes(Base):
+    __tablename__ = 'comment_likes'
+
+    id                  = Column(Integer, nullable = False, primary_key = True)
+
+    comment_id          = Column(Integer, ForeignKey('event_comments.id'))
+    comment_rel         = relationship('EventComments')
+    owner_id            = Column(Integer, ForeignKey('accounts.id'))
+    owner_rel           = relationship('Accounts', foreign_keys=[owner_id])
+
+    date_created        = Column(DateTime, server_default=func.now())
+    unique_value        = Column(String, default = uniqueValue)
+
+
+    @property
+    def serialize(self):
+        # Returns Data Object In Proper Format
+        return {
+            'id': self.id,
+
+            'comment_id': self.comment_id,
+            'owner_id': self.owner_id,
+            'owner_rel': self.owner_rel.serialize,
+
+            'date_created': str(self.date_created),
+            'unique_value': self.unique_value
+        }
+# ---
+
 
 
 class Notifications(Base):
@@ -533,7 +634,6 @@ class ArtistReviews(Base):
             'date_created': str(self.date_created),
             'unique_value': self.unique_value
         }
-
 
 
 

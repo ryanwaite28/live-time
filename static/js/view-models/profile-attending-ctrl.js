@@ -67,6 +67,12 @@
       })
     }
 
+    self.delete_event = function(event_id) {
+      self.attendingList.remove(function(attend){
+        return attend.event_rel.id == event_id;
+      });
+    }
+
   }
 
   ko.applyBindings(new mvc());

@@ -26,6 +26,7 @@ from models import Base, db_session
 
 from models import Accounts, Featured, Follows
 from models import Events, EventPerformers, EventRequests
+from models import EventLikes, EventComments, CommentLikes
 from models import EventInvites, EventAttendees
 from models import ArtistReviews, EventReviews
 from models import Notifications
@@ -134,3 +135,67 @@ def create_event(request):
     except Exception as err:
         print(err)
         return jsonify(error = True, errorMessage = str(err), message = 'error processing...')
+
+
+
+def toggle_event_like(request, event_id):
+    check = db_session.query(EventLikes) \
+    .filter_by(event_id = event_id) \
+    .filter_by(owner_id = user_session['account_id']) \
+    .first()
+
+    if check:
+        db_session.delete(check)
+        db_session.commit()
+
+        return jsonify(message = 'unliked', liked = False)
+
+    else:
+        like = EventLikes(event_id = event_id, owner_id = user_session['account_id'])
+        db_session.add(like)
+        db_session.commit()
+
+        return jsonify(message = 'liked', liked = True)
+
+
+def toggle_comment_like(request, comment_id):
+    check = db_session.query(CommentLikes) \
+    .filter_by(comment_id = comment_id) \
+    .filter_by(owner_id = user_session['account_id']) \
+    .first()
+
+    if check:
+        db_session.delete(check)
+        db_session.commit()
+
+        return jsonify(message = 'unliked', liked = False)
+
+    else:
+        like = CommentLikes(comment_id = comment_id, owner_id = user_session['account_id'])
+        db_session.add(like)
+        db_session.commit()
+
+        return jsonify(message = 'liked', liked = True)
+
+
+
+def create_event_comment(request, event_id):
+    event = db_session.query(Events).filter_by(id = event_id).first()
+    if not event:
+        return jsonify(error = True, message = 'event not found')
+
+
+    data = json.loads(request.data)
+    if not data:
+        return jsonify( error = True, message = 'request body is empty, check headers/data' )
+    if 'text' not in data:
+        return jsonify( error = True, message = 'no text key/value pair in request body' )
+
+
+    text = str(data['text']).encode()
+
+    new_comment = EventComments(event_id = event_id, owner_id = user_session['account_id'], text = text)
+    db_session.add(new_comment)
+    db_session.commit()
+
+    return jsonify(message = 'event comment created', comment = new_comment.serialize)

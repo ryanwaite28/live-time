@@ -9,11 +9,15 @@
     self.signed_in = ko.observable(false);
     self.you = ko.observable({});
 
+    self.event = ko.observable({});
+    self.event_id = ko.observable(0);
+
     self.title = ko.observable('');
     self.desc = ko.observable('');
     self.categories = ko.observable('');
     self.location = ko.observable('');
     self.link = ko.observable('');
+    self.event_date_time = ko.observable('');
 
     //
 
@@ -24,11 +28,38 @@
       if(resp.account) {
         self.you(resp.account);
       }
+      self.get_event();
     });
+
+    self.get_event = function() {
+      var splitter = location.href.split('/');
+      var event_id = splitter[splitter.length - 2];
+      self.event_id(event_id);
+
+      GET.get_event_by_id(event_id)
+      .then(function(resp){
+        console.log(resp);
+        self.event(resp.event);
+        Object.keys(resp.event).forEach(function(key){
+          if(self[key]) {
+            self[key](resp.event[key]);
+          }
+        });
+        var splitter = resp.event.event_date_time.split(' ');
+
+        var event_date = splitter[0];
+        var event_hours = splitter[1].split(':')[0];
+        var event_minutes = splitter[1].split(':')[1];
+
+        $('#event_date_input').val(event_date)
+        $('#event_hours_input').val(event_hours)
+        $('#event_minutes_input').val(event_minutes)
+      });
+    }
 
     //
 
-    self.create_event = function() {
+    self.update_event = function() {
       var title = self.title().trim();
       var desc = self.desc().trim();
       var categories = self.categories().trim();
@@ -99,12 +130,13 @@
         link: link,
         date_concat: date_concat,
         event_date: event_date,
-        file: file
+        file: file,
+        prev_ref: getFileName(self.event().icon)
       }
 
       disable_buttons();
 
-      POST.create_event(data)
+      PUT.update_event(self.event_id(), data)
       .then(function(resp){
         console.log(resp);
         enable_buttons();
@@ -112,16 +144,7 @@
         if(resp.error) {
           return;
         }
-        self.title('')
-        self.desc('')
-        self.categories('')
-        self.location('')
-        self.link('')
-        $('#event_date_input').val('');
-        $('#event_hours_input').val('');
-        $('#event_minutes_input').val('');
-        $('#event-icon-input').val('');
-        $('#event-icon-input-text').val('');
+        window.location.reload();
       })
       .catch(function(error){
         console.log(error);

@@ -26,6 +26,7 @@ from models import Base, db_session
 
 from models import Accounts, Featured, Follows
 from models import Events, EventPerformers, EventRequests
+from models import EventLikes, EventComments, CommentLikes
 from models import EventInvites, EventAttendees
 from models import ArtistReviews, EventReviews
 from models import Notifications
@@ -50,7 +51,7 @@ def delete_account(request):
     try:
         you = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
         db_session.delete(you)
-        db_session.comit()
+        db_session.commit()
 
         user_session.clear()
         return jsonify(error = False, message = 'Account Deleted')
@@ -62,14 +63,38 @@ def delete_account(request):
 
 def delete_event(request, event_id):
     try:
-        event = db_session.query(Accounts).filter_by(id = event_id).first()
+        event = db_session.query(Events) \
+        .filter(Events.id == event_id) \
+        .filter(Events.host_id == user_session['account_id']) \
+        .first()
         if event == None:
             return jsonify(error = True, message = 'Event not found')
 
-        db_session.delete(you)
-        db_session.comit()
+        db_session.delete(event)
+        db_session.commit()
 
         return jsonify(error = False, message = 'Event Deleted')
+
+    except Exception as err:
+        print(err)
+        return jsonify(error = True, errorMessage = str(err), message = 'error processing...')
+
+
+
+def delete_comment(request, comment_id):
+    try:
+        comment = db_session.query(EventComments) \
+        .filter(EventComments.id == comment_id) \
+        .filter(EventComments.owner_id == user_session['account_id']) \
+        .first()
+
+        if not comment:
+            return jsonify(error = True, message = 'No Comment Found...')
+
+        db_session.delete(comment)
+        db_session.commit()
+
+        return jsonify(message = 'Comment Deleted!')
 
     except Exception as err:
         print(err)

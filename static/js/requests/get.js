@@ -81,6 +81,69 @@ const Get = function() {
     });
   }
 
+  self.get_random_events = function() {
+    return new Promise(function(resolve, reject){
+      fetch('/get/random/events', {method: "GET", credentials: "include"})
+      .then(function(resp){ return resp.json() })
+      .then(function(json){ return resolve(json); })
+      .catch(function(error){ return reject(error) })
+    });
+  }
+
+  self.get_random_venues = function() {
+    return new Promise(function(resolve, reject){
+      fetch('/get/random/venues', {method: "GET", credentials: "include"})
+      .then(function(resp){ return resp.json() })
+      .then(function(json){ return resolve(json); })
+      .catch(function(error){ return reject(error) })
+    });
+  }
+
+  self.get_random_artists = function() {
+    return new Promise(function(resolve, reject){
+      fetch('/get/random/artists', {method: "GET", credentials: "include"})
+      .then(function(resp){ return resp.json() })
+      .then(function(json){ return resolve(json); })
+      .catch(function(error){ return reject(error) })
+    });
+  }
+
+  self.get_random_users = function() {
+    return new Promise(function(resolve, reject){
+      fetch('/get/random/users', {method: "GET", credentials: "include"})
+      .then(function(resp){ return resp.json() })
+      .then(function(json){ return resolve(json); })
+      .catch(function(error){ return reject(error) })
+    });
+  }
+
+  self.check_event_account_like = function(event_id, account_id) {
+    return new Promise(function(resolve, reject){
+      fetch('/event/' + event_id + '/account_like/' + account_id, {method: "GET", credentials: "include"})
+      .then(function(resp){ return resp.json() })
+      .then(function(json){ return resolve(json); })
+      .catch(function(error){ return reject(error) })
+    });
+  }
+
+  self.check_comment_account_like = function(comment_id, account_id) {
+    return new Promise(function(resolve, reject){
+      fetch('/comment/' + comment_id + '/account_like/' + account_id, {method: "GET", credentials: "include"})
+      .then(function(resp){ return resp.json() })
+      .then(function(json){ return resolve(json); })
+      .catch(function(error){ return reject(error) })
+    });
+  }
+
+  self.get_event_comments = function(event_id, comment_id) {
+    return new Promise(function(resolve, reject){
+      fetch('/event/' + event_id + '/comments/' + comment_id, {method: "GET", credentials: "include"})
+      .then(function(resp){ return resp.json() })
+      .then(function(json){ return resolve(json); })
+      .catch(function(error){ return reject(error) })
+    });
+  }
+
 }
 
 // Create and Store New Instance In a Constant

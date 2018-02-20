@@ -1,0 +1,61 @@
+<div class="col s12 transition">
+  <div class="card">
+    <div class="card-image fill transition" data-bind="style: { 'background-image': 'url(' + event().icon + ')' }">
+      <div class="dim transition"></div>
+      <img class="transition" style="visibility: hidden" data-bind="attr: { title: event().location, alt: event().location, src: event().icon }">
+
+    </div>
+    <div class="card-content">
+      <a data-bind="attr: { title: 'See Post Page', href: '/events/' + event().id }">
+        <span class="card-title" data-bind="text: event().location"></span>
+      </a>
+
+      <p style="margin: 25px 0px;" data-bind="text: event().desc"></p>
+
+      <div data-bind="">
+        <div class="chip">
+          <img data-bind="attr: { title: event().host_rel.username, alt: event().host_rel.username, src: event().host_rel.icon }">
+          <a data-bind="attr: { title: event().host_rel.username, href: '/accounts/' + event().host_rel.username }">
+            <span data-bind="text: event().host_rel.username"></span>
+          </a>
+        </div>
+      </div>
+
+      <br/>
+
+      <p class="caption-1">
+        <span>
+          Event Date: <em class="text-grey" data-bind="text: date_formatter(event().event_date_time)"></em>
+        </span>
+      </p>
+      <p class="caption-1">
+        <span>
+          Created: <em class="text-grey" data-bind="text: date_formatter(event().date_created)"></em>
+        </span>
+      </p>
+    </div>
+
+    <div data-bind="visible: signed_in() && you_id() === event().host_id">
+      <div class="card-action">
+        <a data-bind="attr: { title: 'Edit Event', href: '/event/' + event().id + '/edit' }">
+          <button class="blue btn waves-effect waves-light" type="button" name="action">
+            Edit
+          </button>
+        </a>
+        <button data-bind="click: delete_event" class="red btn waves-effect waves-light" type="button" name="action">
+          Delete
+        </button>
+      </div>
+    </div>
+    <div class="card-action">
+      <div data-bind="">
+        <event-like-widget params="parent: $parent, event: event(), event_likes: event_likes(), event_id: event_id(), you_id: you_id(), signed_in: signed_in()"></event-like-widget>
+      </div>
+    </div>
+    <div class="card-action">
+      <div>
+        <comments-list-widget params="parent: $parent, event: event(), event_comments: event_comments(), event_id: event_id(), you_id: you_id(), signed_in: signed_in()"></comments-widget>
+      </div>
+    </div>
+  </div>
+</div>

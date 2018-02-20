@@ -26,6 +26,7 @@ from models import Base, db_session
 
 from models import Accounts, Featured, Follows
 from models import Events, EventPerformers, EventRequests
+from models import EventLikes, EventComments, CommentLikes
 from models import EventInvites, EventAttendees
 from models import ArtistReviews, EventReviews
 from models import Notifications
@@ -195,6 +196,25 @@ def create_event(request):
     return render_template('create-event.html', session = logged_in())
 
 
+def edit_event(request, event_id):
+    user_session['auth_key'] = uniqueValue()
+
+    if 'session_id' not in user_session:
+        return render_template('error-page.html', session = logged_in(), message = 'Not logged in...')
+
+    event = db_session.query(Events).filter_by(id = event_id).first()
+
+    if event == None:
+        message = '''Event not found.'''
+        return render_template('error-page.html', session = logged_in(), message = message)
+
+    if event.id != user_session['account_id']:
+        message = '''You do not own this event'''
+        return render_template('error-page.html', session = logged_in(), message = message)
+
+    return render_template('edit-event.html', session = logged_in())
+
+
 def signin(request):
     user_session['auth_key'] = uniqueValue()
     return render_template('signin.html', session = logged_in())
@@ -321,3 +341,53 @@ def get_user_attending(request, account_id, attend_id):
         .all()
 
     return jsonify(message = 'user attending', attending = [a.serialize for a in attending])
+
+
+
+def check_event_account_like(request, event_id, account_id):
+    check = db_session.query(EventLikes) \
+    .filter_by(event_id = event_id) \
+    .filter_by(owner_id = account_id) \
+    .first()
+
+    if check:
+        return jsonify(message = 'liked', liked = True)
+    else:
+        return jsonify(message = 'not liked', liked = False)
+
+
+def check_comment_account_like(request, comment_id, account_id):
+    check = db_session.query(CommentLikes) \
+    .filter_by(comment_id = comment_id) \
+    .filter_by(owner_id = account_id) \
+    .first()
+
+    if check:
+        return jsonify(message = 'liked', liked = True)
+    else:
+        return jsonify(message = 'not liked', liked = False)
+
+
+def get_event_comments(request, event_id, comment_id):
+    try:
+        if comment_id == 0:
+            event_comments = db_session.query(EventComments) \
+            .filter(EventComments.event_id == event_id) \
+            .order_by(desc(EventComments.date_created)) \
+            .limit(5) \
+            .all()
+
+        else:
+            event_comments = db_session.query(EventComments) \
+            .filter(EventComments.event_id == event_id) \
+            .filter(EventComments.id < comment_id) \
+            .order_by(desc(EventComments.date_created)) \
+            .limit(5) \
+            .all()
+
+        return jsonify(message = 'event comments', event_comments = [ec.serialize for ec in event_comments])
+
+
+    except Exception as err:
+        print(err)
+        return jsonify(error = True, errorMessage = str(err), message = 'error processing...')
