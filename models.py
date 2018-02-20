@@ -25,7 +25,6 @@ class Accounts(Base):
     phone               = Column(String(80), nullable = False, default = '')
     email               = Column(String, nullable = False, unique = True, default = '')
     booking_email       = Column(String, nullable = False, unique = True, default = '')
-    paypal_email        = Column(String, nullable = False, unique = True, default = '')
     password            = Column(String, nullable = False)
     icon                = Column(String, default = '/static/img/anon.png')
     background          = Column(String, default = '/static/img/blank.png')
@@ -75,7 +74,6 @@ class Accounts(Base):
             'phone': self.phone,
             'email': self.email,
             'booking_email': self.booking_email,
-            # 'paypal_email': self.paypal_email,
             'icon': self.icon,
             'background': self.background,
             'link': self.link,

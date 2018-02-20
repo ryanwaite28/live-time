@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% include '_dependencies.html' %}
+
+    <title>Live Time | Events!</title>
+  </head>
+  <body>
+
+    {% if session == True %}
+      {% include 'navbar-2.html' %}
+    {% else %}
+      {% include 'navbar-1.html' %}
+    {% endif %}
+
+    <div class="container middle-box">
+      <div class="row">
+        <div class="col s12">
+
+          <div class="middlr" data-bind="foreach: eventsList">
+            <event-widget params="parent: $parent, event: $data, show_user_chip: true, signed_in: $parent.signed_in(), you_id: $parent.you().id"></event-widget>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    {% include 'footer.html' %}
+
+    <script src="/static/js/view-models/eventpage-ctrl.js"></script>
+
+  </body>
+</html>

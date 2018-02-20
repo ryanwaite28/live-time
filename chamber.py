@@ -1,4 +1,5 @@
-import os , sys , cgi , re, hmac, hashlib, smtplib, requests, datetime
+import os , sys , cgi , re, hmac, hashlib, smtplib, requests
+import time, datetime
 import logging, dateutil, sqlite3, urllib, httplib2, json, psycopg2
 import random, string
 
@@ -125,7 +126,7 @@ def errorAlert(msg):
 # ---
 
 def uniqueValue():
-    value = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(50))
+    value = str( int(time.time()) ) + ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(50))
     return value.lower()
 # ---
 
@@ -176,3 +177,8 @@ def uploadFile(file, prev_ref):
     os.remove( filepath )
 
     return link
+
+
+BOOKED = 'BOOKED'
+NOT_BOOKED = 'NOT BOOKED'
+PENDING_BOOKED = 'PENDING BOOKED'

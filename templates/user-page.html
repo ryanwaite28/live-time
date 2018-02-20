@@ -38,7 +38,52 @@
       <div class="row">
         <div class="col s12">
 
+          <div class="card">
+            <div class="card-content">
+              <div class="collection">
+                <a title="User Events" href="/profile/events" class="collection-item" data-bind="attr: { href: '/venue/' + user().username + '/events' }, style: {display: user().type === 'VENUE' ? 'block' : 'none'}">Events</a>
+                <a title="User Shows" href="/profile/shows" class="collection-item" data-bind="attr: { href: '/artist/' + user().username + '/shows' }, style: {display: user().type === 'ARTIST' ? 'block' : 'none'}">Shows</a>
+                <a title="User Attending" href="/profile/attending" class="collection-item" data-bind="attr: { href: '/user/' + user().username + '/attending' }, style: {display: user().type === 'USER' ? 'block' : 'none'}">Attending</a>
+                <a title="User Reviews" class="collection-item" data-bind="attr: { href: '/accounts/' + user().username + '/reviews' }, ">Reviews</a>
+              </div>
+            </div>
+          </div>
 
+          <div class="card">
+            <div class="card-content">
+              <p class="text-center">Info</p>
+            </div>
+            <div class="card-action">
+              <p><b>Categories</b><br/><span data-bind="text: user().categories || '...'"></span></p>
+              <p><b>Location</b><br/><span data-bind="text: user().location || '...'"></span></p>
+              <p><b>Phone</b><br/><span data-bind="text: user().phone || '...'"></span></p>
+              <p><b>Eventbrite</b><br/><span data-bind="text: user().eventbrite || '...'"></span></p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-content">
+              <p class="text-center">Social</p>
+            </div>
+            <div class="card-action">
+              <p><b>Facebook</b><br/><span data-bind="text: user().facebook || '...'"></span></p>
+              <p><b>Twitter</b><br/><span data-bind="text: user().twitter || '...'"></span></p>
+              <p><b>userTube</b><br/><span data-bind="text: user().usertube || '...'"></span></p>
+              <p><b>Instagram</b><br/><span data-bind="text: user().instagram || '...'"></span></p>
+              <p><b>Soundcloud</b><br/><span data-bind="text: user().soundcloud || '...'"></span></p>
+              <p><b>Snapchat</b><br/><span data-bind="text: user().snapchat || '...'"></span></p>
+              <p><b>iTunes</b><br/><span data-bind="text: user().itunes || '...'"></span></p>
+              <p><b>Google Play</b><br/><span data-bind="text: user().google_play || '...'"></span></p>
+              <p><b>Last FM</b><br/><span data-bind="text: user().last_fm || '...'"></span></p>
+              <p><b>Spotify</b><br/><span data-bind="text: user().spotify || '...'"></span></p>
+              <p><b>Google Plus</b><br/><span data-bind="text: user().google_plus || '...'"></span></p>
+              <p><b>Tidal</b><br/><span data-bind="text: user().tidal || '...'"></span></p>
+              <p><b>Pandora</b><br/><span data-bind="text: user().pandora || '...'"></span></p>
+              <p><b>Spinrilla</b><br/><span data-bind="text: user().spinrilla || '...'"></span></p>
+              <p><b>Bandcamp</b><br/><span data-bind="text: user().bandcamp || '...'"></span></p>
+              <p><b>Datpiff</b><br/><span data-bind="text: user().datpiff || '...'"></span></p>
+            </div>
+          </div>
 
         </div>
       </div>

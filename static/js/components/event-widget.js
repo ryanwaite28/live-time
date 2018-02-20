@@ -14,8 +14,15 @@ ko.components.register('event-widget', {
       self.event_comments = ko.observable(params.event.comments);
 
       self.commentsLength = ko.observable(params.event.comments);
+      self.performers = ko.observableArray(params.event.performers);
+
+      self.hide_performers = ko.observable(true);
 
       // console.log(params, self);
+
+      self.toggle_performers_view = function() {
+        self.hide_performers( !self.hide_performers() );
+      }
 
       self.edit_event = function(event) {
 

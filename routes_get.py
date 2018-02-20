@@ -180,6 +180,18 @@ def account_attending(request, username):
     return render_template('user-attending.html', session = logged_in())
 
 
+def event_page(request, event_id):
+    user_session['auth_key'] = uniqueValue()
+
+    event = db_session.query(Events).filter_by(id = event_id).first()
+
+    if event == None:
+        message = '''No event exists with this id'''
+        return render_template('error-page.html', session = logged_in(), message = message)
+
+    return render_template('event-page.html', session = logged_in())
+
+
 
 def create_event(request):
     user_session['auth_key'] = uniqueValue()
@@ -208,8 +220,9 @@ def edit_event(request, event_id):
         message = '''Event not found.'''
         return render_template('error-page.html', session = logged_in(), message = message)
 
-    if event.id != user_session['account_id']:
-        message = '''You do not own this event'''
+    if event.host_id != user_session['account_id']:
+        message = '''You cannot make edits because
+        you do not own this event'''
         return render_template('error-page.html', session = logged_in(), message = message)
 
     return render_template('edit-event.html', session = logged_in())

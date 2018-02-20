@@ -19,7 +19,7 @@ ko.components.register('comments-list-widget', {
       self.min_comment_id = 0;
 
       self.end = ko.observable(false);
-      self.hide_comments = ko.observable(false);
+      self.hide_comments = ko.observable(true);
 
       // console.log(self, params);
 

@@ -33,7 +33,7 @@
 
     self.get_account_by_username = function() {
       var splitter = location.href.split('/');
-      var username = splitter[splitter.length - 1];
+      var username = splitter[splitter.length - 2];
 
       GET.get_account_by_username(username)
       .then(function(resp){

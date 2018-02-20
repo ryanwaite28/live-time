@@ -183,10 +183,14 @@ def account_attending(username):
     return routes_get.account_attending(request, username)
 
 
+@app.route('/event/<int:event_id>', methods=['GET'])
+def event_page(event_id):
+    return routes_get.event_page(request, event_id)
+
+
 @app.route('/create/event', methods=['GET'])
 def create_event_get():
     return routes_get.create_event(request)
-
 
 
 @app.route('/event/<int:event_id>/edit', methods=['GET'])

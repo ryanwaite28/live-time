@@ -38,7 +38,9 @@
       <div class="row">
         <div class="col s12">
 
-
+          <div class="middlr" data-bind="foreach: eventsList">
+            <event-widget params="parent: $parent, event: $data, show_user_chip: true, signed_in: $parent.signed_in(), you_id: $parent.you().id"></event-widget>
+          </div>
 
         </div>
       </div>

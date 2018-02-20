@@ -112,16 +112,20 @@
         if(resp.error) {
           return;
         }
-        self.title('')
-        self.desc('')
-        self.categories('')
-        self.location('')
-        self.link('')
-        $('#event_date_input').val('');
-        $('#event_hours_input').val('');
-        $('#event_minutes_input').val('');
-        $('#event-icon-input').val('');
-        $('#event-icon-input-text').val('');
+
+        window.location.href = '/event/' + resp.event.id;
+        return;
+
+        // self.title('')
+        // self.desc('')
+        // self.categories('')
+        // self.location('')
+        // self.link('')
+        // $('#event_date_input').val('');
+        // $('#event_hours_input').val('');
+        // $('#event_minutes_input').val('');
+        // $('#event-icon-input').val('');
+        // $('#event-icon-input-text').val('');
       })
       .catch(function(error){
         console.log(error);

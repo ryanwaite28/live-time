@@ -6,17 +6,21 @@
 
     </div>
     <div class="card-content">
-      <a data-bind="attr: { title: 'See Post Page', href: '/events/' + event().id }">
-        <span class="card-title" data-bind="text: event().location"></span>
+      <a data-bind="attr: { title: 'See Post Page', href: '/event/' + event().id }">
+        <span class="card-title" data-bind="text: event().title"></span>
       </a>
 
       <p style="margin: 25px 0px;" data-bind="text: event().desc"></p>
+
+      <p style="margin: 25px 0px;">Location: <span data-bind="text: event().location"></span></p>
+
+      <p style="margin: 25px 0px;" data-bind="text: event().categories"></p>
 
       <div data-bind="">
         <div class="chip">
           <img data-bind="attr: { title: event().host_rel.username, alt: event().host_rel.username, src: event().host_rel.icon }">
           <a data-bind="attr: { title: event().host_rel.username, href: '/accounts/' + event().host_rel.username }">
-            <span data-bind="text: event().host_rel.username"></span>
+            <span data-bind="text: event().host_rel.username + ' ' + '(' + event().host_rel.type + ')'"></span>
           </a>
         </div>
       </div>
@@ -55,6 +59,19 @@
     <div class="card-action">
       <div>
         <comments-list-widget params="parent: $parent, event: event(), event_comments: event_comments(), event_id: event_id(), you_id: you_id(), signed_in: signed_in()"></comments-widget>
+      </div>
+    </div>
+    <div class="card-action">
+      <span data-bind="visible: performers().length > 0">
+        <i class="fas fa-user"></i>
+      </span>
+      <span data-bind="visible: performers().length == 0">
+        <i class="far fa-user"></i>
+      </span>
+      <span data-bind="text: performers().length"></span> | <span class="info-text cursor-class" data-bind="click: toggle_performers_view">hide/show performers</span>
+      <br/>
+      <div data-bind="foreach: performers">
+        <account-widget params="parent: $parent, account: $data.performer_rel, you_id: you_id(), signed_in: signed_in()"></account-widget>
       </div>
     </div>
   </div>

@@ -36,11 +36,11 @@ nav {
 
 /* Classes */
 
-.middle-box {
+/* .middle-box {
   padding: 75px 0px;
   display: block;
   margin: auto;
-}
+} */
 
 .img-frame-1 {
   padding: 3px;
@@ -58,7 +58,7 @@ nav {
 }
 
 .middle-box {
-  width: 925px;
+  width: 825px;
   max-width: 100%;
   display: block;
   margin: auto;

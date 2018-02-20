@@ -81,7 +81,7 @@ ko.components.register('comment-widget', {
         '<div class="space-1">\
           <div class="chip"> \
             <img data-bind="attr: { alt: owner_username, src: owner_icon }"> \
-            <a style="color: #039be5; text-transform: lowercase; margin-right: 0px;" data-bind="attr: { title: owner_username(), href: \'\/users\/\' + owner_username() }"> \
+            <a style="color: #039be5; text-transform: lowercase; margin-right: 0px;" data-bind="attr: { title: owner_username(), href: \'\/accounts\/\' + owner_username() }"> \
               <span data-bind="text: owner_username"></span> \
             </a> \
           </div>  \
