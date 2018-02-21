@@ -172,6 +172,8 @@ class Events(Base):
 
     closed              = Column(Boolean, default = False)
     over                = Column(Boolean, default = False)
+
+    attending           = relationship('EventAttendees', cascade='delete, delete-orphan', backref="EventAttendees")
     performers          = relationship('EventPerformers', cascade='delete, delete-orphan', backref="EventPerformers")
     requests            = relationship('EventRequests', cascade='delete, delete-orphan', backref="EventRequests")
 
@@ -196,6 +198,7 @@ class Events(Base):
             'closed': self.closed,
             'over': self.over,
             'performers': [p.serialize for p in self.performers],
+            'attending': len(self.attending),
             'requests': len(self.requests),
             'likes': len(self.likes_rel),
             'comments': len(self.comments_rel),

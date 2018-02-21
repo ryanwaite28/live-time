@@ -135,6 +135,15 @@ const Get = function() {
     });
   }
 
+  self.check_account_follow = function(account_id) {
+    return new Promise(function(resolve, reject){
+      fetch('/accounts/' + account_id + '/following', {method: "GET", credentials: "include"})
+      .then(function(resp){ return resp.json() })
+      .then(function(json){ return resolve(json); })
+      .catch(function(error){ return reject(error) })
+    });
+  }
+
   self.get_event_comments = function(event_id, comment_id) {
     return new Promise(function(resolve, reject){
       fetch('/event/' + event_id + '/comments/' + comment_id, {method: "GET", credentials: "include"})

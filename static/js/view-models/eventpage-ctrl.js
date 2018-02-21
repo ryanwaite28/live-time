@@ -50,6 +50,7 @@
       GET.search_artists(self.search_type(), query)
       .then(function(resp) {
         console.log(resp);
+        self.artistsList(resp.artists);
       })
       .catch(function(error){
         console.log(error);

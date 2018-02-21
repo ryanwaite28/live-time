@@ -23,6 +23,9 @@ svg.fa-heart {
 svg.fa-comment {
 	color: #039be5;
 }
+svg.fa-star {
+	color: #ffee58;
+}
 
 nav {
   padding: 0px 20px;
@@ -131,4 +134,9 @@ nav {
 }
 .action-item {
     cursor: pointer;
+}
+
+.card-action a {
+	text-transform: none;
+	color: #039be5;
 }

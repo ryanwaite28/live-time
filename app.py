@@ -242,6 +242,13 @@ def check_comment_account_like(comment_id, account_id):
     return routes_get.check_comment_account_like(request, comment_id, account_id)
 
 
+@Authorize
+@SessionRequired
+@app.route('/accounts/<int:account_id>/following', methods=['GET'])
+def check_account_follow(account_id):
+    return routes_get.check_account_follow(request, account_id)
+
+
 # the comment_id is used as a starting point for the query:
 # filter comments by IDs greater than the comment id given
 @Authorize
@@ -311,6 +318,13 @@ def toggle_event_like(event_id):
 @app.route('/comment/<int:comment_id>/toggle_like', methods=['POST'])
 def toggle_comment_like(comment_id):
     return routes_post.toggle_comment_like(request, comment_id)
+
+
+@Authorize
+@SessionRequired
+@app.route('/accounts/<int:account_id>/toggle_follow', methods=['POST'])
+def toggle_account_follow(account_id):
+    return routes_post.toggle_account_follow(request, account_id)
 
 
 

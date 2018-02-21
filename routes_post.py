@@ -180,6 +180,30 @@ def toggle_comment_like(request, comment_id):
 
 
 
+def toggle_account_follow(request, account_id):
+    if account_id == user_session['account_id']:
+        return jsonify(error = True, message = 'provided account_id is same as session account\'s id: accounts cannot follow themselves.')
+
+    check = db_session.query(Follows) \
+    .filter_by(account_id = user_session['account_id']) \
+    .filter_by(follows_id = account_id) \
+    .first()
+
+    if check:
+        db_session.delete(check)
+        db_session.commit()
+
+        return jsonify(message = 'unfollowed', following = False)
+
+    else:
+        follow = Follows(account_id = user_session['account_id'], follows_id = account_id)
+        db_session.add(follow)
+        db_session.commit()
+
+        return jsonify(message = 'followed', following = True)
+
+
+
 def create_event_comment(request, event_id):
     event = db_session.query(Events).filter_by(id = event_id).first()
     if not event:

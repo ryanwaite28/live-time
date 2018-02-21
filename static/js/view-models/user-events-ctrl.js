@@ -9,10 +9,15 @@
     self.signed_in = ko.observable(false);
     self.you = ko.observable({});
     self.user = ko.observable({});
+    self.userFollowing = ko.observable(0);
+    self.userFollowers = ko.observable(0);
+
+    self.user_loaded = ko.observable(false);
 
     //
 
     self.background_view = ko.observable(false);
+    self.following = ko.observable(false);
 
     self.eventsList = ko.observableArray([]);
     self.eventsIDs = ko.observableArray([]);
@@ -40,9 +45,46 @@
         console.log(resp);
         if(resp.account) {
           self.user(resp.account);
+          self.userFollowing(resp.account.following);
+          self.userFollowers(resp.account.followers);
+          self.user_loaded(true);
+          self.check_account_follow();
         }
         self.get_user_events();
       });
+    }
+
+    //
+
+    self.check_account_follow = function() {
+      GET.check_account_follow(self.user().id)
+      .then(function(resp) {
+        console.log(resp);
+        self.following(resp.following);
+      })
+      .catch(function(error){
+        console.log(error);
+      })
+    }
+
+    self.toggle_follow = function() {
+      if(self.signed_in() === false) { return }
+
+      POST.toggle_account_follow(self.user().id)
+      .then(function(resp){
+        // console.log(resp);
+        self.following(resp.following);
+
+        if(self.following() === true) {
+          self.userFollowers( self.userFollowers() + 1 );
+        }
+        else {
+          self.userFollowers( self.userFollowers() - 1 );
+        }
+      })
+      .catch(function(error){
+        console.log(error);
+      })
     }
 
     //

@@ -7,6 +7,8 @@ ko.components.register('event-widget', {
       self.you_id = ko.observable(params.parent.you().id);
       self.signed_in = ko.observable(params.parent.signed_in());
 
+      self.root = ko.observable(params.root);
+
       self.event = ko.observable(params.event || {});
 
       self.event_id = ko.observable(params.event.id);
@@ -15,6 +17,7 @@ ko.components.register('event-widget', {
 
       self.commentsLength = ko.observable(params.event.comments);
       self.performers = ko.observableArray(params.event.performers);
+      self.attending = ko.observableArray(params.event.attending);
 
       self.hide_performers = ko.observable(true);
 

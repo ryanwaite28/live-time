@@ -30,6 +30,15 @@
           <p class="text-center">
             <a class="" data-bind="text: user().link, attr: {href: user().link || '#'}"></a>
           </p>
+          <p class="text-center text-white" data-bind="visible: user_loaded() && you().id !== user().id">
+            <span class="cursor-class" data-bind="click: toggle_follow, visible: following()">
+              <i class="fas fa-star"></i>
+            </span>
+            <span class="cursor-class" data-bind="click: toggle_follow, visible: !following()">
+              <i class="far fa-star"></i>
+            </span>
+            <span data-bind="text: following() === true ? 'Following' : 'Follow'"></span>
+          </p>
         </div>
       </div>
     </div>

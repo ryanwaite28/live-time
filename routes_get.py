@@ -381,6 +381,21 @@ def check_comment_account_like(request, comment_id, account_id):
         return jsonify(message = 'not liked', liked = False)
 
 
+def check_account_follow(request, account_id):
+    if account_id == user_session['account_id']:
+        return jsonify(error = True, message = 'provided account_id is same as session account\'s id')
+
+    check = db_session.query(Follows) \
+    .filter_by(account_id = user_session['account_id']) \
+    .filter_by(follows_id = account_id) \
+    .first()
+
+    if check:
+        return jsonify(message = 'following', following = True)
+    else:
+        return jsonify(message = 'not following', following = False)
+
+
 def get_event_comments(request, event_id, comment_id):
     try:
         if comment_id == 0:
@@ -512,7 +527,7 @@ def search_artists(request, search_type, search_query):
             .limit(10).all()
 
 
-        return jsonify(message = 'artists', events = [a.serialize for a in artists])
+        return jsonify(message = 'artists', artists = [a.serialize for a in artists])
 
 
     except Exception as err:

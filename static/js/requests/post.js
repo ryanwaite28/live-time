@@ -67,6 +67,15 @@ const Post = function() {
     });
   }
 
+  self.toggle_account_follow = function(account_id) {
+    return new Promise(function(resolve, reject){
+      fetch('/accounts/' + account_id + '/toggle_follow', {method: "POST", credentials: "include"})
+      .then(function(resp){ return resp.json() })
+      .then(function(json){ return resolve(json); })
+      .catch(function(error){ return reject(error) })
+    });
+  }
+
   self.create_event_comment = function(event_id = 0, text = '') {
     if(!text || text.constructor !== String) { return; }
     return new Promise(function(resolve, reject){
