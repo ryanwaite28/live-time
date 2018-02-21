@@ -250,6 +250,30 @@ def get_event_comments(event_id, comment_id):
     return routes_get.get_event_comments(request, event_id, comment_id)
 
 
+@Authorize
+@app.route('/search/events/<search_type>/<search_query>', methods=['GET'])
+def search_events(search_type, search_query):
+    return routes_get.search_events(request, search_type, search_query)
+
+
+@Authorize
+@app.route('/search/venues/<search_type>/<search_query>', methods=['GET'])
+def search_venues(search_type, search_query):
+    return routes_get.search_venues(request, search_type, search_query)
+
+
+@Authorize
+@app.route('/search/artists/<search_type>/<search_query>', methods=['GET'])
+def search_artists(search_type, search_query):
+    return routes_get.search_artists(request, search_type, search_query)
+
+
+@Authorize
+@app.route('/search/users/<search_type>/<search_query>', methods=['GET'])
+def search_users(search_type, search_query):
+    return routes_get.search_users(request, search_type, search_query)
+
+
 
 # --- POST Routes --- #
 

@@ -63,16 +63,19 @@
     </div>
     <div class="card-action">
       <span data-bind="visible: performers().length > 0">
-        <i class="fas fa-user"></i>
+        <i class="fas fa-microphone"></i>
       </span>
       <span data-bind="visible: performers().length == 0">
-        <i class="far fa-user"></i>
+        <i class="far fa-microphone"></i>
       </span>
       <span data-bind="text: performers().length"></span> | <span class="info-text cursor-class" data-bind="click: toggle_performers_view">hide/show performers</span>
       <br/>
       <div data-bind="foreach: performers">
         <account-widget params="parent: $parent, account: $data.performer_rel, you_id: you_id(), signed_in: signed_in()"></account-widget>
       </div>
+    </div>
+    <div class="card-action">
+      
     </div>
   </div>
 </div>

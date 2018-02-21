@@ -144,6 +144,62 @@ const Get = function() {
     });
   }
 
+  self.search_events = function(type, query) {
+    return new Promise(function(resolve, reject) {
+      var params = {
+        method: "GET",
+        credentials: "include"
+      }
+
+      fetch('/search/events/' + type + '/' + query.replace(/\s/gi,'_space_'), params)
+      .then(function(resp){ return resp.json() })
+      .then(function(json){ return resolve(json); })
+      .catch(function(error){ return reject(error) })
+    });
+  }
+
+  self.search_venues = function(type, query) {
+    return new Promise(function(resolve, reject) {
+      var params = {
+        method: "GET",
+        credentials: "include"
+      }
+
+      fetch('/search/venues/' + type + '/' + query.replace(/\s/gi,'_space_'), params)
+      .then(function(resp){ return resp.json() })
+      .then(function(json){ return resolve(json); })
+      .catch(function(error){ return reject(error) })
+    });
+  }
+
+  self.search_artists = function(type, query) {
+    return new Promise(function(resolve, reject) {
+      var params = {
+        method: "GET",
+        credentials: "include"
+      }
+
+      fetch('/search/artists/' + type + '/' + query.replace(/\s/gi,'_space_'), params)
+      .then(function(resp){ return resp.json() })
+      .then(function(json){ return resolve(json); })
+      .catch(function(error){ return reject(error) })
+    });
+  }
+
+  self.search_users = function(type, query) {
+    return new Promise(function(resolve, reject) {
+      var params = {
+        method: "GET",
+        credentials: "include"
+      }
+
+      fetch('/search/users/' + type + '/' + query.replace(/\s/gi,'_space_'), params)
+      .then(function(resp){ return resp.json() })
+      .then(function(json){ return resolve(json); })
+      .catch(function(error){ return reject(error) })
+    });
+  }
+
 }
 
 // Create and Store New Instance In a Constant

@@ -404,3 +404,158 @@ def get_event_comments(request, event_id, comment_id):
     except Exception as err:
         print(err)
         return jsonify(error = True, errorMessage = str(err), message = 'error processing...')
+
+
+
+def search_events(request, search_type, search_query):
+    try:
+        search_type = str(search_type).encode().lower().replace('_space_', ' ').replace('%20', ' ')
+        types = ['location', 'category']
+        if search_type not in types:
+            return jsonify(error = True, message = 'search type is unknown/invalid: ' + search_type)
+
+
+        query = '%' + str(cgi.escape(search_query)).encode().lower() + '%'
+
+        if search_type == 'location':
+            events = db_session.query(Events) \
+            .filter( func.lower(Events.location).like( query ) ) \
+            .order_by(func.random()) \
+            .limit(10).all()
+
+        if search_type == 'category':
+            events = db_session.query(Events) \
+            .filter( func.lower(Events.categories).like( query ) ) \
+            .order_by(func.random()) \
+            .limit(10).all()
+
+
+        return jsonify(message = 'events', events = [e.serialize for e in events])
+
+
+    except Exception as err:
+        print(err)
+        return jsonify(error = True, errorMessage = str(err), message = 'error processing...')
+
+
+
+def search_venues(request, search_type, search_query):
+    try:
+        search_type = str(search_type).encode().lower().replace('_space_', ' ').replace('%20', ' ')
+        types = ['location', 'category', 'username']
+        if search_type not in types:
+            return jsonify(error = True, message = 'search type is unknown/invalid: ' + search_type)
+
+
+        query = '%' + str(cgi.escape(search_query)).encode().lower() + '%'
+
+        if search_type == 'username':
+            venues = db_session.query(Accounts) \
+            .filter(Accounts.type == 'VENUE') \
+            .filter( func.lower(Accounts.username).like( query ) ) \
+            .order_by(func.random()) \
+            .limit(10).all()
+
+        if search_type == 'location':
+            venues = db_session.query(Accounts) \
+            .filter(Accounts.type == 'VENUE') \
+            .filter( func.lower(Accounts.location).like( query ) ) \
+            .order_by(func.random()) \
+            .limit(10).all()
+
+        if search_type == 'category':
+            venues = db_session.query(Accounts) \
+            .filter(Accounts.type == 'VENUE') \
+            .filter( func.lower(Accounts.categories).like( query ) ) \
+            .order_by(func.random()) \
+            .limit(10).all()
+
+
+        return jsonify(message = 'venues', venues = [v.serialize for v in venues])
+
+
+    except Exception as err:
+        print(err)
+        return jsonify(error = True, errorMessage = str(err), message = 'error processing...')
+
+
+
+def search_artists(request, search_type, search_query):
+    try:
+        search_type = str(search_type).encode().lower().replace('_space_', ' ').replace('%20', ' ')
+        types = ['location', 'category', 'username']
+        if search_type not in types:
+            return jsonify(error = True, message = 'search type is unknown/invalid: ' + search_type)
+
+
+        query = '%' + str(cgi.escape(search_query)).encode().lower() + '%'
+
+        if search_type == 'username':
+            artists = db_session.query(Accounts) \
+            .filter(Accounts.type == 'ARTIST') \
+            .filter( func.lower(Accounts.username).like( query ) ) \
+            .order_by(func.random()) \
+            .limit(10).all()
+
+        if search_type == 'location':
+            artists = db_session.query(Accounts) \
+            .filter(Accounts.type == 'ARTIST') \
+            .filter( func.lower(Accounts.location).like( query ) ) \
+            .order_by(func.random()) \
+            .limit(10).all()
+
+        if search_type == 'category':
+            artists = db_session.query(Accounts) \
+            .filter(Accounts.type == 'ARTIST') \
+            .filter( func.lower(Accounts.categories).like( query ) ) \
+            .order_by(func.random()) \
+            .limit(10).all()
+
+
+        return jsonify(message = 'artists', events = [a.serialize for a in artists])
+
+
+    except Exception as err:
+        print(err)
+        return jsonify(error = True, errorMessage = str(err), message = 'error processing...')
+
+
+
+def search_users(request, search_type, search_query):
+    try:
+        search_type = str(search_type).encode().lower().replace('_space_', ' ').replace('%20', ' ')
+        types = ['location', 'category', 'username']
+        if search_type not in types:
+            return jsonify(error = True, message = 'search type is unknown/invalid: ' + search_type)
+
+
+        query = '%' + str(cgi.escape(search_query)).encode().lower() + '%'
+
+        if search_type == 'username':
+            users = db_session.query(Accounts) \
+            .filter(Accounts.type == 'USER') \
+            .filter( func.lower(Accounts.username).like( query ) ) \
+            .order_by(func.random()) \
+            .limit(10).all()
+
+        if search_type == 'location':
+            users = db_session.query(Accounts) \
+            .filter(Accounts.type == 'USER') \
+            .filter( func.lower(Accounts.location).like( query ) ) \
+            .order_by(func.random()) \
+            .limit(10).all()
+
+        if search_type == 'category':
+            users = db_session.query(Accounts) \
+            .filter(Accounts.type == 'USER') \
+            .filter( func.lower(Accounts.categories).like( query ) ) \
+            .order_by(func.random()) \
+            .limit(10).all()
+
+
+        return jsonify(message = 'artists', users = [u.serialize for u in users])
+
+
+    except Exception as err:
+        print(err)
+        return jsonify(error = True, errorMessage = str(err), message = 'error processing...')

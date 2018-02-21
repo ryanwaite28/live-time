@@ -13,14 +13,41 @@
       {% include 'navbar-1.html' %}
     {% endif %}
 
-    <div class="container middle-box">
+    <div class="container" data-bind="css: { 'middle-box-2': event().host_id === you().id, 'middle-box': event().host_id !== you().id }">
       <div class="row">
-        <div class="col s12">
-
+        <div class="col s12" data-bind="css: { 'm6': event().host_id === you().id, 'm12': event().host_id !== you().id }">
           <div class="middlr" data-bind="foreach: eventsList">
             <event-widget params="parent: $parent, event: $data, show_user_chip: true, signed_in: $parent.signed_in(), you_id: $parent.you().id"></event-widget>
           </div>
+        </div>
+        <div class="col s12 m6" data-bind="style: { display: event().host_id === you().id ? 'block' : 'none' }">
+          <div class="col s12">
+            <div class="card">
+              <div class="card-content">
+                <p class="text-center">Search for artists to book</p>
+              </div>
+              <div class="card-action">
+                <p class="text-center">Type</p>
 
+                <p class="text-center">
+                  <span data-bind="click: set_query_type('username')">
+                    <input name="group1" type="radio" id="artist_username_radio" /> <label for="artist_username_radio">Username</label>
+                  </span> |
+                  <span data-bind="click: set_query_type('location')">
+                    <input name="group1" type="radio" id="artist_location_radio" /> <label for="artist_location_radio">Location</label>
+                  </span> |
+                  <span data-bind="click: set_query_type('category')">
+                    <input name="group1" type="radio" id="artist_category_radio" /> <label for="artist_category_radio">Category</label>
+                  </span>
+                </p>
+
+                <input data-bind="attr: { placeholder: 'Search artists by: ' + search_type() }, textInput: search_query, event: { keyup: search_artists }" >
+              </div>
+              <div class="card-action">
+
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

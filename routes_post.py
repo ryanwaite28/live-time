@@ -1,6 +1,7 @@
 # --- Modules/Functions --- #
 
 import os , sys , cgi , re, hmac, hashlib, smtplib, requests, datetime
+import HTMLParser
 import logging, dateutil, sqlite3, urllib, httplib2, json, psycopg2
 import random, string, bcrypt
 
