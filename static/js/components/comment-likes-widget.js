@@ -26,7 +26,10 @@ ko.components.register('comment-likes-widget', {
           console.log(error);
         })
       }.bind(self);
-      self.check_comment_like();
+
+      if(self.signed_in() === true) {
+        self.check_comment_like();
+      }
 
       self.toggle_like = function() {
         if(self.signed_in() === false) { return }

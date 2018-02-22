@@ -144,7 +144,7 @@
         if(resp.error) {
           return;
         }
-        window.location.reload();
+        window.location.href = '/event/' + self.event_id();
       })
       .catch(function(error){
         console.log(error);

@@ -568,7 +568,63 @@ def search_users(request, search_type, search_query):
             .limit(10).all()
 
 
-        return jsonify(message = 'artists', users = [u.serialize for u in users])
+        return jsonify(message = 'users', users = [u.serialize for u in users])
+
+
+    except Exception as err:
+        print(err)
+        return jsonify(error = True, errorMessage = str(err), message = 'error processing...')
+
+
+
+
+def get_random_events(request):
+    try:
+        events = db_session.query(Events).order_by(func.random()).limit(9).all()
+
+        return jsonify(message = 'events', events = [e.serialize for e in events])
+
+
+    except Exception as err:
+        print(err)
+        return jsonify(error = True, errorMessage = str(err), message = 'error processing...')
+
+
+def get_random_venues(request):
+    try:
+        venues = db_session.query(Accounts) \
+        .filter(Accounts.type == 'VENUE') \
+        .order_by(func.random()).limit(6).all()
+
+        return jsonify(message = 'venues', venues = [v.serialize for v in venues])
+
+
+    except Exception as err:
+        print(err)
+        return jsonify(error = True, errorMessage = str(err), message = 'error processing...')
+
+
+def get_random_artists(request):
+    try:
+        artists = db_session.query(Accounts) \
+        .filter(Accounts.type == 'ARTIST') \
+        .order_by(func.random()).limit(6).all()
+
+        return jsonify(message = 'artists', artists = [a.serialize for a in artists])
+
+
+    except Exception as err:
+        print(err)
+        return jsonify(error = True, errorMessage = str(err), message = 'error processing...')
+
+
+def get_random_users(request):
+    try:
+        users = db_session.query(Accounts) \
+        .filter(Accounts.type == 'USER') \
+        .order_by(func.random()).limit(6).all()
+
+        return jsonify(message = 'users', users = [u.serialize for u in users])
 
 
     except Exception as err:

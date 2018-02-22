@@ -96,6 +96,18 @@ nav {
 	position: relative;
 	min-height: 35vh;
 }
+.background-box-2 {
+	padding: 45px 0px;
+	border: 1px solid lightgrey;
+	box-shadow: 0px 1px 3px grey;
+	position: relative;
+}
+.background-box-3 {
+	padding: 90px 0px;
+	border: 1px solid lightgrey;
+	box-shadow: 0px 1px 3px grey;
+	position: relative;
+}
 
 .pos-rel {
 	position: relative;
@@ -139,4 +151,19 @@ nav {
 .card-action a {
 	text-transform: none;
 	color: #039be5;
+}
+
+.ovf-h {
+	overflow: hidden;
+}
+
+.ca-link-null {
+	text-transform: none;
+	color: #039be5;
+}
+
+.center-1 {
+	display: flex;
+  align-items: center;
+  justify-content: center;
 }

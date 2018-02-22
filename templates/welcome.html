@@ -13,12 +13,127 @@
       {% include 'navbar-1.html' %}
     {% endif %}
 
-    <div class="container middle-box">
+    <div class="container middle-box-2">
       <div class="row">
         <div class="col s12">
-
+          <div class="row fill background-box-1">
+            <div class="dim"></div>
+            <div class="col s12 pos-rel">
+              <h5 class="text-center text-white">
+                Where Artists and Venues meet!
+              </h5>
+            </div>
+          </div>
         </div>
       </div>
+
+      <div class="row">
+        <div class="col s12">
+          <div class="row fill background-box-1">
+            <div class="dim"></div>
+            <div class="col s12 pos-rel">
+              <h5 class="text-center text-white">
+                Keep up with your favorite Artists and where they are performing!
+                <br/><br/>
+                Keep up with your favorite Venues and who they got booked!
+              </h5>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="card">
+          <div class="card-content">
+            <p class="text-center"><b>Events</b></p>
+          </div>
+          <div class="card-action ovf-h" data-bind="foreach: randomEvents">
+            <div class="col s12 m4">
+              <div class="row fill background-box-3" data-bind="style: { 'background-image': 'url(' + $data.icon + ')' }">
+                <div class="dim"></div>
+                <div class="col s12 pos-rel">
+                  <div class="center-1">
+                    <div class="chip">
+                      <b><span data-bind="text: $data.title"></span></b> |
+                      <a style="text-transform: none;	color: #039be5; margin-right: 0px;" data-bind="attr: { title: $data.title, href: '/event/' + $data.id }">
+                        <b><span data-bind="">Event Page</span></b>
+                      </a>
+                    </div>
+                  </div>
+                  <div class="center-1">
+                    <div class="chip">
+                      <img data-bind="attr: { alt: $data.host_rel.username, src: $data.host_rel.icon }">
+                      <a style="text-transform: none;	color: #039be5; margin-right: 0px;" data-bind="attr: { title: $data.host_rel.username, href: '/accounts/' + $data.host_rel.username }">
+                        <b><span data-bind="text: $data.host_rel.username"></span></b>
+                      </a>
+                    </div>
+                  </div>
+                  <p class="text-center text-white" data-bind="visible: $parent.signed_in() === true && $parent.you().id != $data.host_rel.id">
+                    <follow-widget params="root: $root, parent: $parent, account_id: $data.host_rel.id"></follow-widget>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="card">
+          <div class="card-content">
+            <p class="text-center"><b>Venues</b></p>
+          </div>
+          <div class="card-action ovf-h" data-bind="foreach: randomVenues">
+            <div class="col s12 m6">
+              <div class="row fill background-box-2" data-bind="style: { 'background-image': 'url(' + $data.background + ')' }">
+                <div class="dim"></div>
+                <div class="col s12 pos-rel">
+                  <img class="middlr img-frame-1" data-bind="attr: { src: $data.icon }"/>
+                  <div class="center-1">
+                    <div class="chip">
+                      <a style="text-transform: none;	color: #039be5; margin-right: 0px;" data-bind="attr: { title: $data.username, href: '/accounts/' + $data.username }">
+                        <b><span data-bind="text: $data.username"></span></b>
+                      </a>
+                    </div>
+                  </div>
+                  <p class="text-center text-white" data-bind="visible: $parent.signed_in() === true && $parent.you().id != $data.id">
+                    <follow-widget params="root: $root, parent: $parent, account_id: $data.id"></follow-widget>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="card">
+          <div class="card-content">
+            <p class="text-center"><b>Artists</b></p>
+          </div>
+          <div class="card-action ovf-h" data-bind="foreach: randomArtists">
+            <div class="col s12 m6">
+              <div class="row fill background-box-2" data-bind="style: { 'background-image': 'url(' + $data.background + ')' }">
+                <div class="dim"></div>
+                <div class="col s12 pos-rel">
+                  <img class="middlr img-frame-1" data-bind="attr: { src: $data.icon }"/>
+                  <div class="center-1">
+                    <div class="chip">
+                      <a style="text-transform: none;	color: #039be5; margin-right: 0px;" data-bind="attr: { title: $data.username, href: '/accounts/' + $data.username }">
+                        <b><span data-bind="text: $data.username"></span></b>
+                      </a>
+                    </div>
+                  </div>
+                  <p class="text-center text-white" data-bind="visible: $parent.signed_in() === true && $parent.you().id != $data.id">
+                    <follow-widget params="root: $root, parent: $parent, account_id: $data.id"></follow-widget>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     {% include 'footer.html' %}

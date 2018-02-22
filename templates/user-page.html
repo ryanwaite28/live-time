@@ -30,7 +30,7 @@
           <p class="text-center">
             <a class="" data-bind="text: user().link, attr: {href: user().link || '#'}"></a>
           </p>
-          <p class="text-center text-white" data-bind="visible: user_loaded() && you().id !== user().id">
+          <p class="text-center text-white" data-bind="visible: signed_in() === true && user_loaded() && you().id !== user().id">
             <span class="cursor-class" data-bind="click: toggle_follow, visible: following()">
               <i class="fas fa-star"></i>
             </span>
@@ -53,7 +53,6 @@
                 <a title="User Events" href="/profile/events" class="collection-item" data-bind="attr: { href: '/venue/' + user().username + '/events' }, style: {display: user().type === 'VENUE' ? 'block' : 'none'}">Events</a>
                 <a title="User Shows" href="/profile/shows" class="collection-item" data-bind="attr: { href: '/artist/' + user().username + '/shows' }, style: {display: user().type === 'ARTIST' ? 'block' : 'none'}">Shows</a>
                 <a title="User Attending" href="/profile/attending" class="collection-item" data-bind="attr: { href: '/user/' + user().username + '/attending' }, style: {display: user().type === 'USER' ? 'block' : 'none'}">Attending</a>
-                <a title="User Reviews" class="collection-item" data-bind="attr: { href: '/accounts/' + user().username + '/reviews' }, ">Reviews</a>
               </div>
             </div>
           </div>
@@ -66,6 +65,8 @@
               <p><b>Categories</b><br/><span data-bind="text: user().categories || '...'"></span></p>
               <p><b>Location</b><br/><span data-bind="text: user().location || '...'"></span></p>
               <p><b>Phone</b><br/><span data-bind="text: user().phone || '...'"></span></p>
+              <p><b>Email</b><br/><span data-bind="text: user().email || '...'"></span></p>
+              <p><b>Booking Email</b><br/><span data-bind="text: user().booking_email || '...'"></span></p>
               <p><b>Eventbrite</b><br/><span data-bind="text: user().eventbrite || '...'"></span></p>
             </div>
           </div>

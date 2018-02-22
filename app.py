@@ -46,7 +46,7 @@ def login_required(f):
 
 
 def logged_in():
-    return 'session_id' in user_session and 'user_id' in user_session
+    return 'session_id' in user_session and 'account_id' in user_session
 # ---
 
 
@@ -69,7 +69,7 @@ def SessionRequired(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
 
-        if 'session_id' in user_session and 'user_id' in user_session:
+        if 'session_id' in user_session and 'account_id' in user_session:
             return f(*args, **kwargs)
         else:
             return jsonify(error = True, message = 'no session found with this request.')
@@ -279,6 +279,32 @@ def search_artists(search_type, search_query):
 @app.route('/search/users/<search_type>/<search_query>', methods=['GET'])
 def search_users(search_type, search_query):
     return routes_get.search_users(request, search_type, search_query)
+
+
+
+
+@Authorize
+@app.route('/get/random/events', methods=['GET'])
+def get_random_events():
+    return routes_get.get_random_events(request)
+
+
+@Authorize
+@app.route('/get/random/venues', methods=['GET'])
+def get_random_venues():
+    return routes_get.get_random_venues(request)
+
+
+@Authorize
+@app.route('/get/random/artists', methods=['GET'])
+def get_random_artists():
+    return routes_get.get_random_artists(request)
+
+
+@Authorize
+@app.route('/get/random/users', methods=['GET'])
+def get_random_users():
+    return routes_get.get_random_users(request)
 
 
 

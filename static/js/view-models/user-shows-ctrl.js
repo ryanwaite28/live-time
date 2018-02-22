@@ -48,7 +48,9 @@
           self.userFollowing(resp.account.following);
           self.userFollowers(resp.account.followers);
           self.user_loaded(true);
-          self.check_account_follow();
+          if(self.signed_in() === true) {
+            self.check_account_follow();
+          }
         }
         self.get_user_shows();
       });

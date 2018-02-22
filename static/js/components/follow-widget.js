@@ -3,7 +3,7 @@
 
 ko.components.register('follow-widget', {
     viewModel: function(params) {
-      var self = this; console.log(params);
+      var self = this;
 
       self.you_id = ko.observable(params.root.you().id);
       self.signed_in = ko.observable(params.root.signed_in());
@@ -12,7 +12,8 @@ ko.components.register('follow-widget', {
 
       self.following = ko.observable(false);
 
-      console.log(self)
+      // console.log(params);
+      // console.log(self);
 
       self.check_account_follow = function() {
         GET.check_account_follow(self.account_id())
@@ -24,7 +25,10 @@ ko.components.register('follow-widget', {
           console.log(error);
         })
       }
-      self.check_account_follow();
+
+      if(self.signed_in() === true) {
+        self.check_account_follow();
+      }
 
       self.toggle_follow = function() {
         if(self.signed_in() === false) { return }
@@ -42,7 +46,7 @@ ko.components.register('follow-widget', {
 
     },
     template:
-        '<div class="cursor-class">\
+        '<div>\
             <span class="cursor-class" data-bind="click: toggle_follow, visible: following()"> \
               <i class="fas fa-star"></i> \
             </span> \

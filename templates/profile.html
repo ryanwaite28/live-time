@@ -46,7 +46,6 @@
                 <a title="Your Shows" href="/profile/shows" class="collection-item" data-bind="style: {display: you().type === 'ARTIST' ? 'block' : 'none'}">Shows</a>
                 <a title="Your Attending" href="/profile/attending" class="collection-item" data-bind="style: {display: you().type === 'USER' ? 'block' : 'none'}">Attending</a>
                 <a title="Your Notifications" href="/profile/notifications" class="collection-item">Notifications</a>
-                <a title="Your Reviews" href="/profile/reviews" class="collection-item">Reviews</a>
               </div>
             </div>
           </div>
@@ -59,6 +58,8 @@
               <p><b>Categories</b><br/><span data-bind="text: you().categories || '...'"></span></p>
               <p><b>Location</b><br/><span data-bind="text: you().location || '...'"></span></p>
               <p><b>Phone</b><br/><span data-bind="text: you().phone || '...'"></span></p>
+              <p><b>Email</b><br/><span data-bind="text: you().email || '...'"></span></p>
+              <p><b>Booking Email</b><br/><span data-bind="text: you().booking_email || '...'"></span></p>
               <p><b>Eventbrite</b><br/><span data-bind="text: you().eventbrite || '...'"></span></p>
             </div>
           </div>

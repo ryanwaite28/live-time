@@ -116,21 +116,29 @@ def create_event(request):
         date_concat       = str(request.form['date_concat']).encode()
         event_date_time   = datetime.strptime(date_concat, '%Y-%m-%d %H:%M:%S')
 
+        new_event = Events(title = title, desc = desc, categories = categories, location = location,
+                            link = link, event_date_time = event_date_time, host_id = you.id)
+
         if 'event_photo' not in request.files:
-            icon = ''
+            db_session.add(new_event)
+            db_session.commit()
+
+            return jsonify(message = 'Event Created Successfully!', event = new_event.serialize)
+            
         else:
             file = request.files['event_photo']
             if file and file.filename != '' and chamber.allowed_photo(file.filename):
                 icon = chamber.uploadFile(file = file, prev_ref = '')
+
+                new_event.icon = icon
+
+                db_session.add(new_event)
+                db_session.commit()
+
+                return jsonify(message = 'Event Created Successfully!', event = new_event.serialize)
+
             else:
-                icon = ''
-
-        new_event = Events(title = title, desc = desc, categories = categories, location = location,
-                            link = link, icon = icon, event_date_time = event_date_time, host_id = you.id)
-        db_session.add(new_event)
-        db_session.commit()
-
-        return jsonify(message = 'Event Created Successfully!', event = new_event.serialize)
+                return jsonify(error = True, message = 'file was not of type: image')
 
 
     except Exception as err:
