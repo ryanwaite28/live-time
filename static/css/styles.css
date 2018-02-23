@@ -149,8 +149,8 @@ nav {
 }
 
 .card-action a {
-	text-transform: none;
-	color: #039be5;
+	/* text-transform: none;
+	color: #039be5; */
 }
 
 .ovf-h {

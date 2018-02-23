@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% include '_dependencies.html' %}
+
+    <title>Live Time | Search!</title>
+  </head>
+  <body>
+
+    {% if session == True %}
+      {% include 'navbar-2.html' %}
+    {% else %}
+      {% include 'navbar-1.html' %}
+    {% endif %}
+
+    <div class="container middle-box">
+      <div class="row">
+        <div class="col s12">
+          <div class="card">
+            <div class="card-content">
+              <p class="text-center">Search for Events</p>
+            </div>
+            <div class="card-action">
+              <p class="text-center">Type</p>
+
+              <p class="text-center">
+                <span data-bind="click: set_events_query_type('username')">
+                  <input name="group1" type="radio" id="events_username_radio" /> <label for="events_username_radio">Username</label>
+                </span> |
+                <span data-bind="click: set_events_query_type('location')">
+                  <input name="group1" type="radio" id="events_location_radio" /> <label for="events_location_radio">Location</label>
+                </span> |
+                <span data-bind="click: set_events_query_type('category')">
+                  <input name="group1" type="radio" id="events_category_radio" /> <label for="events_category_radio">Category</label>
+                </span>
+              </p>
+
+              <input data-bind="attr: { placeholder: 'Search events by: ' + events_search_type() }, textInput: events_search_query" >
+              <p class="text-center">
+                <a class="waves-effect blue waves-light btn" data-bind="click: search_events">Submit</a>
+              </p>
+              <p class="text-center" data-bind="text: events_search_msg"></p>
+            </div>
+            <div class="card-action ovf-h" data-bind="foreach: events_list">
+              <div class="col s12 m4">
+                <div class="row fill background-box-3" data-bind="style: { 'background-image': 'url(' + $data.icon + ')' }">
+                  <div class="dim"></div>
+                  <div class="col s12 pos-rel">
+                    <div class="center-1">
+                      <div class="chip">
+                        <b><span data-bind="text: $data.title"></span></b> |
+                        <a style="text-transform: none;	color: #039be5; margin-right: 0px;" data-bind="attr: { title: $data.title, href: '/event/' + $data.id }">
+                          <b><span data-bind="">Event Page</span></b>
+                        </a>
+                      </div>
+                    </div>
+                    <div class="center-1">
+                      <div class="chip">
+                        <img data-bind="attr: { alt: $data.host_rel.username, src: $data.host_rel.icon }">
+                        <a style="text-transform: none;	color: #039be5; margin-right: 0px;" data-bind="attr: { title: $data.host_rel.username, href: '/accounts/' + $data.host_rel.username }">
+                          <b><span data-bind="text: $data.host_rel.username"></span></b>
+                        </a>
+                      </div>
+                    </div>
+                    <p class="text-center text-white" data-bind="visible: $parent.signed_in() === true && $parent.you().id != $data.host_rel.id">
+                      <follow-widget params="root: $root, parent: $parent, account_id: $data.host_rel.id"></follow-widget>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!--  -->
+
+      <div class="row">
+        <div class="col s12">
+          <div class="card">
+            <div class="card-content">
+              <p class="text-center">Search for Venues</p>
+            </div>
+            <div class="card-action">
+              <p class="text-center">Type</p>
+
+              <p class="text-center">
+                <span data-bind="click: set_venues_query_type('username')">
+                  <input name="group2" type="radio" id="venues_username_radio" /> <label for="venues_username_radio">Username</label>
+                </span> |
+                <span data-bind="click: set_venues_query_type('location')">
+                  <input name="group2" type="radio" id="venues_location_radio" /> <label for="venues_location_radio">Location</label>
+                </span> |
+                <span data-bind="click: set_venues_query_type('category')">
+                  <input name="group2" type="radio" id="venues_category_radio" /> <label for="venues_category_radio">Category</label>
+                </span>
+              </p>
+
+
+              <input data-bind="attr: { placeholder: 'Search venues by: ' + venues_search_type() }, textInput: venues_search_query" >
+              <p class="text-center">
+                <a class="waves-effect blue waves-light btn" data-bind="click: search_venues">Submit</a>
+              </p>
+              <p class="text-center" data-bind="text:  venues_search_msg"></p>
+            </div>
+            <div class="card-action ovf-h" data-bind="foreach: venues_list">
+              <div class="col s12 m6">
+                <div class="row fill background-box-2" data-bind="style: { 'background-image': 'url(' + $data.background + ')' }">
+                  <div class="dim"></div>
+                  <div class="col s12 pos-rel">
+                    <img class="middlr img-frame-1" data-bind="attr: { src: $data.icon }"/>
+                    <div class="center-1">
+                      <div class="chip">
+                        <a style="text-transform: none;	color: #039be5; margin-right: 0px;" data-bind="attr: { title: $data.username, href: '/accounts/' + $data.username }">
+                          <b><span data-bind="text: $data.username"></span></b>
+                        </a>
+                      </div>
+                    </div>
+                    <p class="text-center text-white" data-bind="visible: $parent.signed_in() === true && $parent.you().id != $data.id">
+                      <follow-widget params="root: $root, parent: $parent, account_id: $data.id"></follow-widget>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!--  -->
+
+      <div class="row">
+        <div class="col s12">
+          <div class="card">
+            <div class="card-content">
+              <p class="text-center">Search for Artists</p>
+            </div>
+            <div class="card-action">
+              <p class="text-center">Type</p>
+
+              <p class="text-center">
+                <span data-bind="click: set_artists_query_type('username')">
+                  <input name="group3" type="radio" id="artists_username_radio" /> <label for="artists_username_radio">Username</label>
+                </span> |
+                <span data-bind="click: set_artists_query_type('location')">
+                  <input name="group3" type="radio" id="artists_location_radio" /> <label for="artists_location_radio">Location</label>
+                </span> |
+                <span data-bind="click: set_artists_query_type('category')">
+                  <input name="group3" type="radio" id="artists_category_radio" /> <label for="artists_category_radio">Category</label>
+                </span>
+              </p>
+
+
+              <input data-bind="attr: { placeholder: 'Search artists by: ' + artists_search_type() }, textInput: artists_search_query" >
+              <p class="text-center">
+                <a class="waves-effect blue waves-light btn" data-bind="click: search_artists">Submit</a>
+              </p>
+              <p class="text-center" data-bind="text: artists_search_msg"></p>
+            </div>
+            <div class="card-action ovf-h" data-bind="foreach: artists_list">
+              <div class="col s12 m6">
+                <div class="row fill background-box-2" data-bind="style: { 'background-image': 'url(' + $data.background + ')' }">
+                  <div class="dim"></div>
+                  <div class="col s12 pos-rel">
+                    <img class="middlr img-frame-1" data-bind="attr: { src: $data.icon }"/>
+                    <div class="center-1">
+                      <div class="chip">
+                        <a style="text-transform: none;	color: #039be5; margin-right: 0px;" data-bind="attr: { title: $data.username, href: '/accounts/' + $data.username }">
+                          <b><span data-bind="text: $data.username"></span></b>
+                        </a>
+                      </div>
+                    </div>
+                    <p class="text-center text-white" data-bind="visible: $parent.signed_in() === true && $parent.you().id != $data.id">
+                      <follow-widget params="root: $root, parent: $parent, account_id: $data.id"></follow-widget>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!--  -->
+
+      <div class="row">
+        <div class="col s12">
+          <div class="card">
+            <div class="card-content">
+              <p class="text-center">Search for Users</p>
+            </div>
+            <div class="card-action">
+              <p class="text-center">Type</p>
+
+              <p class="text-center">
+                <span data-bind="click: set_users_query_type('username')">
+                  <input name="group4" type="radio" id="users_username_radio" /> <label for="users_username_radio">Username</label>
+                </span> |
+                <span data-bind="click: set_users_query_type('location')">
+                  <input name="group4" type="radio" id="users_location_radio" /> <label for="users_location_radio">Location</label>
+                </span> |
+                <span data-bind="click: set_users_query_type('category')">
+                  <input name="group4" type="radio" id="users_category_radio" /> <label for="users_category_radio">Category</label>
+                </span>
+              </p>
+
+
+              <input data-bind="attr: { placeholder: 'Search users by: ' + users_search_type() }, textInput: users_search_query" >
+              <p class="text-center">
+                <a class="waves-effect blue waves-light btn" data-bind="click: search_users">Submit</a>
+              </p>
+              <p class="text-center" data-bind="text: users_search_msg"></p>
+            </div>
+            <div class="card-action ovf-h" data-bind="foreach: users_list">
+              <div class="col s12 m6">
+                <div class="row fill background-box-2" data-bind="style: { 'background-image': 'url(' + $data.background + ')' }">
+                  <div class="dim"></div>
+                  <div class="col s12 pos-rel">
+                    <img class="middlr img-frame-1" data-bind="attr: { src: $data.icon }"/>
+                    <div class="center-1">
+                      <div class="chip">
+                        <a style="text-transform: none;	color: #039be5; margin-right: 0px;" data-bind="attr: { title: $data.username, href: '/accounts/' + $data.username }">
+                          <b><span data-bind="text: $data.username"></span></b>
+                        </a>
+                      </div>
+                    </div>
+                    <p class="text-center text-white" data-bind="visible: $parent.signed_in() === true && $parent.you().id != $data.id">
+                      <follow-widget params="root: $root, parent: $parent, account_id: $data.id"></follow-widget>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    {% include 'footer.html' %}
+
+    <script src="/static/js/view-models/search-ctrl.js"></script>
+
+  </body>
+</html>

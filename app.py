@@ -132,6 +132,11 @@ def info():
     return routes_get.info(request)
 
 
+@app.route('/search', methods=['GET'])
+def search_page():
+    return routes_get.search_page(request)
+
+
 @Authorize
 @app.route('/check_session', methods=['GET'])
 def check_session():

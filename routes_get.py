@@ -66,6 +66,11 @@ def info(request):
     return render_template('info.html', session = logged_in())
 
 
+def search_page(request):
+    user_session['auth_key'] = uniqueValue()
+    return render_template('search.html', session = logged_in())
+
+
 def signup(request):
     user_session['auth_key'] = uniqueValue()
     if 'session_id' in user_session:
@@ -425,7 +430,7 @@ def get_event_comments(request, event_id, comment_id):
 def search_events(request, search_type, search_query):
     try:
         search_type = str(search_type).encode().lower().replace('_space_', ' ').replace('%20', ' ')
-        types = ['location', 'category']
+        types = set(['location', 'category'])
         if search_type not in types:
             return jsonify(error = True, message = 'search type is unknown/invalid: ' + search_type)
 
@@ -457,7 +462,7 @@ def search_events(request, search_type, search_query):
 def search_venues(request, search_type, search_query):
     try:
         search_type = str(search_type).encode().lower().replace('_space_', ' ').replace('%20', ' ')
-        types = ['location', 'category', 'username']
+        types = set(['location', 'category', 'username'])
         if search_type not in types:
             return jsonify(error = True, message = 'search type is unknown/invalid: ' + search_type)
 
@@ -498,7 +503,7 @@ def search_venues(request, search_type, search_query):
 def search_artists(request, search_type, search_query):
     try:
         search_type = str(search_type).encode().lower().replace('_space_', ' ').replace('%20', ' ')
-        types = ['location', 'category', 'username']
+        types = set(['location', 'category', 'username'])
         if search_type not in types:
             return jsonify(error = True, message = 'search type is unknown/invalid: ' + search_type)
 
@@ -539,7 +544,7 @@ def search_artists(request, search_type, search_query):
 def search_users(request, search_type, search_query):
     try:
         search_type = str(search_type).encode().lower().replace('_space_', ' ').replace('%20', ' ')
-        types = ['location', 'category', 'username']
+        types = set(['location', 'category', 'username'])
         if search_type not in types:
             return jsonify(error = True, message = 'search type is unknown/invalid: ' + search_type)
 

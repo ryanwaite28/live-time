@@ -41,7 +41,11 @@
                   </span>
                 </p>
 
-                <input data-bind="attr: { placeholder: 'Search artists by: ' + search_type() }, textInput: search_query, event: { keyup: search_artists }" >
+                <input data-bind="attr: { placeholder: 'Search artists by: ' + search_type() }, textInput: search_query" >
+                <p class="text-center">
+                  <a class="waves-effect blue waves-light btn" data-bind="click: search_artists">Submit</a>
+                </p>
+                <p class="text-center" data-bind="text: search_msg"></p>
               </div>
               <div class="card-action">
                 <div data-bind="foreach: artistsList">

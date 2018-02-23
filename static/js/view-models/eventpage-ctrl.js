@@ -19,6 +19,7 @@
     self.eventsIDs = ko.observableArray([]);
     self.eventsObj = {};
 
+    self.search_msg = ko.observable('');
     self.search_query = ko.observable('');
     self.search_type = ko.observable('');
     self.artistsList = ko.observableArray([]);
@@ -45,12 +46,14 @@
     self.search_artists = function(data, event) {
       if(self.signed_in() === false) { return; }
       var query = self.search_query().toLowerCase().trim();
-      if(!query) { self.artistsList([]); return; }
+      if(!query) { self.artistsList([]); self.search_msg(''); return; }
 
       GET.search_artists(self.search_type(), query)
       .then(function(resp) {
         console.log(resp);
         self.artistsList(resp.artists);
+        var msg = resp.artists.length + ' results';
+        self.search_msg(msg);
       })
       .catch(function(error){
         console.log(error);
