@@ -264,7 +264,7 @@ def toggle_comment_like(request, sse, comment_id):
 def toggle_account_follow(request, sse, account_id):
     account = db_session.query(Accounts).filter_by(id = account_id).first()
     if not account:
-        return jsonify(error = True, type = '', message = 'account not found')
+        return jsonify(error = True, message = 'account not found')
 
     if account_id == user_session['account_id']:
         return jsonify(error = True, message = 'provided account_id is same as session account\'s id: accounts cannot follow themselves.')
