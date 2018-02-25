@@ -337,7 +337,7 @@ def create_event_comment(request, sse, event_id):
     if event.host_id != user_session['account_id']:
         you = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
 
-        message = you.username + ' commented on your event(' + event.title[:15] + '): ' + text[:15]
+        message = you.username + ' commented on your event(' + event.title[:10] + '...' + '): ' + text[:10] + '...'
 
         new_notification = Notifications(action = ACTION_TYPES['NEW_COMMENT'],
             target_type = TARGET_TYPES['EVENT'], target_id = event.id,

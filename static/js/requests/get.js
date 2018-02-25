@@ -90,6 +90,21 @@ const Get = function() {
     });
   }
 
+  self.get_account_notifications = function(account_id = 0, notification_id = 0) {
+    return new Promise(function(resolve, reject){
+      var params = {
+        method: "GET",
+        credentials: "include",
+        header: headers_json()
+      }
+
+      fetch('/accounts/' + account_id + '/notifications/' + notification_id, params)
+      .then(function(resp){ return resp.json() })
+      .then(function(json){ return resolve(json); })
+      .catch(function(error){ return reject(error) })
+    });
+  }
+
   self.get_random_events = function() {
     return new Promise(function(resolve, reject){
       fetch('/get/random/events', {method: "GET", credentials: "include"})

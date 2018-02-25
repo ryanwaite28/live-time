@@ -254,6 +254,12 @@ def get_user_attending(account_id, attend_id):
 
 
 @Authorize
+@app.route('/accounts/<int:account_id>/notifications/<int:notification_id>', methods=['GET'])
+def get_account_notifications(account_id, notification_id):
+    return routes_get.get_account_notifications(request, sse, account_id, notification_id)
+
+
+@Authorize
 @SessionRequired
 @app.route('/event/<int:event_id>/account_like/<int:account_id>', methods=['GET'])
 def check_event_account_like(event_id, account_id):

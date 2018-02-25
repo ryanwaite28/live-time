@@ -369,6 +369,26 @@ def get_user_attending(request, sse, account_id, attend_id):
 
 
 
+def get_account_notifications(request, sse, account_id, notification_id):
+    if notification_id == 0:
+        notifications = db_session.query(Notifications) \
+        .filter(Notifications.account_id == account_id) \
+        .order_by(desc(Notifications.date_created)) \
+        .limit(5) \
+        .all()
+
+    else:
+        notifications = db_session.query(Notifications) \
+        .filter(Notifications.account_id == account_id) \
+        .filter(Notifications.id < notification_id) \
+        .order_by(desc(Notifications.date_created)) \
+        .limit(5) \
+        .all()
+
+    return jsonify(message = 'account notifications', notifications = [n.serialize for n in notifications])
+
+
+
 def check_event_account_like(request, sse, event_id, account_id):
     check = db_session.query(EventLikes) \
     .filter_by(event_id = event_id) \
