@@ -3,6 +3,15 @@
 const Get = function() {
   var self = this;
 
+  // self.welcome_event = function() {
+  //   fetch('/welcome_event', {method: "GET", credentials: "include"})
+  //   .then(function(resp){ return resp.json(); })
+  //   .then(function(resp){ /* console.log(resp); */ })
+  //   .catch(function(error){
+  //     return reject(error);
+  //   });
+  // }
+
   self.check_session = function() {
     return new Promise(function(resolve, reject){
       fetch('/check_session', {method: "GET", credentials: "include"})

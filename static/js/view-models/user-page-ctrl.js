@@ -51,6 +51,7 @@
     //
 
     self.check_account_follow = function() {
+      if(self.user().id === self.you().id) { return; }
       GET.check_account_follow(self.user().id)
       .then(function(resp) {
         console.log(resp);

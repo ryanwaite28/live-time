@@ -26,10 +26,14 @@ ko.components.register('comments-list-widget', {
       self.get_event_comments = function() {
         GET.get_event_comments(self.event_id, self.min_comment_id)
         .then(function(resp){
-          // console.log(resp);
+          // if(resp.message) { alert(resp.message); }
+          if(resp.error) {
+            console.log(resp);
+            return;
+          }
+
           if(resp.event_comments.length < 5) {
             self.end(true);
-            // return;
           }
 
           resp.event_comments.forEach(function(comment){

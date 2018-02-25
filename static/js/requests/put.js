@@ -184,6 +184,7 @@ const Put = function() {
       form_data.append("location", data.location);
       form_data.append("link", data.link);
       form_data.append("prev_ref", data.prev_ref);
+      form_data.append("date_str", data.date_str);
       form_data.append("date_concat", data.date_concat);
       if(data.file) {
         form_data.append("event_photo", data.file);

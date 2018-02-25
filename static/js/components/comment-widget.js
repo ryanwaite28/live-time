@@ -31,9 +31,9 @@ ko.components.register('comment-widget', {
 
         PUT.edit_comment(self.comment.id, self.edit_text())
         .then(function(resp){
-          // console.log(resp);
+          // if(resp.message) { alert(resp.message); }
           if(resp.error) {
-            alert(resp.message);
+            console.log(resp);
             return;
           }
 

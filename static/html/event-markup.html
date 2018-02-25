@@ -57,7 +57,7 @@
       <span data-bind="">
         <i class="fas fa-microphone"></i>
       </span>
-      <span data-bind="text: performers().length"></span> Artists Performing
+      <span data-bind="text: performers().length"></span> | Artists Performing
       <br/>
       <div data-bind="foreach: performers">
         <account-widget params="root: $root, parent: $parent, account: $data.performer_rel, you_id: you_id(), signed_in: signed_in()"></account-widget>
@@ -67,7 +67,7 @@
       <span data-bind="">
         <i class="fas fa-user"></i>
       </span>
-      <span data-bind="text: attending().length"></span> Users Attending
+      <span data-bind="text: attending().length"></span> | Users Attending
     </div>
     <div class="card-action">
       <div data-bind="">

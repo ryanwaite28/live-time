@@ -13,6 +13,7 @@ from dateutil import parser
 from flask import Flask, make_response, g, request, send_from_directory
 from flask import render_template, url_for, redirect, flash, jsonify
 from flask import session as user_session
+
 from werkzeug.utils import secure_filename
 
 from sqlalchemy import cast, exc, select
@@ -32,10 +33,11 @@ from models import EventInvites, EventAttendees
 from models import ArtistReviews, EventReviews
 from models import Notifications
 from models import ChatRooms, ChatRoomMembers, ChatRoomMessages
-from models import Conversations, ConversationMessages
+from models import Conversations, ConversationMessages, Messages
 
 import chamber
 from chamber import uniqueValue
+from chamber import ARTIST_EVENT_STATUSES, ACTION_TYPES, TARGET_TYPES, ERROR_TYPES
 
 
 
@@ -48,7 +50,7 @@ def logged_in():
 
 
 
-def signup(request):
+def signup(request, sse):
     try:
         data = json.loads(request.data)
         if not data:
@@ -94,7 +96,7 @@ def signup(request):
 
 
 
-def create_event(request):
+def create_event(request, sse):
     try:
         if logged_in() == False:
             return jsonify(error = True, message = 'no session found with this request.')
@@ -113,18 +115,24 @@ def create_event(request):
         categories        = str(request.form['categories']).encode()
         location          = str(request.form['location']).encode()
         link              = str(request.form['link']).encode()
+        date_str          = str(request.form['date_str']).encode()
         date_concat       = str(request.form['date_concat']).encode()
+        event_date        = datetime.strptime(date_str, '%Y-%m-%d')
         event_date_time   = datetime.strptime(date_concat, '%Y-%m-%d %H:%M:%S')
 
         new_event = Events(title = title, desc = desc, categories = categories, location = location,
-                            link = link, event_date_time = event_date_time, host_id = you.id)
+                            link = link, event_date = event_date, event_date_time = event_date_time, host_id = you.id)
+
+        message = you.username + ' created an event: ' + new_event.title
 
         if 'event_photo' not in request.files:
             db_session.add(new_event)
             db_session.commit()
 
+            sse.publish({"message": message, "account_id": you.id}, type='notify')
+
             return jsonify(message = 'Event Created Successfully!', event = new_event.serialize)
-            
+
         else:
             file = request.files['event_photo']
             if file and file.filename != '' and chamber.allowed_photo(file.filename):
@@ -134,6 +142,8 @@ def create_event(request):
 
                 db_session.add(new_event)
                 db_session.commit()
+
+                sse.publish({"message": message, "account_id": you.id}, type='notify')
 
                 return jsonify(message = 'Event Created Successfully!', event = new_event.serialize)
 
@@ -147,14 +157,31 @@ def create_event(request):
 
 
 
-def toggle_event_like(request, event_id):
-    check = db_session.query(EventLikes) \
+def toggle_event_like(request, sse, event_id):
+    event = db_session.query(Events).filter_by(id = event_id).first()
+    if not event:
+        return jsonify(error = True, message = 'event not found')
+
+    like = db_session.query(EventLikes) \
     .filter_by(event_id = event_id) \
     .filter_by(owner_id = user_session['account_id']) \
     .first()
 
-    if check:
-        db_session.delete(check)
+    if like:
+        db_session.delete(like)
+
+        check_notification = db_session.query(Notifications) \
+        .filter(Notifications.action == ACTION_TYPES['EVENT_LIKE']) \
+        .filter(Notifications.target_type == TARGET_TYPES['EVENT']) \
+        .filter(Notifications.target_id == like.event_id) \
+        .filter(Notifications.from_id == user_session['account_id']) \
+        .filter(Notifications.account_id == like.event_rel.host_id) \
+        .first()
+
+        if check_notification:
+            print()
+            db_session.delete(check_notification)
+
         db_session.commit()
 
         return jsonify(message = 'unliked', liked = False)
@@ -164,17 +191,48 @@ def toggle_event_like(request, event_id):
         db_session.add(like)
         db_session.commit()
 
+        if like.event_rel.host_id != user_session['account_id']:
+            you = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
+
+            message = you.username + ' liked your event: ' + like.event_rel.title
+
+            new_notification = Notifications(action = ACTION_TYPES['EVENT_LIKE'],
+                target_type = TARGET_TYPES['EVENT'], target_id = like.event_id ,
+                from_id = user_session['account_id'], account_id = like.event_rel.host_id,
+                message = message, link = '/event/' + str(event_id))
+
+            db_session.add(new_notification)
+            db_session.commit()
+
+            sse.publish({"message": message, "for_id": like.event_rel.host_id}, type='action')
+
         return jsonify(message = 'liked', liked = True)
 
 
-def toggle_comment_like(request, comment_id):
-    check = db_session.query(CommentLikes) \
+def toggle_comment_like(request, sse, comment_id):
+    comment = db_session.query(EventComments).filter_by(id = comment_id).first()
+    if not comment:
+        return jsonify(error = True, message = 'comment not found')
+
+    like = db_session.query(CommentLikes) \
     .filter_by(comment_id = comment_id) \
     .filter_by(owner_id = user_session['account_id']) \
     .first()
 
-    if check:
-        db_session.delete(check)
+    if like:
+        db_session.delete(like)
+
+        check_notification = db_session.query(Notifications) \
+        .filter(Notifications.action == ACTION_TYPES['COMMENT_LIKE']) \
+        .filter(Notifications.target_type == TARGET_TYPES['COMMENT']) \
+        .filter(Notifications.target_id == like.comment_id) \
+        .filter(Notifications.from_id == user_session['account_id']) \
+        .filter(Notifications.account_id == like.comment_rel.owner_id) \
+        .first()
+
+        if check_notification:
+            db_session.delete(check_notification)
+
         db_session.commit()
 
         return jsonify(message = 'unliked', liked = False)
@@ -184,21 +242,52 @@ def toggle_comment_like(request, comment_id):
         db_session.add(like)
         db_session.commit()
 
+        if like.comment_rel.owner_id != user_session['account_id']:
+            you = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
+
+            message = you.username + ' liked your comment: ' + like.comment_rel.text
+
+            new_notification = Notifications(action = ACTION_TYPES['COMMENT_LIKE'],
+                target_type = TARGET_TYPES['COMMENT'], target_id = like.comment_id,
+                from_id = user_session['account_id'], account_id = like.comment_rel.owner_id,
+                message = message, link = '/event/' + str(like.comment_rel.event_rel.id))
+
+            db_session.add(new_notification)
+            db_session.commit()
+
+            sse.publish({"message": message, "for_id": like.comment_rel.owner_id}, type='action')
+
         return jsonify(message = 'liked', liked = True)
 
 
 
-def toggle_account_follow(request, account_id):
+def toggle_account_follow(request, sse, account_id):
+    account = db_session.query(Accounts).filter_by(id = account_id).first()
+    if not account:
+        return jsonify(error = True, type = '', message = 'account not found')
+
     if account_id == user_session['account_id']:
         return jsonify(error = True, message = 'provided account_id is same as session account\'s id: accounts cannot follow themselves.')
 
-    check = db_session.query(Follows) \
+    follow = db_session.query(Follows) \
     .filter_by(account_id = user_session['account_id']) \
     .filter_by(follows_id = account_id) \
     .first()
 
-    if check:
-        db_session.delete(check)
+    if follow:
+        db_session.delete(follow)
+
+        check_notification = db_session.query(Notifications) \
+        .filter(Notifications.action == ACTION_TYPES['ACCOUNT_FOLLOW']) \
+        .filter(Notifications.target_type == TARGET_TYPES['ACCOUNT']) \
+        .filter(Notifications.target_id == account_id) \
+        .filter(Notifications.from_id == user_session['account_id']) \
+        .filter(Notifications.account_id == account_id) \
+        .first()
+
+        if check_notification:
+            db_session.delete(check_notification)
+
         db_session.commit()
 
         return jsonify(message = 'unfollowed', following = False)
@@ -206,13 +295,28 @@ def toggle_account_follow(request, account_id):
     else:
         follow = Follows(account_id = user_session['account_id'], follows_id = account_id)
         db_session.add(follow)
+
+        if account_id != user_session['account_id']:
+            you = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
+
+            message = you.username + ' started following you'
+
+            new_notification = Notifications(action = ACTION_TYPES['ACCOUNT_FOLLOW'],
+                target_type = TARGET_TYPES['ACCOUNT'], target_id = account_id,
+                from_id = user_session['account_id'], account_id = account_id,
+                message = message)
+
+            db_session.add(new_notification)
+
+            sse.publish({"message": message, "for_id": account_id}, type='action')
+
         db_session.commit()
 
         return jsonify(message = 'followed', following = True)
 
 
 
-def create_event_comment(request, event_id):
+def create_event_comment(request, sse, event_id):
     event = db_session.query(Events).filter_by(id = event_id).first()
     if not event:
         return jsonify(error = True, message = 'event not found')
@@ -229,6 +333,21 @@ def create_event_comment(request, event_id):
 
     new_comment = EventComments(event_id = event_id, owner_id = user_session['account_id'], text = text)
     db_session.add(new_comment)
+
+    if event.host_id != user_session['account_id']:
+        you = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
+
+        message = you.username + ' commented on your event(' + event.title[:15] + '): ' + text[:15]
+
+        new_notification = Notifications(action = ACTION_TYPES['NEW_COMMENT'],
+            target_type = TARGET_TYPES['EVENT'], target_id = event.id,
+            from_id = user_session['account_id'], account_id = event.host_id,
+            message = message, link = '/event/' + str(event.id))
+
+        db_session.add(new_notification)
+
+        sse.publish({"message": message, "for_id": event.host_id}, type='action')
+
     db_session.commit()
 
     return jsonify(message = 'event comment created', comment = new_comment.serialize)

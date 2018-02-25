@@ -18,9 +18,13 @@ ko.components.register('comment-likes-widget', {
       self.check_comment_like = function() {
         GET.check_comment_account_like(self.comment_id, self.you_id())
         .then(function(resp) {
-          // console.log(resp);
+          // if(resp.message) { alert(resp.message); }
+          if(resp.error) {
+            console.log(resp);
+            return;
+          }
+
           self.liked(resp.liked);
-          // console.log(self);
         })
         .catch(function(error){
           console.log(error);
@@ -36,7 +40,12 @@ ko.components.register('comment-likes-widget', {
 
         POST.toggle_comment_like(self.comment_id)
         .then(function(resp){
-          // console.log(resp);
+          // if(resp.message) { alert(resp.message); }
+          if(resp.error) {
+            console.log(resp);
+            return;
+          }
+
           self.liked(resp.liked);
 
           if(resp.liked == true) {

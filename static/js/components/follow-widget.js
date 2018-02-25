@@ -18,7 +18,12 @@ ko.components.register('follow-widget', {
       self.check_account_follow = function() {
         GET.check_account_follow(self.account_id())
         .then(function(resp) {
-          // console.log(resp);
+          // if(resp.message) { alert(resp.message); }
+          if(resp.error) {
+            console.log(resp);
+            return;
+          }
+
           self.following(resp.following);
         })
         .catch(function(error){
@@ -36,7 +41,12 @@ ko.components.register('follow-widget', {
 
         POST.toggle_account_follow(self.account_id())
         .then(function(resp){
-          // console.log(resp);
+          // if(resp.message) { alert(resp.message); }
+          if(resp.error) {
+            console.log(resp);
+            return;
+          }
+
           self.following(resp.following);
         })
         .catch(function(error){

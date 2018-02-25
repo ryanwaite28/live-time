@@ -92,12 +92,12 @@
       }
 
       var hours = parseInt($('#event_hours_input').val());
-      if(!hours || hours === NaN || !/^[0-9]{2}$/.test(String(hours)) || hours < 0 || hours > 23) {
+      if(!hours || hours === NaN || !/^[0-9]{1,2}$/.test(String(hours)) || hours < 0 || hours > 23) {
         alert('Hours input is in bad format');
         return;
       }
       var minutes = parseInt($('#event_minutes_input').val());
-      if(!minutes || minutes === NaN || !/^[0-9]{2}$/.test(String(minutes)) || minutes < 0 || minutes > 59) {
+      if(!minutes || minutes === NaN || !/^[0-9]{1,2}$/.test(String(minutes)) || minutes < 0 || minutes > 59) {
         alert('Minutes input is in bad format');
         return;
       }
@@ -128,6 +128,7 @@
         categories: categories,
         location: location,
         link: link,
+        date_str: event_date_input,
         date_concat: date_concat,
         event_date: event_date,
         file: file,

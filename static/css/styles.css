@@ -167,3 +167,8 @@ nav {
   align-items: center;
   justify-content: center;
 }
+
+.container {
+	padding-left: 10px;
+	padding-right: 10px;
+}

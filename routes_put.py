@@ -13,6 +13,7 @@ from dateutil import parser
 from flask import Flask, make_response, g, request, send_from_directory
 from flask import render_template, url_for, redirect, flash, jsonify
 from flask import session as user_session
+
 from werkzeug.utils import secure_filename
 
 from sqlalchemy import cast, exc, select
@@ -32,10 +33,11 @@ from models import EventInvites, EventAttendees
 from models import ArtistReviews, EventReviews
 from models import Notifications
 from models import ChatRooms, ChatRoomMembers, ChatRoomMessages
-from models import Conversations, ConversationMessages
+from models import Conversations, ConversationMessages, Messages
 
 import chamber
 from chamber import uniqueValue
+from chamber import ARTIST_EVENT_STATUSES, ACTION_TYPES, TARGET_TYPES, ERROR_TYPES
 
 
 
@@ -48,7 +50,7 @@ def logged_in():
 
 
 
-def signin(request):
+def signin(request, sse):
     try:
         data = json.loads(request.data)
         if not data:
@@ -80,7 +82,7 @@ def signin(request):
 
 
 
-def update_info(request):
+def update_info(request, sse):
     try:
         data = json.loads(request.data)
         if not data:
@@ -118,7 +120,7 @@ def update_info(request):
 
 
 
-def update_icon(request):
+def update_icon(request, sse):
     try:
         if 'icon_photo' not in request.files:
             return jsonify(error = True, message = 'file with filename "icon_photo" was not found in request')
@@ -148,7 +150,7 @@ def update_icon(request):
 
 
 
-def update_background(request):
+def update_background(request, sse):
     try:
         if 'background_photo' not in request.files:
             return jsonify(error = True, message = 'file with filename "background_photo" was not found in request')
@@ -178,7 +180,7 @@ def update_background(request):
 
 
 
-def update_social(request):
+def update_social(request, sse):
     try:
         data = json.loads(request.data)
         if not data:
@@ -232,7 +234,7 @@ def update_social(request):
 
 
 
-def update_username(request):
+def update_username(request, sse):
     try:
         data = json.loads(request.data)
         if not data:
@@ -258,7 +260,7 @@ def update_username(request):
 
 
 
-def update_account_email(request):
+def update_account_email(request, sse):
     try:
         data = json.loads(request.data)
         if not data:
@@ -284,7 +286,7 @@ def update_account_email(request):
 
 
 
-def update_booking_email(request):
+def update_booking_email(request, sse):
     try:
         data = json.loads(request.data)
         if not data:
@@ -309,7 +311,7 @@ def update_booking_email(request):
 
 
 
-def update_password(request):
+def update_password(request, sse):
     try:
         data = json.loads(request.data)
         if not data:
@@ -333,7 +335,7 @@ def update_password(request):
 
 
 
-def update_event(request, event_id):
+def update_event(request, sse, event_id):
     try:
         if not request.form:
             return jsonify(error = True, message = 'no request form was sent')
@@ -353,20 +355,22 @@ def update_event(request, event_id):
 
 
 
-        title                    = str(request.form['title']).encode()
-        desc                     = str(request.form['desc']).encode()
-        categories               = str(request.form['categories']).encode()
-        location                 = str(request.form['location']).encode()
-        link                     = str(request.form['link']).encode()
-        prev_ref                 = str(request.form['prev_ref']).encode()
-        date_concat              = str(request.form['date_concat']).encode()
-        event_date_time          = datetime.strptime(date_concat, '%Y-%m-%d %H:%M:%S')
+        title             = str(request.form['title']).encode()
+        desc              = str(request.form['desc']).encode()
+        categories        = str(request.form['categories']).encode()
+        location          = str(request.form['location']).encode()
+        link              = str(request.form['link']).encode()
+        date_str          = str(request.form['date_str']).encode()
+        date_concat       = str(request.form['date_concat']).encode()
+        event_date        = datetime.strptime(date_str, '%Y-%m-%d')
+        event_date_time   = datetime.strptime(date_concat, '%Y-%m-%d %H:%M:%S')
 
         event.title              = title
         event.desc               = desc
         event.categories         = categories
         event.location           = location
         event.link               = link
+        event.event_date         = event_date
         event.event_date_time    = event_date_time
 
         if 'event_photo' not in request.files:
@@ -392,7 +396,7 @@ def update_event(request, event_id):
 
 
 
-def edit_comment(request, comment_id):
+def edit_comment(request, sse, comment_id):
     comment = db_session.query(EventComments) \
     .filter(EventComments.id == comment_id) \
     .filter(EventComments.owner_id == user_session['account_id']) \

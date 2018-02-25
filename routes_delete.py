@@ -12,6 +12,7 @@ from dateutil import parser
 from flask import Flask, make_response, g, request, send_from_directory
 from flask import render_template, url_for, redirect, flash, jsonify
 from flask import session as user_session
+
 from werkzeug.utils import secure_filename
 
 from sqlalchemy import cast, exc, select
@@ -31,10 +32,11 @@ from models import EventInvites, EventAttendees
 from models import ArtistReviews, EventReviews
 from models import Notifications
 from models import ChatRooms, ChatRoomMembers, ChatRoomMessages
-from models import Conversations, ConversationMessages
+from models import Conversations, ConversationMessages, Messages
 
 import chamber
 from chamber import uniqueValue
+from chamber import ARTIST_EVENT_STATUSES, ACTION_TYPES, TARGET_TYPES, ERROR_TYPES
 
 
 
@@ -47,8 +49,11 @@ def logged_in():
 
 
 
-def delete_account(request):
+def delete_account(request, sse):
     try:
+        if 'account_id' not in user_session:
+            return jsonify(error = True, message = 'no current session id...')
+
         you = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
         db_session.delete(you)
         db_session.commit()
@@ -61,7 +66,7 @@ def delete_account(request):
         return jsonify(error = True, errorMessage = str(err), message = 'error processing...')
 
 
-def delete_event(request, event_id):
+def delete_event(request, sse, event_id):
     try:
         event = db_session.query(Events) \
         .filter(Events.id == event_id) \
@@ -71,6 +76,15 @@ def delete_event(request, event_id):
             return jsonify(error = True, message = 'Event not found')
 
         db_session.delete(event)
+
+        check_notifications = db_session.query(Notifications) \
+        .filter(Notifications.target_type == TARGET_TYPES['EVENT']) \
+        .filter(Notifications.target_id == event.id) \
+        .all()
+
+        if len(check_notifications) > 0:
+            db_session.delete(check_notifications)
+
         db_session.commit()
 
         return jsonify(error = False, message = 'Event Deleted')
@@ -81,7 +95,7 @@ def delete_event(request, event_id):
 
 
 
-def delete_comment(request, comment_id):
+def delete_comment(request, sse, comment_id):
     try:
         comment = db_session.query(EventComments) \
         .filter(EventComments.id == comment_id) \
@@ -92,6 +106,15 @@ def delete_comment(request, comment_id):
             return jsonify(error = True, message = 'No Comment Found...')
 
         db_session.delete(comment)
+
+        check_notifications = db_session.query(Notifications) \
+        .filter(Notifications.target_type == TARGET_TYPES['COMMENT']) \
+        .filter(Notifications.target_id == comment.id) \
+        .all()
+
+        if len(check_notifications) > 0:
+            db_session.delete(check_notifications)
+
         db_session.commit()
 
         return jsonify(message = 'Comment Deleted!')

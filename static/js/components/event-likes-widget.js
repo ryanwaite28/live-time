@@ -17,9 +17,13 @@ ko.components.register('event-like-widget', {
       self.check_event_like = function() {
         GET.check_event_account_like(self.event_id, self.you_id())
         .then(function(resp) {
-          // console.log(resp);
+          // if(resp.message) { alert(resp.message); }
+          if(resp.error) {
+            console.log(resp);
+            return;
+          }
+
           self.liked(resp.liked);
-          // console.log(self);
         })
         .catch(function(error){
           console.log(error);
@@ -35,7 +39,12 @@ ko.components.register('event-like-widget', {
 
         POST.toggle_event_like(self.event_id)
         .then(function(resp){
-          // console.log(resp);
+          // if(resp.message) { alert(resp.message); }
+          if(resp.error) {
+            console.log(resp);
+            return;
+          }
+
           self.liked(resp.liked);
 
           if(resp.liked == true) {

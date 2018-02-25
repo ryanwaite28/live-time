@@ -12,6 +12,7 @@ from dateutil import parser
 from flask import Flask, make_response, g, request, send_from_directory
 from flask import render_template, url_for, redirect, flash, jsonify
 from flask import session as user_session
+
 from werkzeug.utils import secure_filename
 
 from sqlalchemy import cast, exc, select
@@ -31,10 +32,11 @@ from models import EventInvites, EventAttendees
 from models import ArtistReviews, EventReviews
 from models import Notifications
 from models import ChatRooms, ChatRoomMembers, ChatRoomMessages
-from models import Conversations, ConversationMessages
+from models import Conversations, ConversationMessages, Messages
 
 import chamber
 from chamber import uniqueValue
+from chamber import ARTIST_EVENT_STATUSES, ACTION_TYPES, TARGET_TYPES, ERROR_TYPES
 
 
 
@@ -46,32 +48,37 @@ def logged_in():
 
 
 
-def welcome(request):
+def welcome(request, sse):
     user_session['auth_key'] = uniqueValue()
     return render_template('welcome.html', session = logged_in())
 
 
-def faq(request):
+def welcome_event(request, sse):
+    sse.publish({"message": "Welcome to Live Time!"}, type='greeting');
+    return jsonify(message = 'event pushed!')
+
+
+def faq(request, sse):
     user_session['auth_key'] = uniqueValue()
     return render_template('faq.html', session = logged_in())
 
 
-def about(request):
+def about(request, sse):
     user_session['auth_key'] = uniqueValue()
     return render_template('about.html', session = logged_in())
 
 
-def info(request):
+def info(request, sse):
     user_session['auth_key'] = uniqueValue()
     return render_template('info.html', session = logged_in())
 
 
-def search_page(request):
+def search_page(request, sse):
     user_session['auth_key'] = uniqueValue()
     return render_template('search.html', session = logged_in())
 
 
-def signup(request):
+def signup(request, sse):
     user_session['auth_key'] = uniqueValue()
     if 'session_id' in user_session:
         return redirect('/')
@@ -79,7 +86,7 @@ def signup(request):
     return render_template('signup.html', session = logged_in())
 
 
-def profile_events(request):
+def profile_events(request, sse):
     user_session['auth_key'] = uniqueValue()
 
     if 'session_id' not in user_session:
@@ -94,7 +101,7 @@ def profile_events(request):
     return render_template('profile-events.html', session = logged_in())
 
 
-def profile_shows(request):
+def profile_shows(request, sse):
     user_session['auth_key'] = uniqueValue()
 
     if 'session_id' not in user_session:
@@ -109,7 +116,7 @@ def profile_shows(request):
     return render_template('profile-shows.html', session = logged_in())
 
 
-def profile_attending(request):
+def profile_attending(request, sse):
     user_session['auth_key'] = uniqueValue()
 
     if 'session_id' not in user_session:
@@ -125,7 +132,7 @@ def profile_attending(request):
 
 
 
-def account_page(request, username):
+def account_page(request, sse, username):
     user_session['auth_key'] = uniqueValue()
 
     account = db_session.query(Accounts).filter_by(username = username).first()
@@ -137,7 +144,7 @@ def account_page(request, username):
     return render_template('user-page.html', session = logged_in())
 
 
-def account_events(request, username):
+def account_events(request, sse, username):
     user_session['auth_key'] = uniqueValue()
 
     account = db_session.query(Accounts).filter_by(username = username).first()
@@ -153,7 +160,7 @@ def account_events(request, username):
     return render_template('user-events.html', session = logged_in())
 
 
-def account_shows(request, username):
+def account_shows(request, sse, username):
     user_session['auth_key'] = uniqueValue()
 
     account = db_session.query(Accounts).filter_by(username = username).first()
@@ -169,7 +176,7 @@ def account_shows(request, username):
     return render_template('user-shows.html', session = logged_in())
 
 
-def account_attending(request, username):
+def account_attending(request, sse, username):
     user_session['auth_key'] = uniqueValue()
 
     account = db_session.query(Accounts).filter_by(username = username).first()
@@ -185,7 +192,7 @@ def account_attending(request, username):
     return render_template('user-attending.html', session = logged_in())
 
 
-def event_page(request, event_id):
+def event_page(request, sse, event_id):
     user_session['auth_key'] = uniqueValue()
 
     event = db_session.query(Events).filter_by(id = event_id).first()
@@ -198,7 +205,7 @@ def event_page(request, event_id):
 
 
 
-def create_event(request):
+def create_event(request, sse):
     user_session['auth_key'] = uniqueValue()
 
     if 'session_id' not in user_session:
@@ -213,7 +220,7 @@ def create_event(request):
     return render_template('create-event.html', session = logged_in())
 
 
-def edit_event(request, event_id):
+def edit_event(request, sse, event_id):
     user_session['auth_key'] = uniqueValue()
 
     if 'session_id' not in user_session:
@@ -233,12 +240,12 @@ def edit_event(request, event_id):
     return render_template('edit-event.html', session = logged_in())
 
 
-def signin(request):
+def signin(request, sse):
     user_session['auth_key'] = uniqueValue()
     return render_template('signin.html', session = logged_in())
 
 
-def signout(request):
+def signout(request, sse):
     if 'session_id' in user_session:
         you = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
 
@@ -251,7 +258,7 @@ def signout(request):
 
 
 
-def check_session(request):
+def check_session(request, sse):
     if 'session_id' in user_session:
         you = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
         return jsonify(online = True, account = you.serialize)
@@ -261,7 +268,7 @@ def check_session(request):
 
 
 
-def check_auth(request):
+def check_auth(request, sse):
     if 'auth_key' in user_session:
         return jsonify(auth = True, message = 'client is authorized')
 
@@ -269,7 +276,7 @@ def check_auth(request):
         return jsonify(auth = False, message = 'client is NOT authorized')
 
 
-def profile(request):
+def profile(request, sse):
     if 'session_id' not in user_session:
         return redirect('/')
 
@@ -277,7 +284,7 @@ def profile(request):
     return render_template('profile.html', session = logged_in())
 
 
-def account_settings(request):
+def account_settings(request, sse):
     if 'session_id' not in user_session:
         return redirect('/')
 
@@ -288,7 +295,7 @@ def account_settings(request):
 
 
 
-def get_event(request, event_id):
+def get_event(request, sse, event_id):
     event = db_session.query(Events).filter_by(id = event_id).first()
     if event:
         return jsonify(message = 'venue event', event = event.serialize)
@@ -296,7 +303,7 @@ def get_event(request, event_id):
         return jsonify(message = 'no venue event found', event = False)
 
 
-def get_account_by_username(request, username):
+def get_account_by_username(request, sse, username):
     account = db_session.query(Accounts).filter_by(username = username).first()
     if account:
         return jsonify(message = 'account found', account = account.serialize)
@@ -304,7 +311,7 @@ def get_account_by_username(request, username):
         return jsonify(message = 'no account found', account = False)
 
 
-def get_venue_events(request, account_id, event_id):
+def get_venue_events(request, sse, account_id, event_id):
     if event_id == 0:
         events = db_session.query(Events) \
         .filter(Events.host_id == account_id) \
@@ -323,7 +330,7 @@ def get_venue_events(request, account_id, event_id):
     return jsonify(message = 'venue events', events = [e.serialize for e in events])
 
 
-def get_artist_shows(request, account_id, event_performer_id):
+def get_artist_shows(request, sse, account_id, event_performer_id):
     if event_performer_id == 0:
         shows = db_session.query(EventPerformers) \
         .filter(EventPerformers.performer_id == account_id) \
@@ -342,7 +349,7 @@ def get_artist_shows(request, account_id, event_performer_id):
     return jsonify(message = 'artist shows', shows = [s.serialize for s in shows])
 
 
-def get_user_attending(request, account_id, attend_id):
+def get_user_attending(request, sse, account_id, attend_id):
     if attend_id == 0:
         attending = db_session.query(EventAttendees) \
         .filter(EventAttendees.account_id == account_id) \
@@ -362,7 +369,7 @@ def get_user_attending(request, account_id, attend_id):
 
 
 
-def check_event_account_like(request, event_id, account_id):
+def check_event_account_like(request, sse, event_id, account_id):
     check = db_session.query(EventLikes) \
     .filter_by(event_id = event_id) \
     .filter_by(owner_id = account_id) \
@@ -374,7 +381,7 @@ def check_event_account_like(request, event_id, account_id):
         return jsonify(message = 'not liked', liked = False)
 
 
-def check_comment_account_like(request, comment_id, account_id):
+def check_comment_account_like(request, sse, comment_id, account_id):
     check = db_session.query(CommentLikes) \
     .filter_by(comment_id = comment_id) \
     .filter_by(owner_id = account_id) \
@@ -386,7 +393,7 @@ def check_comment_account_like(request, comment_id, account_id):
         return jsonify(message = 'not liked', liked = False)
 
 
-def check_account_follow(request, account_id):
+def check_account_follow(request, sse, account_id):
     if account_id == user_session['account_id']:
         return jsonify(error = True, message = 'provided account_id is same as session account\'s id')
 
@@ -401,7 +408,7 @@ def check_account_follow(request, account_id):
         return jsonify(message = 'not following', following = False)
 
 
-def get_event_comments(request, event_id, comment_id):
+def get_event_comments(request, sse, event_id, comment_id):
     try:
         if comment_id == 0:
             event_comments = db_session.query(EventComments) \
@@ -427,14 +434,14 @@ def get_event_comments(request, event_id, comment_id):
 
 
 
-def search_events(request, search_type, search_query):
+def search_events(request, sse, search_type, search_query):
     try:
-        search_type = str(search_type).encode().lower().replace('_space_', ' ').replace('%20', ' ')
+        search_type = str(search_type).encode().lower()
         types = set(['location', 'category'])
         if search_type not in types:
             return jsonify(error = True, message = 'search type is unknown/invalid: ' + search_type)
 
-
+        search_query = str(search_query).encode().lower().replace('_space_', ' ').replace('%20', ' ')
         query = '%' + str(cgi.escape(search_query)).encode().lower() + '%'
 
         if search_type == 'location':
@@ -449,7 +456,6 @@ def search_events(request, search_type, search_query):
             .order_by(func.random()) \
             .limit(10).all()
 
-
         return jsonify(message = 'events', events = [e.serialize for e in events])
 
 
@@ -459,14 +465,14 @@ def search_events(request, search_type, search_query):
 
 
 
-def search_venues(request, search_type, search_query):
+def search_venues(request, sse, search_type, search_query):
     try:
-        search_type = str(search_type).encode().lower().replace('_space_', ' ').replace('%20', ' ')
+        search_type = str(search_type).encode().lower()
         types = set(['location', 'category', 'username'])
         if search_type not in types:
             return jsonify(error = True, message = 'search type is unknown/invalid: ' + search_type)
 
-
+        search_query = str(search_query).encode().lower().replace('_space_', ' ').replace('%20', ' ')
         query = '%' + str(cgi.escape(search_query)).encode().lower() + '%'
 
         if search_type == 'username':
@@ -489,7 +495,6 @@ def search_venues(request, search_type, search_query):
             .filter( func.lower(Accounts.categories).like( query ) ) \
             .order_by(func.random()) \
             .limit(10).all()
-
 
         return jsonify(message = 'venues', venues = [v.serialize for v in venues])
 
@@ -500,14 +505,14 @@ def search_venues(request, search_type, search_query):
 
 
 
-def search_artists(request, search_type, search_query):
+def search_artists(request, sse, search_type, search_query):
     try:
-        search_type = str(search_type).encode().lower().replace('_space_', ' ').replace('%20', ' ')
+        search_type = str(search_type).encode().lower()
         types = set(['location', 'category', 'username'])
         if search_type not in types:
             return jsonify(error = True, message = 'search type is unknown/invalid: ' + search_type)
 
-
+        search_query = str(search_query).encode().lower().replace('_space_', ' ').replace('%20', ' ')
         query = '%' + str(cgi.escape(search_query)).encode().lower() + '%'
 
         if search_type == 'username':
@@ -530,7 +535,6 @@ def search_artists(request, search_type, search_query):
             .filter( func.lower(Accounts.categories).like( query ) ) \
             .order_by(func.random()) \
             .limit(10).all()
-
 
         return jsonify(message = 'artists', artists = [a.serialize for a in artists])
 
@@ -541,14 +545,14 @@ def search_artists(request, search_type, search_query):
 
 
 
-def search_users(request, search_type, search_query):
+def search_users(request, sse, search_type, search_query):
     try:
-        search_type = str(search_type).encode().lower().replace('_space_', ' ').replace('%20', ' ')
+        search_type = str(search_type).encode().lower()
         types = set(['location', 'category', 'username'])
         if search_type not in types:
             return jsonify(error = True, message = 'search type is unknown/invalid: ' + search_type)
 
-
+        search_query = str(search_query).encode().lower().replace('_space_', ' ').replace('%20', ' ')
         query = '%' + str(cgi.escape(search_query)).encode().lower() + '%'
 
         if search_type == 'username':
@@ -571,7 +575,6 @@ def search_users(request, search_type, search_query):
             .filter( func.lower(Accounts.categories).like( query ) ) \
             .order_by(func.random()) \
             .limit(10).all()
-
 
         return jsonify(message = 'users', users = [u.serialize for u in users])
 
@@ -583,7 +586,7 @@ def search_users(request, search_type, search_query):
 
 
 
-def get_random_events(request):
+def get_random_events(request, sse):
     try:
         events = db_session.query(Events).order_by(func.random()).limit(9).all()
 
@@ -595,7 +598,7 @@ def get_random_events(request):
         return jsonify(error = True, errorMessage = str(err), message = 'error processing...')
 
 
-def get_random_venues(request):
+def get_random_venues(request, sse):
     try:
         venues = db_session.query(Accounts) \
         .filter(Accounts.type == 'VENUE') \
@@ -609,7 +612,7 @@ def get_random_venues(request):
         return jsonify(error = True, errorMessage = str(err), message = 'error processing...')
 
 
-def get_random_artists(request):
+def get_random_artists(request, sse):
     try:
         artists = db_session.query(Accounts) \
         .filter(Accounts.type == 'ARTIST') \
@@ -623,7 +626,7 @@ def get_random_artists(request):
         return jsonify(error = True, errorMessage = str(err), message = 'error processing...')
 
 
-def get_random_users(request):
+def get_random_users(request, sse):
     try:
         users = db_session.query(Accounts) \
         .filter(Accounts.type == 'USER') \

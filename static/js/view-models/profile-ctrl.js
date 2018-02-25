@@ -13,14 +13,18 @@
 
     self.background_view = ko.observable(false);
 
-    GET.check_session()
-    .then(function(resp){
-      console.log(resp);
-      self.signed_in(resp.online);
-      if(resp.account) {
-        self.you(resp.account);
-      }
-    });
+    self.check_session = function() {
+      GET.check_session()
+      .then(function(resp){
+        console.log(resp);
+        self.signed_in(resp.online);
+        if(resp.account) {
+          self.you(resp.account);
+        }
+      });
+    }
+    self.check_session();
+    setTimeout(function(){ Materialize.toast('Welcome!', 4000) }, 1000);
 
     //
 

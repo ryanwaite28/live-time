@@ -1,7 +1,7 @@
 import sys, os, psycopg2, string, random, json
 import cgi, HTMLParser
 
-from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Float, Boolean
+from sqlalchemy import Column, ForeignKey, Integer, String, Date, DateTime, Float, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import sessionmaker
@@ -102,6 +102,7 @@ class Accounts(Base):
 
             'following': len(self.following),
             'followers': len(self.followers),
+            'following_ids': [f.follows_id for f in self.following],
 
             'date_created': str(self.date_created),
             'last_loggedin': str(self.last_loggedin),
@@ -164,6 +165,7 @@ class Events(Base):
     categories          = Column(String, nullable = False, default = '')
     location            = Column(String, nullable = False, default = '')
     link                = Column(String, default = '')
+    event_date          = Column(Date)
     event_date_time     = Column(DateTime)
     icon                = Column(String, default = '/static/img/blank.png')
 
@@ -202,6 +204,7 @@ class Events(Base):
             'requests': len(self.requests),
             'likes': len(self.likes_rel),
             'comments': len(self.comments_rel),
+            'event_date': str(self.event_date),
             'event_date_time': str(self.event_date_time),
             'date_created': str(self.date_created),
             'unique_value': self.unique_value
@@ -425,8 +428,15 @@ class Notifications(Base):
     __tablename__ = 'notifications'
 
     id                  = Column(Integer, primary_key = True)
+
+    action              = Column(String, nullable = False)
+    target_type         = Column(String, nullable = False)
+    target_id           = Column(Integer, nullable = False)
+    from_id             = Column(Integer, ForeignKey('accounts.id'))
+    from_rel            = relationship('Accounts', foreign_keys=[from_id])
     account_id          = Column(Integer, ForeignKey('accounts.id'))
     account_rel         = relationship('Accounts', foreign_keys=[account_id])
+
     message             = Column(String, nullable = False)
     link                = Column(String, default = '')
     viewed              = Column(Boolean, default = False)
@@ -437,8 +447,13 @@ class Notifications(Base):
     def serialize(self):
         return {
             'id': self.id,
+            'action': self.action,
+            'target_type': self.target_type,
+            'target_id': self.target_id,
             'account_id': self.account_id,
             'account_rel': self.account_rel.serialize,
+            'from_id': self.from_id,
+            'from_rel': self.from_rel.serialize,
             'message': self.message,
             'link': self.link,
             'viewed': self.viewed,
@@ -578,6 +593,36 @@ class ConversationMessages(Base):
 
 
 
+class Messages(Base):
+    __tablename__ = 'messages'
+
+    id                  = Column(Integer, primary_key = True)
+
+    sender_id           = Column(Integer, ForeignKey('accounts.id'))
+    sender_rel          = relationship('Accounts', foreign_keys=[sender_id])
+    receiver_id         = Column(Integer, ForeignKey('accounts.id'))
+    receiver_rel        = relationship('Accounts', foreign_keys=[receiver_id])
+
+    message             = Column(String, default = '')
+
+    date_created        = Column(DateTime, server_default=func.now())
+    unique_value        = Column(String, default = uniqueValue)
+
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'sender_id': self.sender_id,
+            'sender_rel': self.sender_rel.serialize,
+            'receiver_id': self.receiver_id,
+            'receiver_rel': self.receiver_rel.serialize,
+            'message': self.message,
+            'date_created': str(self.date_created),
+            'unique_value': self.unique_value
+        }
+
+
+
 
 class EventReviews(Base):
     __tablename__ = 'event_reviews'
@@ -607,6 +652,35 @@ class EventReviews(Base):
             'unique_value': self.unique_value
         }
 
+
+
+class VenueReviews(Base):
+    __tablename__ = 'venue_reviews'
+
+    id                  = Column(Integer, primary_key = True)
+
+    account_id          = Column(Integer, ForeignKey('accounts.id'))
+    account_rel         = relationship('Accounts', foreign_keys=[account_id])
+    owner_id            = Column(Integer, ForeignKey('accounts.id'))
+    owner_rel           = relationship('Accounts', foreign_keys=[owner_id])
+    rating              = Column(Integer, default = 0)
+    message             = Column(String, default = '')
+    date_created        = Column(DateTime, server_default=func.now())
+    unique_value        = Column(String, default = uniqueValue)
+
+    @property
+    def serialize(self):
+        return {
+            'id': self.id,
+            'account_id': self.account_id,
+            'account_rel': self.account_rel.serialize,
+            'owner_id': self.owner_id,
+            'owner_rel': self.owner_rel.serialize,
+            'rating': self.rating,
+            'message': self.message,
+            'date_created': str(self.date_created),
+            'unique_value': self.unique_value
+        }
 
 
 class ArtistReviews(Base):
