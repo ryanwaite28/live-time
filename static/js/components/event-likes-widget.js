@@ -64,10 +64,10 @@ ko.components.register('event-like-widget', {
     },
     template:
         '<div class="">\
-            <span data-bind="click: toggle_like, visible: liked()"> \
+            <span data-bind="click: toggle_like, if: liked()"> \
               <i class="fas fa-heart"></i> \
             </span> \
-            <span data-bind="click: toggle_like, visible: !liked()"> \
+            <span data-bind="click: toggle_like, if: !liked()"> \
               <i class="far fa-heart"></i> \
             </span> \
             <span data-bind="text: likesLength"></span>\

@@ -93,6 +93,20 @@ def SessionRequired(f):
 # ---
 
 
+def AuthorizeSessionRequired(f):
+    ''' Checks If Client Is Authorized '''
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+
+        if 'auth_key' in user_session and 'session_id' in user_session and 'account_id' in user_session:
+            return f(*args, **kwargs)
+        else:
+            return jsonify(error = True, message = 'no session found with this request.')
+
+    return decorated_function
+# ---
+
+
 def Check_Authorize():
     return 'auth_key' in user_session
 # ---
@@ -157,8 +171,9 @@ def search_page():
     return routes_get.search_page(request, sse)
 
 
-@Authorize
+
 @app.route('/check_session', methods=['GET'])
+@Authorize
 def check_session():
     return routes_get.check_session(request, sse)
 
@@ -223,117 +238,127 @@ def edit_event(event_id):
     return routes_get.edit_event(request, sse, event_id)
 
 
-@Authorize
+
 @app.route('/get/account/<username>', methods=['GET'])
+@Authorize
 def get_account_by_username(username):
     return routes_get.get_account_by_username(request, sse, username)
 
 
-@Authorize
+
 @app.route('/get/event/<int:event_id>', methods=['GET'])
+@Authorize
 def get_event(event_id):
     return routes_get.get_event(request, sse, event_id)
 
 
-@Authorize
+
 @app.route('/venue/<int:account_id>/events/<int:event_id>', methods=['GET'])
+@Authorize
 def get_venue_events(account_id, event_id):
     return routes_get.get_venue_events(request, sse, account_id, event_id)
 
 
-@Authorize
+
 @app.route('/artist/<int:account_id>/shows/<int:event_performer_id>', methods=['GET'])
+@Authorize
 def get_artist_shows(account_id, event_performer_id):
     return routes_get.get_artist_shows(request, sse, account_id, event_performer_id)
 
 
-@Authorize
+
 @app.route('/user/<int:account_id>/attending/<int:attend_id>', methods=['GET'])
+@Authorize
 def get_user_attending(account_id, attend_id):
     return routes_get.get_user_attending(request, sse, account_id, attend_id)
 
 
-@Authorize
+
 @app.route('/accounts/<int:account_id>/notifications/<int:notification_id>', methods=['GET'])
+@Authorize
 def get_account_notifications(account_id, notification_id):
     return routes_get.get_account_notifications(request, sse, account_id, notification_id)
 
 
-@Authorize
-@SessionRequired
+
 @app.route('/event/<int:event_id>/account_like/<int:account_id>', methods=['GET'])
+@AuthorizeSessionRequired
 def check_event_account_like(event_id, account_id):
     return routes_get.check_event_account_like(request, sse, event_id, account_id)
 
 
-@Authorize
-@SessionRequired
+
 @app.route('/comment/<int:comment_id>/account_like/<int:account_id>', methods=['GET'])
+@AuthorizeSessionRequired
 def check_comment_account_like(comment_id, account_id):
     return routes_get.check_comment_account_like(request, sse, comment_id, account_id)
 
 
-@Authorize
-@SessionRequired
+
 @app.route('/accounts/<int:account_id>/following', methods=['GET'])
+@AuthorizeSessionRequired
 def check_account_follow(account_id):
     return routes_get.check_account_follow(request, sse, account_id)
 
 
 # the comment_id is used as a starting point for the query:
 # filter comments by IDs greater than the comment id given
-@Authorize
 @app.route('/event/<int:event_id>/comments/<int:comment_id>', methods=['GET'])
+@Authorize
 def get_event_comments(event_id, comment_id):
     return routes_get.get_event_comments(request, sse, event_id, comment_id)
 
 
-@Authorize
+
 @app.route('/search/events/<search_type>/<search_query>', methods=['GET'])
+@Authorize
 def search_events(search_type, search_query):
     return routes_get.search_events(request, sse, search_type, search_query)
 
 
-@Authorize
+
 @app.route('/search/venues/<search_type>/<search_query>', methods=['GET'])
+@Authorize
 def search_venues(search_type, search_query):
     return routes_get.search_venues(request, sse, search_type, search_query)
 
 
-@Authorize
+
 @app.route('/search/artists/<search_type>/<search_query>', methods=['GET'])
+@Authorize
 def search_artists(search_type, search_query):
     return routes_get.search_artists(request, sse, search_type, search_query)
 
 
-@Authorize
+
 @app.route('/search/users/<search_type>/<search_query>', methods=['GET'])
+@Authorize
 def search_users(search_type, search_query):
     return routes_get.search_users(request, sse, search_type, search_query)
 
 
 
 
-@Authorize
 @app.route('/get/random/events', methods=['GET'])
+@Authorize
 def get_random_events():
     return routes_get.get_random_events(request, sse)
 
 
-@Authorize
 @app.route('/get/random/venues', methods=['GET'])
+@Authorize
 def get_random_venues():
     return routes_get.get_random_venues(request, sse)
 
 
-@Authorize
 @app.route('/get/random/artists', methods=['GET'])
+@Authorize
 def get_random_artists():
     return routes_get.get_random_artists(request, sse)
 
 
-@Authorize
 @app.route('/get/random/users', methods=['GET'])
+@Authorize
 def get_random_users():
     return routes_get.get_random_users(request, sse)
 
@@ -343,43 +368,43 @@ def get_random_users():
 
 
 
-@Authorize
+
 @app.route('/signup', methods=['POST'])
+@Authorize
 def signup_post():
     return routes_post.signup(request, sse)
 
 
-@Authorize
-@SessionRequired
+
 @app.route('/venue/create_event', methods=['POST'])
+@AuthorizeSessionRequired
 def create_event_post():
     return routes_post.create_event(request, sse)
 
 
-@Authorize
-@SessionRequired
+
 @app.route('/event/<int:event_id>/create_comment', methods=['POST'])
+@AuthorizeSessionRequired
 def create_event_comment(event_id):
     return routes_post.create_event_comment(request, sse, event_id)
 
 
-@Authorize
-@SessionRequired
+
 @app.route('/event/<int:event_id>/toggle_like', methods=['POST'])
+@AuthorizeSessionRequired
 def toggle_event_like(event_id):
     return routes_post.toggle_event_like(request, sse, event_id)
 
 
-@Authorize
-@SessionRequired
 @app.route('/comment/<int:comment_id>/toggle_like', methods=['POST'])
+@AuthorizeSessionRequired
 def toggle_comment_like(comment_id):
     return routes_post.toggle_comment_like(request, sse, comment_id)
 
 
-@Authorize
-@SessionRequired
+
 @app.route('/accounts/<int:account_id>/toggle_follow', methods=['POST'])
+@AuthorizeSessionRequired
 def toggle_account_follow(account_id):
     return routes_post.toggle_account_follow(request, sse, account_id)
 
@@ -390,79 +415,79 @@ def toggle_account_follow(account_id):
 
 
 
-@Authorize
+
 @app.route('/signin', methods=['PUT'])
+@Authorize
 def signin_put():
     return routes_put.signin(request, sse)
 
 
 
-@Authorize
-@SessionRequired
 @app.route('/account/update_info', methods=['PUT'])
+@AuthorizeSessionRequired
 def update_info():
     return routes_put.update_info(request, sse)
 
 
-@Authorize
-@SessionRequired
+
 @app.route('/account/update_icon', methods=['PUT'])
+@AuthorizeSessionRequired
 def update_icon():
     return routes_put.update_icon(request, sse)
 
 
-@Authorize
-@SessionRequired
+
 @app.route('/account/update_background', methods=['PUT'])
+@AuthorizeSessionRequired
 def update_background():
     return routes_put.update_background(request, sse)
 
 
-@Authorize
-@SessionRequired
+
 @app.route('/account/update_social', methods=['PUT'])
+@AuthorizeSessionRequired
 def update_social():
     return routes_put.update_social(request, sse)
 
 
-@Authorize
-@SessionRequired
+
 @app.route('/account/update_username', methods=['PUT'])
+@AuthorizeSessionRequired
 def update_username():
     return routes_put.update_username(request, sse)
 
 
-@Authorize
-@SessionRequired
+
 @app.route('/account/update_account_email', methods=['PUT'])
+@AuthorizeSessionRequired
 def update_account_email():
     return routes_put.update_account_email(request, sse)
 
 
-@Authorize
-@SessionRequired
+
 @app.route('/account/update_booking_email', methods=['PUT'])
+@AuthorizeSessionRequired
 def update_booking_email():
     return routes_put.update_booking_email(request, sse)
 
 
-@Authorize
-@SessionRequired
+
 @app.route('/account/update_password', methods=['PUT'])
+@AuthorizeSessionRequired
 def update_password():
     return routes_put.update_password(request, sse)
 
 
-@Authorize
-@SessionRequired
+
 @app.route('/event/<int:event_id>/update', methods=['PUT'])
+@AuthorizeSessionRequired
 def update_event(event_id):
     return routes_put.update_event(request, sse, event_id)
 
 
-@Authorize
-@SessionRequired
+
 @app.route('/comment/<int:comment_id>/edit', methods=['PUT'])
+@AuthorizeSessionRequired
 def edit_comment(comment_id):
     return routes_put.edit_comment(request, sse, comment_id)
 
@@ -473,23 +498,23 @@ def edit_comment(comment_id):
 
 
 
-@Authorize
-@SessionRequired
+
 @app.route('/account/delete', methods=['DELETE'])
+@AuthorizeSessionRequired
 def delete_account():
     return routes_delete.delete_account(request, sse)
 
 
-@Authorize
-@SessionRequired
+
 @app.route('/event/<int:event_id>/delete', methods=['DELETE'])
+@AuthorizeSessionRequired
 def delete_event(event_id):
     return routes_delete.delete_event(request, sse, event_id)
 
 
-@Authorize
-@SessionRequired
+
 @app.route('/comment/<int:comment_id>/delete', methods=['DELETE'])
+@AuthorizeSessionRequired
 def delete_comment(comment_id):
     return routes_delete.delete_comment(request, sse, comment_id)
 
@@ -499,6 +524,25 @@ def delete_comment(comment_id):
 
 
 
+
+@app.route('/api/get/random/events', methods=['GET'])
+def api_get_random_events():
+    return routes_get.get_random_events(request, sse)
+
+
+@app.route('/api/get/random/venues', methods=['GET'])
+def api_get_random_venues():
+    return routes_get.get_random_venues(request, sse)
+
+
+@app.route('/api/get/random/artists', methods=['GET'])
+def api_get_random_artists():
+    return routes_get.get_random_artists(request, sse)
+
+
+@app.route('/api/get/random/users', methods=['GET'])
+def api_get_random_users():
+    return routes_get.get_random_users(request, sse)
 
 
 

@@ -95,14 +95,14 @@ ko.components.register('comment-widget', {
           <div> \
             <comment-likes-widget params="comment_likes: comment_likes(), comment_id: comment_id(), you_id: you_id(), signed_in: signed_in()"></comment-likes-widget> \
           </div> \
-          <div data-bind="visible: signed_in() && show_editor() === true"> \
+          <div data-bind="if: signed_in() && show_editor() === true"> \
             <div class="row"> \
               <div class="input-field col s12"> \
                 <input placeholder="Write a comment" data-bind="textInput: edit_text, event: { keyup: keyListener }" > \
               </div> \
             </div> \
           </div> \
-          <div data-bind="visible: signed_in() && you_id() === owner_id()"> \
+          <div data-bind="if: signed_in() && you_id() === owner_id()"> \
             <br/> \
             <span class="action-item transition cursor-class" data-bind="click: toggle_show_editor"><i class="far fa-edit"></i> edit</span> | \
             <span class="action-item transition cursor-class" data-bind="click: delete_comment"><i class="far fa-times-circle"></i> delete</span> \

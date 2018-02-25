@@ -96,17 +96,17 @@ ko.components.register('comments-list-widget', {
     },
     template:
         '<div class="">\
-            <span data-bind="visible: commentsLength() > 0"> \
+            <span data-bind="if: commentsLength() > 0"> \
               <i class="fas fa-comment"></i> \
             </span> \
-            <span data-bind="visible: commentsLength() == 0"> \
+            <span data-bind="if: commentsLength() == 0"> \
               <i class="far fa-comment"></i> \
             </span> \
             <span data-bind="text: commentsLength"></span> | <span class="info-text cursor-class" data-bind="click: toggle_comments_view">hide/show comments</span> \
             <br/> \
             <div data-bind="visible: hide_comments() === false"> \
               <br/> \
-              <div data-bind="visible: signed_in() === true"> \
+              <div data-bind="if: signed_in() === true"> \
                 <div class="row"> \
                   <div class="input-field col s12"> \
                     <input placeholder="Write a comment" data-bind="textInput: comment_text, event: { keyup: keyListener }" > \
@@ -117,7 +117,7 @@ ko.components.register('comments-list-widget', {
                 <comment-widget params="parent: $parent, comment: $data, you_id: $parent.you_id(), signed_in: $parent.signed_in()"></comment-widget>\
               </div> \
               <br/> \
-              <div data-bind="visible: end() == false"> \
+              <div data-bind="if: end() == false"> \
                 <p><a data-bind="click: get_event_comments">Load more comments</a></p>\
               </div> \
             </div> \

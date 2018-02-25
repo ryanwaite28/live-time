@@ -59,7 +59,7 @@
                         </a>
                       </div>
                     </div>
-                    <p class="text-center text-white" data-bind="visible: $parent.signed_in() === true && $parent.you().id != $data.host_rel.id">
+                    <p class="text-center text-white" data-bind="if: $parent.signed_in() === true && $parent.you().id != $data.host_rel.id">
                       <follow-widget params="root: $root, parent: $parent, account_id: $data.host_rel.id"></follow-widget>
                     </p>
                   </div>
@@ -113,7 +113,7 @@
                         </a>
                       </div>
                     </div>
-                    <p class="text-center text-white" data-bind="visible: $parent.signed_in() === true && $parent.you().id != $data.id">
+                    <p class="text-center text-white" data-bind="if: $parent.signed_in() === true && $parent.you().id != $data.id">
                       <follow-widget params="root: $root, parent: $parent, account_id: $data.id"></follow-widget>
                     </p>
                   </div>
@@ -167,7 +167,7 @@
                         </a>
                       </div>
                     </div>
-                    <p class="text-center text-white" data-bind="visible: $parent.signed_in() === true && $parent.you().id != $data.id">
+                    <p class="text-center text-white" data-bind="if: $parent.signed_in() === true && $parent.you().id != $data.id">
                       <follow-widget params="root: $root, parent: $parent, account_id: $data.id"></follow-widget>
                     </p>
                   </div>
@@ -221,7 +221,7 @@
                         </a>
                       </div>
                     </div>
-                    <p class="text-center text-white" data-bind="visible: $parent.signed_in() === true && $parent.you().id != $data.id">
+                    <p class="text-center text-white" data-bind="if: $parent.signed_in() === true && $parent.you().id != $data.id">
                       <follow-widget params="root: $root, parent: $parent, account_id: $data.id"></follow-widget>
                     </p>
                   </div>

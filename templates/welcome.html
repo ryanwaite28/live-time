@@ -48,7 +48,7 @@
             <p class="text-center">
               <b>Events</b>
               <br/>
-              <span data-bind="visible: randomEvents().length == 0"><span>None Right Now...</span></span>
+              <span data-bind="if: randomEvents().length == 0"><span>None Right Now...</span></span>
             </p>
           </div>
           <div class="card-action ovf-h" data-bind="foreach: randomEvents">
@@ -72,7 +72,7 @@
                       </a>
                     </div>
                   </div>
-                  <p class="text-center text-white" data-bind="visible: $parent.signed_in() === true && $parent.you().id != $data.host_rel.id">
+                  <p class="text-center text-white" data-bind="if: $parent.signed_in() === true && $parent.you().id != $data.host_rel.id">
                     <follow-widget params="root: $root, parent: $parent, account_id: $data.host_rel.id"></follow-widget>
                   </p>
                 </div>
@@ -88,7 +88,7 @@
             <p class="text-center">
               <b>Venues</b>
               <br/>
-              <span data-bind="visible: randomVenues().length == 0"><span>None Right Now...</span></span>
+              <span data-bind="if: randomVenues().length == 0"><span>None Right Now...</span></span>
             </p>
           </div>
           <div class="card-action ovf-h" data-bind="foreach: randomVenues">
@@ -104,7 +104,7 @@
                       </a>
                     </div>
                   </div>
-                  <p class="text-center text-white" data-bind="visible: $parent.signed_in() === true && $parent.you().id != $data.id">
+                  <p class="text-center text-white" data-bind="if: $parent.signed_in() === true && $parent.you().id != $data.id">
                     <follow-widget params="root: $root, parent: $parent, account_id: $data.id"></follow-widget>
                   </p>
                 </div>
@@ -120,7 +120,7 @@
             <p class="text-center">
               <b>Artists</b>
               <br/>
-              <span data-bind="visible: randomArtists().length == 0"><span>None Right Now...</span></span>
+              <span data-bind="if: randomArtists().length == 0"><span>None Right Now...</span></span>
             </p>
           </div>
           <div class="card-action ovf-h" data-bind="foreach: randomArtists">
@@ -136,7 +136,7 @@
                       </a>
                     </div>
                   </div>
-                  <p class="text-center text-white" data-bind="visible: $parent.signed_in() === true && $parent.you().id != $data.id">
+                  <p class="text-center text-white" data-bind="if: $parent.signed_in() === true && $parent.you().id != $data.id">
                     <follow-widget params="root: $root, parent: $parent, account_id: $data.id"></follow-widget>
                   </p>
                 </div>

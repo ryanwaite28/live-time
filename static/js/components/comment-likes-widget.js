@@ -65,10 +65,10 @@ ko.components.register('comment-likes-widget', {
     },
     template:
         '<div class="">\
-            <span class="cursor-class" data-bind="click: toggle_like, visible: liked()"> \
+            <span class="cursor-class" data-bind="click: toggle_like, if: liked()"> \
               <i class="fas fa-heart"></i> \
             </span> \
-            <span class="cursor-class" data-bind="click: toggle_like, visible: !liked()"> \
+            <span class="cursor-class" data-bind="click: toggle_like, if: !liked()"> \
               <i class="far fa-heart"></i> \
             </span> \
             <span data-bind="text: likesLength"></span>\

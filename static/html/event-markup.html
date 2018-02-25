@@ -40,7 +40,7 @@
       </p>
     </div>
 
-    <div data-bind="visible: signed_in() && you_id() === event().host_id">
+    <div data-bind="if: signed_in() && you_id() === event().host_id">
       <div class="card-action">
         <a data-bind="attr: { title: 'Edit Event', href: '/event/' + event().id + '/edit' }">
           <button class="blue btn waves-effect waves-light" type="button" name="action">

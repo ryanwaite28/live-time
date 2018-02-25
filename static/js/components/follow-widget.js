@@ -57,10 +57,10 @@ ko.components.register('follow-widget', {
     },
     template:
         '<div>\
-            <span class="cursor-class" data-bind="click: toggle_follow, visible: following()"> \
+            <span class="cursor-class" data-bind="click: toggle_follow, if: following()"> \
               <i class="fas fa-star"></i> \
             </span> \
-            <span class="cursor-class" data-bind="click: toggle_follow, visible: !following()"> \
+            <span class="cursor-class" data-bind="click: toggle_follow, if: !following()"> \
               <i class="far fa-star"></i> \
             </span> \
             <span data-bind="text: following() === true ? \'Following\' : \'Follow\'"></span> \
