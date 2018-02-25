@@ -164,8 +164,8 @@ def check_session():
 
 
 @app.route('/profile', methods=['GET'])
-def profile():
-    return routes_get.profile(request, sse)
+def profile_page():
+    return routes_get.profile_page(request, sse)
 
 
 @app.route('/account_settings', methods=['GET'])

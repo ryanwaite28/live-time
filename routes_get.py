@@ -276,12 +276,20 @@ def check_auth(request, sse):
         return jsonify(auth = False, message = 'client is NOT authorized')
 
 
-def profile(request, sse):
+def profile_page(request, sse):
     if 'session_id' not in user_session:
         return redirect('/')
 
     user_session['auth_key'] = uniqueValue()
     return render_template('profile.html', session = logged_in())
+
+
+def notifications_page(request, sse):
+    if 'session_id' not in user_session:
+        return redirect('/')
+
+    user_session['auth_key'] = uniqueValue()
+    return render_template('notifications-page.html', session = logged_in())
 
 
 def account_settings(request, sse):
