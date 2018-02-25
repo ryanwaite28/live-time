@@ -1,3 +1,8 @@
+// run command
+gunicorn app:app --worker-class gevent --bind 127.0.0.1:5000
+
+
+
 convoCheck = session.query(Conversations) \
     .filter( (Conversations.userA_id==you.id) | (Conversations.userB_id==you.id) ) \
     .filter( (Conversations.userA_id==user.id) | (Conversations.userB_id==user.id) ).first()
@@ -29,3 +34,39 @@ convoCheck = session.query(Conversations) \
 
 // event: hide/show performers markup
 | <span class="info-text cursor-class" data-bind="click: toggle_performers_view">hide/show performers</span>
+
+
+
+// event stream samples - client-side
+
+<script>
+  var source = new EventSource("/stream");
+  source.onopen = function() {
+    console.log("Connection to server opened.");
+  };
+  source.addEventListener('greeting', function(event) {
+    var data = JSON.parse(event.data);
+    alert("The server says " + data.message);
+  }, false);
+  source.addEventListener('error', function(event) {
+    console.log(event);
+    // alert("Failed to connect to event stream. Is Redis running?");
+  }, false);
+</script>
+
+
+
+// event stream samples - server side (python)
+
+def event_stream():
+    pubsub = red.pubsub()
+    pubsub.subscribe('chat')
+    # TODO: handle client disconnection.
+    for message in pubsub.listen():
+        print message
+        yield 'data: %s\n\n' % message['data']
+
+@app.route('/stream')
+def stream():
+    return flask.Response(event_stream(),
+                          mimetype="text/event-stream")
