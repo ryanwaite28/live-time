@@ -26,6 +26,9 @@ svg.fa-comment {
 svg.fa-star {
 	color: #ffee58;
 }
+svg.fa-user {
+	color: #66BB6A;
+}
 
 nav {
   padding: 0px 20px;
@@ -171,4 +174,11 @@ nav {
 .container {
 	padding-left: 10px;
 	padding-right: 10px;
+}
+
+.text-color-red {
+	color: red;
+}
+.text-color-green {
+	color: #66BB6A;
 }

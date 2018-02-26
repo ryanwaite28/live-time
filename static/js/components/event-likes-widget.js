@@ -70,6 +70,6 @@ ko.components.register('event-like-widget', {
             <span data-bind="click: toggle_like, if: !liked()"> \
               <i class="far fa-heart"></i> \
             </span> \
-            <span data-bind="text: likesLength"></span>\
+            <span data-bind="text: likesLength"></span> | Likes \
         </div>'
 });

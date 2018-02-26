@@ -56,9 +56,11 @@
               <div class="row fill background-box-3" data-bind="style: { 'background-image': 'url(' + $data.icon + ')' }">
                 <div class="dim"></div>
                 <div class="col s12 pos-rel">
+                  <p class="text-center text-white">
+                    <b><span data-bind="text: $data.title.length <= 15 ? $data.title : $data.title.substr(0,15) + '...'"></span></b>
+                  </p>
                   <div class="center-1">
                     <div class="chip">
-                      <b><span data-bind="text: $data.title"></span></b> |
                       <a style="text-transform: none;	color: #039be5; margin-right: 0px;" data-bind="attr: { title: $data.title, href: '/event/' + $data.id }">
                         <b><span data-bind="">Event Page</span></b>
                       </a>
@@ -68,7 +70,7 @@
                     <div class="chip">
                       <img data-bind="attr: { alt: $data.host_rel.username, src: $data.host_rel.icon }">
                       <a style="text-transform: none;	color: #039be5; margin-right: 0px;" data-bind="attr: { title: $data.host_rel.username, href: '/accounts/' + $data.host_rel.username }">
-                        <b><span data-bind="text: $data.host_rel.username"></span></b>
+                        <b><span data-bind="text: $data.host_rel.username.length <= 15 ? $data.host_rel.username : $data.host_rel.username.substr(0,15) + '...'"></span></b>
                       </a>
                     </div>
                   </div>
@@ -100,7 +102,7 @@
                   <div class="center-1">
                     <div class="chip">
                       <a style="text-transform: none;	color: #039be5; margin-right: 0px;" data-bind="attr: { title: $data.username, href: '/accounts/' + $data.username }">
-                        <b><span data-bind="text: $data.username"></span></b>
+                        <b><span data-bind="text: $data.username.length <= 15 ? $data.username : $data.username.substr(0,15) + '...'"></span></b>
                       </a>
                     </div>
                   </div>
@@ -132,7 +134,39 @@
                   <div class="center-1">
                     <div class="chip">
                       <a style="text-transform: none;	color: #039be5; margin-right: 0px;" data-bind="attr: { title: $data.username, href: '/accounts/' + $data.username }">
-                        <b><span data-bind="text: $data.username"></span></b>
+                        <b><span data-bind="text: $data.username.length <= 15 ? $data.username : $data.username.substr(0,15) + '...'"></span></b>
+                      </a>
+                    </div>
+                  </div>
+                  <p class="text-center text-white" data-bind="if: $parent.signed_in() === true && $parent.you().id != $data.id">
+                    <follow-widget params="root: $root, parent: $parent, account_id: $data.id"></follow-widget>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="card">
+          <div class="card-content">
+            <p class="text-center">
+              <b>Users</b>
+              <br/>
+              <span data-bind="if: randomUsers().length == 0"><span>None Right Now...</span></span>
+            </p>
+          </div>
+          <div class="card-action ovf-h" data-bind="foreach: randomUsers">
+            <div class="col s12 m6">
+              <div class="row fill background-box-2" data-bind="style: { 'background-image': 'url(' + $data.background + ')' }">
+                <div class="dim"></div>
+                <div class="col s12 pos-rel">
+                  <img class="middlr img-frame-1" data-bind="attr: { src: $data.icon }"/>
+                  <div class="center-1">
+                    <div class="chip">
+                      <a style="text-transform: none;	color: #039be5; margin-right: 0px;" data-bind="attr: { title: $data.username, href: '/accounts/' + $data.username }">
+                        <b><span data-bind="text: $data.username.length <= 15 ? $data.username : $data.username.substr(0,15) + '...'"></span></b>
                       </a>
                     </div>
                   </div>

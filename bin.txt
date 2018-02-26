@@ -1,5 +1,5 @@
 // run command
-gunicorn app:app --worker-class gevent --bind 127.0.0.1:5000
+gunicorn app:app --worker-class gevent --reload --bind 127.0.0.1:5000
 
 
 

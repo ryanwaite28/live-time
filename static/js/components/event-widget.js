@@ -12,12 +12,14 @@ ko.components.register('event-widget', {
       self.event = ko.observable(params.event || {});
 
       self.event_id = ko.observable(params.event.id);
+
       self.event_likes = ko.observable(params.event.likes);
+      self.event_attending = ko.observable(params.event.attending);
       self.event_comments = ko.observable(params.event.comments);
 
       self.commentsLength = ko.observable(params.event.comments);
       self.performers = ko.observableArray(params.event.performers);
-      self.attending = ko.observableArray(params.event.attending);
+      self.attending = ko.observable(params.event.attending);
 
       self.hide_performers = ko.observable(true);
 

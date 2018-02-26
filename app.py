@@ -281,7 +281,7 @@ def get_account_notifications(account_id, notification_id):
 
 
 
-@app.route('/event/<int:event_id>/account_like/<int:account_id>', methods=['GET'])
+@app.route('/events/<int:event_id>/account_like/<int:account_id>', methods=['GET'])
 @AuthorizeSessionRequired
 def check_event_account_like(event_id, account_id):
     return routes_get.check_event_account_like(request, sse, event_id, account_id)
@@ -299,6 +299,12 @@ def check_comment_account_like(comment_id, account_id):
 @AuthorizeSessionRequired
 def check_account_follow(account_id):
     return routes_get.check_account_follow(request, sse, account_id)
+
+
+@app.route('/events/<int:event_id>/attending', methods=['GET'])
+@AuthorizeSessionRequired
+def check_event_attending(event_id):
+    return routes_get.check_event_attending(request, sse, event_id)
 
 
 # the comment_id is used as a starting point for the query:
@@ -394,6 +400,12 @@ def create_event_comment(event_id):
 @AuthorizeSessionRequired
 def toggle_event_like(event_id):
     return routes_post.toggle_event_like(request, sse, event_id)
+
+
+@app.route('/event/<int:event_id>/toggle_attending', methods=['POST'])
+@AuthorizeSessionRequired
+def toggle_event_attending(event_id):
+    return routes_post.toggle_event_attending(request, sse, event_id)
 
 
 @app.route('/comment/<int:comment_id>/toggle_like', methods=['POST'])

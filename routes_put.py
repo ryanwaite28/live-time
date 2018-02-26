@@ -72,6 +72,7 @@ def signin(request, sse):
         session_id                     = chamber.uniqueValue()
         user_session['session_id']     = session_id
         user_session['account_id']     = account.id
+        user_session['account_type']   = account.type
 
         return jsonify(account = account.serialize, message = 'Signed In!')
 

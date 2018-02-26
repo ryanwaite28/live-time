@@ -86,6 +86,7 @@ def signup(request, sse):
         session_id                     = chamber.uniqueValue()
         user_session['session_id']     = session_id
         user_session['account_id']     = new_account.id
+        user_session['account_type']   = new_account.type
 
         return jsonify(account = new_account.serialize, message = 'Signed Up!')
 
@@ -179,7 +180,6 @@ def toggle_event_like(request, sse, event_id):
         .first()
 
         if check_notification:
-            print()
             db_session.delete(check_notification)
 
         db_session.commit()
@@ -207,6 +207,61 @@ def toggle_event_like(request, sse, event_id):
             sse.publish({"message": message, "for_id": like.event_rel.host_id}, type='action')
 
         return jsonify(message = 'liked', liked = True)
+
+
+
+def toggle_event_attending(request, sse, event_id):
+    if user_session['account_type'] != 'USER':
+        return jsonify(error = True, message = 'current account is not of type: USER')
+
+    event = db_session.query(Events).filter_by(id = event_id).first()
+    if not event:
+        return jsonify(error = True, message = 'event not found')
+
+    attending = db_session.query(EventAttendees) \
+    .filter_by(event_id = event_id) \
+    .filter_by(account_id = user_session['account_id']) \
+    .first()
+
+    if attending:
+        db_session.delete(attending)
+
+        check_notification = db_session.query(Notifications) \
+        .filter(Notifications.action == ACTION_TYPES['EVENT_ATTENDING']) \
+        .filter(Notifications.target_type == TARGET_TYPES['EVENT']) \
+        .filter(Notifications.target_id == attending.event_id) \
+        .filter(Notifications.from_id == user_session['account_id']) \
+        .filter(Notifications.account_id == attending.event_rel.host_id) \
+        .first()
+
+        if check_notification:
+            db_session.delete(check_notification)
+
+        db_session.commit()
+
+        return jsonify(message = 'not attending', attending = False)
+
+    else:
+        attending = EventAttendees(event_id = event_id, account_id = user_session['account_id'])
+        db_session.add(attending)
+        db_session.commit()
+
+        if attending.event_rel.host_id != user_session['account_id']:
+            you = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
+
+            message = you.username + ' is attending your event: ' + attending.event_rel.title
+
+            new_notification = Notifications(action = ACTION_TYPES['EVENT_ATTENDING'],
+                target_type = TARGET_TYPES['EVENT'], target_id = attending.event_id ,
+                from_id = user_session['account_id'], account_id = attending.event_rel.host_id,
+                message = message, link = '/event/' + str(event_id))
+
+            db_session.add(new_notification)
+            db_session.commit()
+
+            sse.publish({"message": message, "for_id": attending.event_rel.host_id}, type='action')
+
+        return jsonify(message = 'attending', attending = True)
 
 
 def toggle_comment_like(request, sse, comment_id):

@@ -92,8 +92,7 @@ def profile_events(request, sse):
     if 'session_id' not in user_session:
         return render_template('error-page.html', session = logged_in(), message = 'Not logged in...')
 
-    you = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
-    if you.type != 'VENUE':
+    if user_session['account_type'] != 'VENUE':
         message = '''Your account is not of type: VENUE.
         Only Venues can have events.'''
         return render_template('error-page.html', session = logged_in(), message = message)
@@ -107,8 +106,7 @@ def profile_shows(request, sse):
     if 'session_id' not in user_session:
         return render_template('error-page.html', session = logged_in(), message = 'Not logged in...')
 
-    you = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
-    if you.type != 'ARTIST':
+    if user_session['account_type'] != 'ARTIST':
         message = '''Your account is not of type: ARTIST.
         Only Artists can have shows.'''
         return render_template('error-page.html', session = logged_in(), message = message)
@@ -122,8 +120,7 @@ def profile_attending(request, sse):
     if 'session_id' not in user_session:
         return render_template('error-page.html', session = logged_in(), message = 'Not logged in...')
 
-    you = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
-    if you.type != 'USER':
+    if user_session['account_type'] != 'USER':
         message = '''Your account is not of type: USER.
         Only Users can attend events.'''
         return render_template('error-page.html', session = logged_in(), message = message)
@@ -211,8 +208,7 @@ def create_event(request, sse):
     if 'session_id' not in user_session:
         return render_template('error-page.html', session = logged_in(), message = 'Not logged in...')
 
-    you = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
-    if you.type != 'VENUE':
+    if user_session['account_type'] != 'VENUE':
         message = '''Your account is not of type: VENUE.
         Only Venues can create events.'''
         return render_template('error-page.html', session = logged_in(), message = message)
@@ -434,6 +430,25 @@ def check_account_follow(request, sse, account_id):
         return jsonify(message = 'following', following = True)
     else:
         return jsonify(message = 'not following', following = False)
+
+
+def check_event_attending(request, sse, event_id):
+    if 'session_id' not in user_session:
+        return jsonify(error = True, message = 'no current session')
+
+    event = db_session.query(Events).filter_by(id = event_id).first()
+    if event == None:
+        return jsonify(error = True, message = 'no event found by id: ' + str(event_id))
+
+    check = db_session.query(EventAttendees) \
+    .filter_by(account_id = user_session['account_id']) \
+    .filter_by(event_id = event_id) \
+    .first()
+
+    if check:
+        return jsonify(message = 'attending', attending = True)
+    else:
+        return jsonify(message = 'not attending', attending = False)
 
 
 def get_event_comments(request, sse, event_id, comment_id):

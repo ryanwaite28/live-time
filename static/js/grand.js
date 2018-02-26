@@ -51,7 +51,7 @@ ko.components.loaders.unshift(viewModelCustomLoader);
 /* --- */
 
 const validateUsername = function(username) {
-  var re = /^[a-z0-9\-\_\.]{3,}$/;
+  var re = /^[a-z0-9\-\_\.]{3,24}$/;
   return re.test(username.toLowerCase());
 }
 

@@ -143,7 +143,7 @@ const Get = function() {
 
   self.check_event_account_like = function(event_id, account_id) {
     return new Promise(function(resolve, reject){
-      fetch('/event/' + event_id + '/account_like/' + account_id, {method: "GET", credentials: "include"})
+      fetch('/events/' + event_id + '/account_like/' + account_id, {method: "GET", credentials: "include"})
       .then(function(resp){ return resp.json() })
       .then(function(json){ return resolve(json); })
       .catch(function(error){ return reject(error) })
@@ -162,6 +162,15 @@ const Get = function() {
   self.check_account_follow = function(account_id) {
     return new Promise(function(resolve, reject){
       fetch('/accounts/' + account_id + '/following', {method: "GET", credentials: "include"})
+      .then(function(resp){ return resp.json() })
+      .then(function(json){ return resolve(json); })
+      .catch(function(error){ return reject(error) })
+    });
+  }
+
+  self.check_event_attending = function(event_id) {
+    return new Promise(function(resolve, reject){
+      fetch('/events/' + event_id + '/attending', {method: "GET", credentials: "include"})
       .then(function(resp){ return resp.json() })
       .then(function(json){ return resolve(json); })
       .catch(function(error){ return reject(error) })

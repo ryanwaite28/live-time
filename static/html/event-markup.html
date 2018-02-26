@@ -64,14 +64,13 @@
       </div>
     </div>
     <div class="card-action">
-      <span data-bind="">
-        <i class="fas fa-user"></i>
-      </span>
-      <span data-bind="text: attending().length"></span> | Users Attending
+      <div data-bind="">
+        <user-event-attending-widget params="root: $root, parent: $parent, event: event(), event_attending: event_attending(), event_id: event_id(), you_id: you_id(), signed_in: signed_in()"></user-event-attending-widget>
+      </div>
     </div>
     <div class="card-action">
       <div data-bind="">
-        <event-like-widget params="parent: $parent, event: event(), event_likes: event_likes(), event_id: event_id(), you_id: you_id(), signed_in: signed_in()"></event-like-widget>
+        <event-like-widget params="root: $root, parent: $parent, event: event(), event_likes: event_likes(), event_id: event_id(), you_id: you_id(), signed_in: signed_in()"></event-like-widget>
       </div>
     </div>
     <div class="card-action">

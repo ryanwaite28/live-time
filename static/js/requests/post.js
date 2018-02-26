@@ -50,6 +50,15 @@ const Post = function() {
     });
   }
 
+  self.toggle_event_attending = function(event_id) {
+    return new Promise(function(resolve, reject){
+      fetch('/event/' + event_id + '/toggle_attending', {method: "POST", credentials: "include"})
+      .then(function(resp){ return resp.json() })
+      .then(function(json){ return resolve(json); })
+      .catch(function(error){ return reject(error) })
+    });
+  }
+
   self.toggle_event_like = function(event_id) {
     return new Promise(function(resolve, reject){
       fetch('/event/' + event_id + '/toggle_like', {method: "POST", credentials: "include"})
