@@ -33,7 +33,7 @@
     self.get_account_notifications = function() {
       disable_buttons();
 
-      GET.get_account_notifications(self.you().id, self.min_notification_id)
+      GET.get_account_notifications(self.min_notification_id)
       .then(function(resp){
         console.log(resp);
         enable_buttons();
@@ -60,6 +60,26 @@
         console.log(error);
       })
     }
+
+    // Listen for new notes
+
+    var source = new EventSource("/stream");
+
+    source.onopen = function() {
+      console.log("Listening for new messages...");
+    };
+
+    source.addEventListener('action', function(event) {
+      var data = JSON.parse(event.data);
+      console.log(data);
+      if(data.for_id === self.you().id) {
+        Materialize.toast(data.message, 5000);
+      }
+    }, false);
+
+    source.addEventListener('error', function(event) {
+      console.log(event);
+    }, false);
 
   }
 

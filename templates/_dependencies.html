@@ -39,8 +39,10 @@
 <script src="/static/js/components/comment-widget.js"></script>
 <script src="/static/js/components/comment-likes-widget.js"></script>
 <script src="/static/js/components/account-widget.js"></script>
+<script src="/static/js/components/account-widget-two.js"></script>
 <script src="/static/js/components/follow-widget.js"></script>
 <script src="/static/js/components/user-event-attending-widget.js"></script>
+<script src="/static/js/components/message-widget.js"></script>
 
 
 
@@ -70,53 +72,4 @@
       aftershow: function(){} //Function for after opening timepicker
     });
   });
-</script>
-
-<script>
-  (function(){
-    GET.check_session()
-    .then(function(resp){
-      console.log(resp);
-      var you = resp.account || {};
-      var signed_in = resp.online;
-
-      var source = new EventSource("/stream");
-
-      source.onopen = function() {
-        console.log("Connection to server opened.");
-      };
-
-      source.addEventListener('greeting', function(event) {
-        var data = JSON.parse(event.data);
-        console.log(data);
-      }, false);
-
-      source.addEventListener('message', function(event) {
-        var data = JSON.parse(event.data);
-        console.log(data);
-      }, false);
-
-      // source.addEventListener('notify', function(event) {
-      //   var data = JSON.parse(event.data);
-      //   console.log(data);
-      //   if(data.account_id) {
-      //       if(you.following_ids.indexOf(data.account_id) !== -1) {
-      //         Materialize.toast(data.message, 5000);
-      //       }
-      //   }
-      // }, false);
-
-      source.addEventListener('action', function(event) {
-        var data = JSON.parse(event.data);
-        console.log(data);
-        if(data.for_id === you.id) {
-          Materialize.toast(data.message, 5000);
-        }
-      }, false);
-
-      source.addEventListener('error', function(event) {
-        console.log(event);
-      }, false);
-    });
-  })()
 </script>

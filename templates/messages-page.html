@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  {% include '_dependencies.html' %}
+
+  <title>Live Time | Messages!</title>
+</head>
+
+<body>
+
+  {% if session == True %} {% include 'navbar-2.html' %} {% else %} {% include 'navbar-1.html' %} {% endif %}
+
+  <div class="container middle-box-2">
+    <div class="row">
+      <div class="col s12 m4">
+
+        <div class="card">
+          <div class="card-content">
+            <p class="text-center">Conversations</p>
+            <ul data-bind="foreach: conversationsList">
+              <li class="space-1 cursor-class" data-bind="click: $parent.set_current_conversation">
+                <span>
+                  <account-widget-two params="root: $root, parent: $parent, enableLink: false, account: $data.account_A_id === $parent.you().id ? $data.account_B_rel : $data.account_A_rel"></account-widget-two>
+                </span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col s12 m8" data-bind="if: current_conversation_id() !== null">
+
+        <div class="card">
+          <div class="card-content">
+            <p class="text-center" data-bind="if: account() !== null">
+              <span data-bind="text: account().username"></span>
+            </p>
+          </div>
+          <div class="card-action">
+            <p class="text-center" data-bind="if: end() === false">
+              <button class="blue btn waves-effect waves-light" type="button" name="action" data-bind="click: get_conversation_messages">
+                Load Older Messages
+              </button>
+              <br/>
+            </p>
+
+            <ul class="messages-list" data-bind="foreach: messagesList">
+              <li class="message-item" data-bind="css: { 'your-message': $data.owner_rel.id == $parent.you().id }">
+                <div class="message-box">
+                  <img class="chip-img" data-bind="attr: { alt: $data.owner_rel.username, src: $data.owner_rel.icon }, css: { 'your-message-icon': $data.owner_rel.id == $parent.you().id, 'other-message-text': $data.owner_rel.id != $parent.you().id }">
+                  <div class="message-text-box" data-bind="css: { 'your-message-text': $data.owner_rel.id == $parent.you().id, 'other-message-text': $data.owner_rel.id != $parent.you().id }">
+                    <span class="message-span" data-bind="text: $data.message"></span>
+                    <br/>
+                    <span class="message-span text-grey caption-1" data-bind="text: date_formatter_short($data.date_created)"></span>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="card-action">
+            <div class="row">
+              <div class="input-field col s12">
+                <textarea class="materialize-textarea" placeholder="Enter Message..." id="message_input" type="text" data-bind="textInput: message_input"></textarea>
+              </div>
+
+              <div class="input-field col s12">
+                <p class="text-center">
+                  <button class="blue btn waves-effect waves-light" type="button" name="action" data-bind="click: send_message">Send
+                    <i class="material-icons right">send</i>
+                  </button>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  {% include 'footer.html' %}
+
+  <script src="/static/js/view-models/messages-ctrl.js"></script>
+
+</body>
+
+</html>

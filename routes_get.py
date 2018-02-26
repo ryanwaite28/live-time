@@ -288,6 +288,14 @@ def notifications_page(request, sse):
     return render_template('notifications-page.html', session = logged_in())
 
 
+def messages_page(request, sse):
+    if 'session_id' not in user_session:
+        return redirect('/')
+
+    user_session['auth_key'] = uniqueValue()
+    return render_template('messages-page.html', session = logged_in())
+
+
 def account_settings(request, sse):
     if 'session_id' not in user_session:
         return redirect('/')
@@ -373,23 +381,65 @@ def get_user_attending(request, sse, account_id, attend_id):
 
 
 
-def get_account_notifications(request, sse, account_id, notification_id):
+def get_account_notifications(request, sse, notification_id):
     if notification_id == 0:
         notifications = db_session.query(Notifications) \
-        .filter(Notifications.account_id == account_id) \
+        .filter(Notifications.account_id == user_session['account_id']) \
         .order_by(desc(Notifications.date_created)) \
         .limit(5) \
         .all()
 
     else:
         notifications = db_session.query(Notifications) \
-        .filter(Notifications.account_id == account_id) \
+        .filter(Notifications.account_id == user_session['account_id']) \
         .filter(Notifications.id < notification_id) \
         .order_by(desc(Notifications.date_created)) \
         .limit(5) \
         .all()
 
     return jsonify(message = 'account notifications', notifications = [n.serialize for n in notifications])
+
+
+
+def get_account_conversations(request, sse):
+    try:
+        conversations = db_session.query(Conversations) \
+        .filter( (Conversations.account_A_id == user_session['account_id']) | (Conversations.account_B_id == user_session['account_id']) ) \
+        .order_by(desc(Conversations.last_updated)) \
+        .all()
+
+        return jsonify(message = 'conversations', conversations = [c.serialize for c in conversations])
+
+
+    except Exception as err:
+        print(err)
+        return jsonify(error = True, errorMessage = str(err), message = 'error processing...')
+
+
+
+def get_conversation_messages(request, sse, c_id, cm_id):
+    try:
+        if cm_id == 0:
+            conversation_messages = db_session.query(ConversationMessages) \
+            .filter(ConversationMessages.conversation_id == c_id) \
+            .order_by(desc(ConversationMessages.date_created)) \
+            .limit(5) \
+            .all()
+
+        else:
+            conversation_messages = db_session.query(ConversationMessages) \
+            .filter(ConversationMessages.conversation_id == c_id) \
+            .filter(ConversationMessages.id < cm_id) \
+            .order_by(desc(ConversationMessages.date_created)) \
+            .limit(5) \
+            .all()
+
+        return jsonify(message = 'conversation messages', conversation_messages = [cm.serialize for cm in conversation_messages])
+
+
+    except Exception as err:
+        print(err)
+        return jsonify(error = True, errorMessage = str(err), message = 'error processing...')
 
 
 

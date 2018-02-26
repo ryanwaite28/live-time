@@ -550,6 +550,7 @@ class Conversations(Base):
     account_B_id        = Column(Integer, ForeignKey('accounts.id'))
     account_B_rel       = relationship('Accounts', foreign_keys=[account_B_id])
     date_created        = Column(DateTime, server_default=func.now())
+    last_updated        = Column(DateTime, server_default=func.now())
     unique_value        = Column(String, default = uniqueValue)
     messages_rel        = relationship('ConversationMessages', cascade='delete, delete-orphan', backref="ConversationMessages")
 
@@ -562,6 +563,7 @@ class Conversations(Base):
             'account_B_id': self.account_B_id,
             'account_B_rel': self.account_B_rel.serialize,
             'date_created': str(self.date_created),
+            'last_updated': str(self.last_updated),
             'unique_value': self.unique_value
         }
 
@@ -583,7 +585,7 @@ class ConversationMessages(Base):
         return {
             'id': self.id,
             'conversation_id': self.conversation_id,
-            'conversation_rel': self.conversation_rel.serialize,
+            # 'conversation_rel': self.conversation_rel.serialize,
             'owner_id': self.owner_id,
             'owner_rel': self.owner_rel.serialize,
             'message': self.message,

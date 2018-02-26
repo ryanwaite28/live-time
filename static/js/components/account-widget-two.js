@@ -1,6 +1,6 @@
 /* --- Account --- */
 
-ko.components.register('account-widget', {
+ko.components.register('account-widget-two', {
     viewModel: function(params) {
       var self = this;
 
@@ -17,5 +17,5 @@ ko.components.register('account-widget', {
       // console.log(self);
 
     },
-    template: { fromUrl: 'account-markup.html', maxCacheAge: 1234 }
+    template: { fromUrl: 'account-markup-two.html', maxCacheAge: 1234 }
 });

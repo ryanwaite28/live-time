@@ -39,6 +39,10 @@
             </span>
             <span data-bind="text: following() === true ? 'Following' : 'Follow'"></span>
           </p>
+
+          <div data-bind="if: signed_in() === true && user_loaded() && you().id !== user().id">
+            <message-widget params="root: $root, account_id: user().id"></message-widget>
+          </div>
         </div>
       </div>
     </div>
@@ -54,6 +58,8 @@
     </div>
 
     {% include 'footer.html' %}
+
+    {% include '_event-stream.html' %}
 
     <script src="/static/js/view-models/user-attending-ctrl.js"></script>
 

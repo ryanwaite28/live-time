@@ -46,6 +46,7 @@
                 <a title="Your Shows" href="/profile/shows" class="collection-item" data-bind="style: {display: you().type === 'ARTIST' ? 'block' : 'none'}">Shows</a>
                 <a title="Your Attending" href="/profile/attending" class="collection-item" data-bind="style: {display: you().type === 'USER' ? 'block' : 'none'}">Attending</a>
                 <a title="Your Notifications" href="/profile/notifications" class="collection-item">Notifications</a>
+                <a title="Your Messages" href="/profile/messages" class="collection-item">Messages</a>
               </div>
             </div>
           </div>
@@ -93,6 +94,8 @@
     </div>
 
     {% include 'footer.html' %}
+
+    {% include '_event-stream.html' %}
 
     <script src="/static/js/view-models/profile-ctrl.js"></script>
 

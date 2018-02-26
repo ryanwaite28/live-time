@@ -182,3 +182,40 @@ nav {
 .text-color-green {
 	color: #66BB6A;
 }
+
+.chip-img {
+	  left: auto;
+    height: 32px;
+    width: 32px;
+    border-radius: 50%;
+		float: left;
+}
+
+.message-text-box {
+	padding: 4px;
+	border-radius: 3px;
+	border: 1px solid grey;
+	box-shadow: 0px 1px 2px #f2f2f2;
+	margin: 2px 5px;
+}
+
+.message-item {
+	margin-bottom: 20px;
+	display: table;
+  width: 100%;
+}
+
+span.message-span {
+
+}
+
+.your-message-icon, .your-message-text {
+	float: right;
+}
+.other-message-icon, .other-message-text {
+	float: left;
+}
+
+.your-message-text {
+	background-color: #e3f2fd;
+}

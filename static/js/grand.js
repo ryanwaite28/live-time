@@ -76,6 +76,12 @@ const date_formatter = function(date) {
   return moment(date).format('MMMM D, YYYY - h:mm A');
 }
 
+const date_formatter_short = function(date) {
+  // format --- December 23, 2017 - 10:40 PM
+  // console.log(date);
+  return moment(date).format('M/D/YYYY - h:mm A');
+}
+
 const headers_json = function() {
   let myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json; charset=UTF-8");

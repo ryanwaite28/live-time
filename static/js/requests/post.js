@@ -87,6 +87,7 @@ const Post = function() {
   }
 
   self.create_event_comment = function(event_id = 0, text = '') {
+    if(!event_id || event_id.constructor !== Number) { return; }
     if(!text || text.constructor !== String) { return; }
     return new Promise(function(resolve, reject){
       var params = {
@@ -97,6 +98,24 @@ const Post = function() {
       }
 
       fetch('/event/' + event_id + '/create_comment', params)
+      .then(function(resp){ return resp.json() })
+      .then(function(json){ return resolve(json); })
+      .catch(function(error){ return reject(error) })
+    });
+  }
+
+  self.send_account_message = function(account_id = 0, message = '') {
+    if(!account_id || account_id.constructor !== Number) { return; }
+    if(!message || message.constructor !== String) { return; }
+    return new Promise(function(resolve, reject){
+      var params = {
+        method: "POST",
+        credentials: "include",
+        header: headers_json(),
+        body: JSON.stringify({message: message.trim()})
+      }
+
+      fetch('/accounts/' + account_id + '/send_message', params)
       .then(function(resp){ return resp.json() })
       .then(function(json){ return resolve(json); })
       .catch(function(error){ return reject(error) })

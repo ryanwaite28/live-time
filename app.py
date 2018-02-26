@@ -44,6 +44,10 @@ app.config["REDIS_URL"] = REDIS_URL
 app.register_blueprint(sse, url_prefix='/stream')
 
 
+connections = []
+
+
+
 
 def login_required(f):
     ''' Checks If User Is Logged In '''
@@ -125,9 +129,18 @@ def create_notification(id, msg, link):
 
 
 
+
+
 @app.route('/', methods=['GET'])
 def welcome():
     return routes_get.welcome(request, sse)
+
+
+# @app.route('/new_message_stream', methods=['GET'])
+# def new_message_stream():
+#     def new_event_generator():
+#
+#     return flask.Response(new_event_generator(), mimetype = 'text/event-stream')
 
 
 # @app.route('/welcome_event', methods=['GET'])
@@ -183,7 +196,17 @@ def profile_page():
     return routes_get.profile_page(request, sse)
 
 
-@app.route('/account_settings', methods=['GET'])
+@app.route('/profile/notifications', methods=['GET'])
+def notifications_page():
+    return routes_get.notifications_page(request, sse)
+
+
+@app.route('/profile/messages', methods=['GET'])
+def messages_page():
+    return routes_get.messages_page(request, sse)
+
+
+@app.route('/profile/account_settings', methods=['GET'])
 def account_settings():
     return routes_get.account_settings(request, sse)
 
@@ -201,6 +224,7 @@ def profile_shows():
 @app.route('/profile/attending', methods=['GET'])
 def profile_attending():
     return routes_get.profile_attending(request, sse)
+
 
 
 @app.route('/accounts/<username>', methods=['GET'])
@@ -221,6 +245,7 @@ def account_shows(username):
 @app.route('/user/<username>/attending', methods=['GET'])
 def account_attending(username):
     return routes_get.account_attending(request, sse, username)
+
 
 
 @app.route('/event/<int:event_id>', methods=['GET'])
@@ -274,10 +299,16 @@ def get_user_attending(account_id, attend_id):
 
 
 
-@app.route('/accounts/<int:account_id>/notifications/<int:notification_id>', methods=['GET'])
-@Authorize
-def get_account_notifications(account_id, notification_id):
-    return routes_get.get_account_notifications(request, sse, account_id, notification_id)
+@app.route('/account/notifications/<int:notification_id>', methods=['GET'])
+@AuthorizeSessionRequired
+def get_account_notifications(notification_id):
+    return routes_get.get_account_notifications(request, sse, notification_id)
+
+
+@app.route('/account/conversations', methods=['GET'])
+@AuthorizeSessionRequired
+def get_account_conversations():
+    return routes_get.get_account_conversations(request, sse)
 
 
 
@@ -313,6 +344,12 @@ def check_event_attending(event_id):
 @Authorize
 def get_event_comments(event_id, comment_id):
     return routes_get.get_event_comments(request, sse, event_id, comment_id)
+
+
+@app.route('/conversation/<int:c_id>/messages/<int:cm_id>', methods=['GET'])
+@AuthorizeSessionRequired
+def get_conversation_messages(c_id, cm_id):
+    return routes_get.get_conversation_messages(request, sse, c_id, cm_id)
 
 
 
@@ -419,6 +456,12 @@ def toggle_comment_like(comment_id):
 @AuthorizeSessionRequired
 def toggle_account_follow(account_id):
     return routes_post.toggle_account_follow(request, sse, account_id)
+
+
+@app.route('/accounts/<int:account_id>/send_message', methods=['POST'])
+@AuthorizeSessionRequired
+def send_account_message(account_id):
+    return routes_post.send_account_message(request, sse, account_id)
 
 
 

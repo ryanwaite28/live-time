@@ -90,7 +90,7 @@ const Get = function() {
     });
   }
 
-  self.get_account_notifications = function(account_id = 0, notification_id = 0) {
+  self.get_account_notifications = function(notification_id = 0) {
     return new Promise(function(resolve, reject){
       var params = {
         method: "GET",
@@ -98,7 +98,37 @@ const Get = function() {
         header: headers_json()
       }
 
-      fetch('/accounts/' + account_id + '/notifications/' + notification_id, params)
+      fetch('/account/notifications/' + notification_id, params)
+      .then(function(resp){ return resp.json() })
+      .then(function(json){ return resolve(json); })
+      .catch(function(error){ return reject(error) })
+    });
+  }
+
+  self.get_account_conversations = function() {
+    return new Promise(function(resolve, reject){
+      var params = {
+        method: "GET",
+        credentials: "include",
+        header: headers_json()
+      }
+
+      fetch('/account/conversations', params)
+      .then(function(resp){ return resp.json() })
+      .then(function(json){ return resolve(json); })
+      .catch(function(error){ return reject(error) })
+    });
+  }
+
+  self.get_conversation_messages = function(c_id, cm_id) {
+    return new Promise(function(resolve, reject){
+      var params = {
+        method: "GET",
+        credentials: "include",
+        header: headers_json()
+      }
+
+      fetch('/conversation/' + c_id + '/messages/' + cm_id, params)
       .then(function(resp){ return resp.json() })
       .then(function(json){ return resolve(json); })
       .catch(function(error){ return reject(error) })

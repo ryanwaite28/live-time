@@ -406,3 +406,58 @@ def create_event_comment(request, sse, event_id):
     db_session.commit()
 
     return jsonify(message = 'event comment created', comment = new_comment.serialize)
+
+
+
+def send_account_message(request, sse, account_id):
+    try:
+        if account_id == user_session['account_id']:
+            return jsonify(error = True, message = 'account_id provided is same as current user.')
+
+        data = json.loads(request.data)
+        if not data:
+            return jsonify( error = True, message = 'request body is empty, check headers/data' )
+        if 'message' not in data:
+            return jsonify( error = True, message = 'no message key/value pair in request body' )
+
+        conversation = db_session.query(Conversations) \
+        .filter( (Conversations.account_A_id == user_session['account_id']) | (Conversations.account_B_id == user_session['account_id']) ) \
+        .filter( (Conversations.account_A_id == account_id) | (Conversations.account_B_id == account_id) ) \
+        .first()
+
+        if conversation == None:
+            conversation = Conversations(account_A_id = user_session['account_id'], account_B_id = account_id)
+            db_session.add(conversation)
+            db_session.commit()
+
+        conversation.last_updated = func.now()
+        db_session.add(conversation)
+
+        message = str(data['message']).encode()
+        conversation_messge = ConversationMessages(conversation_id = conversation.id, owner_id = user_session['account_id'], message = message)
+        db_session.add(conversation_messge)
+
+        if account_id != user_session['account_id']:
+            you = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
+
+            text = you.username + ' sent you a message'
+
+            new_notification = Notifications(action = ACTION_TYPES['NEW_MESSAGE'],
+                target_type = TARGET_TYPES['ACCOUNT'], target_id = account_id,
+                from_id = user_session['account_id'], account_id = account_id,
+                message = text, link = '/accounts/' + str(you.username))
+
+            db_session.add(new_notification)
+
+            sse.publish({"message": text, "for_id": account_id}, type='action')
+
+        db_session.commit()
+
+        sse.publish({"message": text, "conversation_message": conversation_messge.serialize}, type='message')
+
+        return jsonify(message = 'message sent', new_message = conversation_messge.serialize)
+
+
+    except Exception as err:
+        print(err)
+        return jsonify(error = True, errorMessage = str(err), message = 'error processing...')
