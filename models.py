@@ -247,6 +247,7 @@ class EventRequests(Base):
 
     event_id            = Column(Integer, ForeignKey('events.id'))
     event_rel           = relationship('Events', foreign_keys=[event_id])
+
     date_created        = Column(DateTime, server_default=func.now())
     unique_value        = Column(String, default = uniqueValue)
 
@@ -262,6 +263,7 @@ class EventRequests(Base):
 
             'event_id': self.event_id,
             'event_rel': self.event_rel.serialize,
+            
             'date_created': str(self.date_created),
             'unique_value': self.unique_value
         }

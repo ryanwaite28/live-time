@@ -464,3 +464,174 @@ def send_account_message(request, sse, account_id):
     except Exception as err:
         print(err)
         return jsonify(error = True, errorMessage = str(err), message = 'error processing...')
+
+
+
+def send_booking_request(request, sse, event_id, account_id):
+    try:
+        # check given data
+
+        your_id = user_session['account_id']
+
+        if account_id == your_id:
+            return jsonify(error = True, message = 'forbidden: provided account_id is equal to current account_id')
+
+        event = db_session.query(Events).filter_by(id = event_id).first()
+        if event == None:
+            return jsonify(error = True, message = 'no event found by id: ' + str(event_id))
+
+        if event.host_id != your_id and event.host_id != account_id:
+            return jsonify(error = True, message = 'none of the two accounts own this event')
+
+
+        # check if booking request already exists
+
+        booking_request = db_session.query(EventRequests) \
+        .filter(EventRequests.event_id == event_id) \
+        .filter( (EventRequests.sender_id == your_id) | (EventRequests.receiver_id == your_id) ) \
+        .filter( (EventRequests.sender_id == account_id) | (EventRequests.receiver_id == account_id) ) \
+        .first()
+
+        if booking_request:
+            response = '''Booking request already exists.'''
+            return jsonify(error = True, message = response,
+            booking_request_exists = True, booking_request = booking_request.serialize)
+
+        check_notification = db_session.query(Notifications) \
+        .filter(Notifications.action == ACTION_TYPES['REMOVE_BOOKING']) \
+        .filter(Notifications.target_type == TARGET_TYPES['EVENT']) \
+        .filter(Notifications.target_id == event_id) \
+        .filter(Notifications.from_id == your_id) \
+        .filter(Notifications.account_id == account_id) \
+        .first()
+
+        if check_notification:
+            db_session.delete(check_notification)
+
+
+        # create booking request
+
+        new_booking_request = EventRequests(sender_id = your_id, receiver_id = account_id, event_id = event_id)
+        db_session.add(new_booking_request)
+
+
+        # create notification / push event
+
+        if account_id != your_id:
+            you = db_session.query(Accounts).filter_by(id = your_id).one()
+            account = db_session.query(Accounts).filter_by(id = account_id).one()
+
+            if you.type == 'ARTIST' and account.type == 'VENUE':
+                text = you.username + ' wants to perform at your event: ' + event.title
+
+            if you.type == 'VENUE' and account.type == 'ARTIST':
+                text = you.username + ' wants you to perform at their event: ' + event.title
+
+            new_notification = Notifications(action = ACTION_TYPES['REQUEST_BOOKING'],
+                target_type = TARGET_TYPES['EVENT'], target_id = event.id,
+                from_id = your_id, account_id = account_id,
+                message = text, link = '/event/' + str(event.id))
+
+            db_session.add(new_notification)
+
+            sse.publish({"message": text, "for_id": account_id}, type='action')
+
+        # commit everything: booking request and notification
+
+        db_session.commit()
+
+        return jsonify(message = 'booking request sent!', new_booking_request = new_booking_request.serialize)
+
+
+    except Exception as err:
+        print(err)
+        return jsonify(error = True, errorMessage = str(err), message = 'error processing...')
+
+
+
+def cancel_booking_request(request, sse, event_id, account_id):
+    try:
+        # check given data
+
+        your_id = user_session['account_id']
+
+        if account_id == your_id:
+            return jsonify(error = True, message = 'forbidden: provided account_id is equal to current account_id')
+
+        event = db_session.query(Events).filter_by(id = event_id).first()
+        if event == None:
+            return jsonify(error = True, message = 'no event found by id: ' + str(event_id))
+
+        if event.host_id != your_id and event.host_id != account_id:
+            return jsonify(error = True, message = 'none of the two accounts own this event')
+
+
+        # check if booking request already exists and if current session was the sender
+
+        booking_request = db_session.query(EventRequests) \
+        .filter(EventRequests.event_id == event_id) \
+        .filter( (EventRequests.sender_id == your_id) | (EventRequests.receiver_id == your_id) ) \
+        .filter( (EventRequests.sender_id == account_id) | (EventRequests.receiver_id == account_id) ) \
+        .first()
+
+        if not booking_request:
+            response = '''Booking request does not exist.'''
+            return jsonify(error = True, message = response,
+            booking_request_exists = False)
+
+
+        if booking_request.sender_id != your_id:
+            response = '''You cannot cancel this booking request
+            because you are not the sender.
+            You must go to your requests page and either accept or decline.'''
+            return jsonify(error = True, message = response,
+            booking_request_exists = False)
+
+
+        # delete booking request and old notification
+
+        db_session.delete(booking_request)
+
+        check_notification = db_session.query(Notifications) \
+        .filter(Notifications.action == ACTION_TYPES['REQUEST_BOOKING']) \
+        .filter(Notifications.target_type == TARGET_TYPES['EVENT']) \
+        .filter(Notifications.target_id == event_id) \
+        .filter(Notifications.from_id == your_id) \
+        .filter(Notifications.account_id == account_id) \
+        .first()
+
+        if check_notification:
+            db_session.delete(check_notification)
+
+
+        # create notification / push event
+
+        if account_id != your_id:
+            you = db_session.query(Accounts).filter_by(id = your_id).one()
+            account = db_session.query(Accounts).filter_by(id = account_id).one()
+
+            if you.type == 'ARTIST' and account.type == 'VENUE':
+                text = you.username + ' canceled performing at your event: ' + event.title
+
+            if you.type == 'VENUE' and account.type == 'ARTIST':
+                text = you.username + ' canceled booking you from their event: ' + event.title
+
+            new_notification = Notifications(action = ACTION_TYPES['REMOVE_BOOKING'],
+                target_type = TARGET_TYPES['ACCOUNT'], target_id = account_id,
+                from_id = your_id, account_id = account_id,
+                message = text, link = '/event/' + str(event.id))
+
+            db_session.add(new_notification)
+
+            sse.publish({"message": text, "for_id": account_id}, type='action')
+
+        # commit everything: booking request and notification
+
+        db_session.commit()
+
+        return jsonify(message = 'booking request canceled!')
+
+
+    except Exception as err:
+        print(err)
+        return jsonify(error = True, errorMessage = str(err), message = 'error processing...')

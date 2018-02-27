@@ -462,6 +462,18 @@ def send_account_message(account_id):
     return routes_post.send_account_message(request, sse, account_id)
 
 
+@app.route('/events/<int:event_id>/send_booking_request/<int:account_id>', methods=['POST'])
+@AuthorizeSessionRequired
+def send_booking_request(event_id, account_id):
+    return routes_post.send_booking_request(request, sse, account_id)
+
+
+@app.route('/events/<int:event_id>/cancel_booking_request/<int:account_id>', methods=['POST'])
+@AuthorizeSessionRequired
+def cancel_booking_request(event_id, account_id):
+    return routes_post.cancel_booking_request(request, sse, account_id)
+
+
 
 
 # --- PUT Routes --- #

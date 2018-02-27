@@ -516,13 +516,14 @@ def check_booking_request(request, sse, event_id, account_id):
         return jsonify(error = True, message = 'none of the two accounts own this event')
 
 
-    booking_request_exists = db_session.query(EventRequests) \
+    booking_request = db_session.query(EventRequests) \
+    .filter(EventRequests.event_id == event_id) \
     .filter( (EventRequests.sender_id == your_id) | (EventRequests.receiver_id == your_id) ) \
     .filter( (EventRequests.sender_id == account_id) | (EventRequests.receiver_id == account_id) ) \
     .first()
 
-    if booking_request_exists:
-        return jsonify(message = 'booking request exists', booking_request_exists = True)
+    if booking_request:
+        return jsonify(message = 'booking request exists', booking_request_exists = True, booking_request = booking_request.serialize)
     else:
         return jsonify(message = 'no booking request exists', booking_request_exists = False)
 
