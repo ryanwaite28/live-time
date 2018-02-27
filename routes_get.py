@@ -501,6 +501,33 @@ def check_event_attending(request, sse, event_id):
         return jsonify(message = 'not attending', attending = False)
 
 
+
+def check_booking_request(request, sse, event_id, account_id):
+    your_id = user_session['account_id']
+
+    if account_id == your_id:
+        return jsonify(error = True, message = 'forbidden: provided account_id is equal to current account_id')
+
+    event = db_session.query(Events).filter_by(id = event_id).first()
+    if event == None:
+        return jsonify(error = True, message = 'no event found by id: ' + str(event_id))
+
+    if event.host_id != your_id and event.host_id != account_id:
+        return jsonify(error = True, message = 'none of the two accounts own this event')
+
+
+    booking_request_exists = db_session.query(EventRequests) \
+    .filter( (EventRequests.sender_id == your_id) | (EventRequests.receiver_id == your_id) ) \
+    .filter( (EventRequests.sender_id == account_id) | (EventRequests.receiver_id == account_id) ) \
+    .first()
+
+    if booking_request_exists:
+        return jsonify(message = 'booking request exists', booking_request_exists = True)
+    else:
+        return jsonify(message = 'no booking request exists', booking_request_exists = False)
+
+
+
 def get_event_comments(request, sse, event_id, comment_id):
     try:
         if comment_id == 0:

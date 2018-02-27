@@ -100,6 +100,46 @@ const enable_buttons = function() {
   $('button.btn').removeClass("disabled");
 }
 
+const booking_widget_compare_types = function(type_a, type_b) {
+  // This function is for comparing the account type between two accounts.
+  // Rules: USER type is not allow; Types cannot be Equivalent;
+  // VENUE and ARTIST pair is required
+
+  var types = ['USER', 'ARTIST', 'VENUE'];
+
+  if(types.indexOf(type_a) === -1) {
+    console.log('type_a: ', type_a);
+    throw new Error('type_a input is not acceptable: ' + String(type_a));
+    return;
+  }
+  if(types.indexOf(type_b) === -1) {
+    console.log('type_b: ', type_b);
+    throw new Error('type_b input is not acceptable: ' + String(type_b));
+    return;
+  }
+
+  if(type_a === 'USER' || type_b === 'USER') {
+    return false;
+  }
+
+  if(type_a === 'ARTIST') {
+    if(type_b === 'VENUE') {
+      return true;
+    }
+    else {
+      return false
+    }
+  }
+  if(type_a === 'VENUE') {
+    if(type_b === 'ARTIST') {
+      return true;
+    }
+    else {
+      return false
+    }
+  }
+}
+
 const get_image_file = function(elem_id = '') {
   if(!elem_id || elem_id.constructor !== String) {
     console.log('string is required...', elem_id);

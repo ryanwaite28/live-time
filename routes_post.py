@@ -411,7 +411,9 @@ def create_event_comment(request, sse, event_id):
 
 def send_account_message(request, sse, account_id):
     try:
-        if account_id == user_session['account_id']:
+        your_id = user_session['account_id']
+
+        if account_id == your_id:
             return jsonify(error = True, message = 'account_id provided is same as current user.')
 
         data = json.loads(request.data)
@@ -420,13 +422,14 @@ def send_account_message(request, sse, account_id):
         if 'message' not in data:
             return jsonify( error = True, message = 'no message key/value pair in request body' )
 
+
         conversation = db_session.query(Conversations) \
-        .filter( (Conversations.account_A_id == user_session['account_id']) | (Conversations.account_B_id == user_session['account_id']) ) \
+        .filter( (Conversations.account_A_id == your_id) | (Conversations.account_B_id == your_id) ) \
         .filter( (Conversations.account_A_id == account_id) | (Conversations.account_B_id == account_id) ) \
         .first()
 
         if conversation == None:
-            conversation = Conversations(account_A_id = user_session['account_id'], account_B_id = account_id)
+            conversation = Conversations(account_A_id = your_id, account_B_id = account_id)
             db_session.add(conversation)
             db_session.commit()
 
@@ -434,17 +437,17 @@ def send_account_message(request, sse, account_id):
         db_session.add(conversation)
 
         message = str(data['message']).encode()
-        conversation_messge = ConversationMessages(conversation_id = conversation.id, owner_id = user_session['account_id'], message = message)
+        conversation_messge = ConversationMessages(conversation_id = conversation.id, owner_id = your_id, message = message)
         db_session.add(conversation_messge)
 
-        if account_id != user_session['account_id']:
-            you = db_session.query(Accounts).filter_by(id = user_session['account_id']).one()
+        if account_id != your_id:
+            you = db_session.query(Accounts).filter_by(id = your_id).one()
 
             text = you.username + ' sent you a message'
 
             new_notification = Notifications(action = ACTION_TYPES['NEW_MESSAGE'],
                 target_type = TARGET_TYPES['ACCOUNT'], target_id = account_id,
-                from_id = user_session['account_id'], account_id = account_id,
+                from_id = your_id, account_id = account_id,
                 message = text, link = '/accounts/' + str(you.username))
 
             db_session.add(new_notification)

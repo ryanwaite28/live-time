@@ -117,14 +117,6 @@ def Check_Authorize():
 
 
 
-def create_notification(id, msg, link):
-    new_notification = Notifications(account_id = id, message = msg, link = link)
-    db_session.add(new_notification)
-    db_session.commit()
-    return new_notification
-
-
-
 # --- GET Routes --- #
 
 
@@ -336,6 +328,12 @@ def check_account_follow(account_id):
 @AuthorizeSessionRequired
 def check_event_attending(event_id):
     return routes_get.check_event_attending(request, sse, event_id)
+
+
+@app.route('/events/<int:event_id>/check_booking/<int:account_id>', methods=['GET'])
+@AuthorizeSessionRequired
+def check_booking_request(event_id, account_id):
+    return routes_get.check_booking_request(request, sse, event_id, account_id)
 
 
 # the comment_id is used as a starting point for the query:

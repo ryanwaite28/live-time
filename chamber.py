@@ -27,11 +27,11 @@ config = {
     "serviceAccount": firebase_json_file_dir
 }
 
-firebase = pyrebase.initialize_app(config)
-cred = credentials.Certificate(firebase_json_file_dir)
-firebase_admin.initialize_app(cred, {
-    'storageBucket': config['storageBucket']
-})
+# firebase = pyrebase.initialize_app(config)
+# cred = credentials.Certificate(firebase_json_file_dir)
+# firebase_admin.initialize_app(cred, {
+#     'storageBucket': config['storageBucket']
+# })
 
 
 
