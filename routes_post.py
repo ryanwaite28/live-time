@@ -484,7 +484,7 @@ def send_booking_request(request, sse, event_id, account_id):
             return jsonify(error = True, message = 'none of the two accounts own this event')
 
 
-        # check if booking request already exists
+        # check if booking request and notification already exists
 
         booking_request = db_session.query(EventRequests) \
         .filter(EventRequests.event_id == event_id) \
@@ -614,10 +614,10 @@ def cancel_booking_request(request, sse, event_id, account_id):
                 text = you.username + ' canceled performing at your event: ' + event.title
 
             if you.type == 'VENUE' and account.type == 'ARTIST':
-                text = you.username + ' canceled booking you from their event: ' + event.title
+                text = you.username + ' canceled booking you for their event: ' + event.title
 
             new_notification = Notifications(action = ACTION_TYPES['REMOVE_BOOKING'],
-                target_type = TARGET_TYPES['ACCOUNT'], target_id = account_id,
+                target_type = TARGET_TYPES['EVENT'], target_id = event.id,
                 from_id = your_id, account_id = account_id,
                 message = text, link = '/event/' + str(event.id))
 
