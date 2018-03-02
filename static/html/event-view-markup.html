@@ -1,0 +1,47 @@
+<div class="col s12 transition">
+  <div class="card">
+    <div class="card-image fill transition" data-bind="style: { 'background-image': 'url(' + event().icon + ')' }">
+      <div class="dim transition"></div>
+      <img class="transition" style="visibility: hidden" data-bind="attr: { title: event().location, alt: event().location, src: event().icon }">
+
+    </div>
+    <div class="card-content">
+      <a data-bind="attr: { title: 'See Post Page', href: '/event/' + event().id }">
+        <span class="card-title" data-bind="text: event().title"></span>
+      </a>
+
+      <p style="margin: 25px 0px;" data-bind="text: event().desc"></p>
+
+      <p style="margin: 25px 0px;">Location: <span data-bind="text: event().location"></span></p>
+
+      <p style="margin: 25px 0px;" data-bind="text: event().categories"></p>
+
+      <div data-bind="">
+        <div class="chip">
+          <img data-bind="attr: { title: event().host_rel.username, alt: event().host_rel.username, src: event().host_rel.icon }">
+          <a data-bind="attr: { title: event().host_rel.username, href: '/accounts/' + event().host_rel.username }">
+            <span data-bind="text: event().host_rel.username + ' ' + '(' + event().host_rel.type + ')'"></span>
+          </a>
+        </div>
+      </div>
+
+      <br/>
+
+      <p>
+        <span>
+          Event Date: <em class="text-grey" data-bind="text: date_formatter(event().event_date_time)"></em>
+        </span>
+      </p>
+      <br/>
+      <p class="caption-1">
+        <span>
+          Created: <em class="text-grey" data-bind="text: date_formatter(event().date_created)"></em>
+        </span>
+      </p>
+    </div>
+
+    <!--  -->
+
+
+  </div>
+</div>

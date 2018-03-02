@@ -20,6 +20,7 @@
     self.following = ko.observable(false);
 
     self.showsList = ko.observableArray([]);
+    self.eventsList = ko.observableArray([]);
     self.showsIDs = ko.observableArray([]);
     self.showsObj = {};
 
@@ -117,6 +118,8 @@
           self.showsList.push(show);
           self.showsIDs.push(show.id);
           self.showsObj[show.unique_value] = show;
+
+          self.eventsList.push(show.event_rel);
         });
 
         self.min_show_id = self.showsIDs().length > 0 ?

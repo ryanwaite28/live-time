@@ -3,7 +3,7 @@
 
   <span data-bind="if: enableLink() === false"><span data-bind="text: account().username"></span></span>
   <span data-bind="if: enableLink() === true">
-    <a style="text-transform: none;	color: #039be5;" data-bind="attr: { title: account().username + '\'s page', href: '/accounts/' + account().username }">
+    <a style="text-transform: none;	color: #039be5; margin-right: 0px" data-bind="attr: { title: account().username + '\'s page', href: '/accounts/' + account().username }">
       <span data-bind="text: account().username.length > 10 ? account().username.substr(0.10) + '...' : account().username"></span>
     </a>
   </span>

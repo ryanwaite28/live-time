@@ -12,10 +12,10 @@
         console.log("Connection to server opened.");
       };
 
-      source.addEventListener('greeting', function(event) {
-        var data = JSON.parse(event.data);
-        console.log(data);
-      }, false);
+      // source.addEventListener('greeting', function(event) {
+      //   var data = JSON.parse(event.data);
+      //   console.log(data);
+      // }, false);
 
       source.addEventListener('message', function(event) {
         var data = JSON.parse(event.data);
@@ -34,7 +34,7 @@
 
       source.addEventListener('action', function(event) {
         var data = JSON.parse(event.data);
-        console.log(data);
+        // console.log(data);
         if(data.for_id === you.id) {
           Materialize.toast(data.message, 5000);
         }

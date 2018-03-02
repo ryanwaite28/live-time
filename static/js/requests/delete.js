@@ -47,6 +47,33 @@ const Delete = function() {
     });
   }
 
+  self.cancel_booking = function(booking_id, account_id) {
+    return new Promise(function(resolve, reject){
+      fetch('/booking/' + booking_id + '/cancel/' + account_id, {method: "DELETE", credentials: "include"})
+      .then(function(resp){ return resp.json() })
+      .then(function(json){ return resolve(json); })
+      .catch(function(error){ return reject(error) })
+    });
+  }
+
+  self.cancel_booking_request = function(event_id, receiver_id) {
+    return new Promise(function(resolve, reject){
+      fetch('/events/' + event_id + '/cancel_booking_request/' + receiver_id, {method: "DELETE", credentials: "include"})
+      .then(function(resp){ return resp.json() })
+      .then(function(json){ return resolve(json); })
+      .catch(function(error){ return reject(error) })
+    });
+  }
+
+  self.decline_booking_request = function(event_id, sender_id) {
+    return new Promise(function(resolve, reject){
+      fetch('/events/' + event_id + '/decline_booking_request/' + sender_id, {method: "DELETE", credentials: "include"})
+      .then(function(resp){ return resp.json() })
+      .then(function(json){ return resolve(json); })
+      .catch(function(error){ return reject(error) })
+    });
+  }
+
 }
 
 // Create and Store New Instance In a Constant

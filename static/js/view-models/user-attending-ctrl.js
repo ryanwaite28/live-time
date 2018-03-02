@@ -19,6 +19,7 @@
     self.background_view = ko.observable(false);
     self.following = ko.observable(false);
 
+    self.eventsList = ko.observableArray([]);
     self.attendingList = ko.observableArray([]);
     self.attendingIDs = ko.observableArray([]);
     self.attendingObj = {};
@@ -117,6 +118,8 @@
           self.attendingList.push(attend);
           self.attendingIDs.push(attend.id);
           self.attendingObj[attend.unique_value] = attend;
+
+          self.eventsList.push(attend.event_rel);
         });
 
         self.min_attending_id = self.attendingIDs().length > 0 ?

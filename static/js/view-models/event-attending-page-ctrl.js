@@ -11,36 +11,47 @@
 
     //
 
-    self.background_view = ko.observable(false);
-
+    self.event = ko.observable({});
     self.eventsList = ko.observableArray([]);
+
     self.attendingList = ko.observableArray([]);
     self.attendingIDs = ko.observableArray([]);
-    self.attendingObj = {};
 
-    self.min_attending_id = 0;
+    self.min_attend_id = 0;
     self.end = ko.observable(false);
 
     GET.check_session()
     .then(function(resp){
-      console.log(resp);
+      // console.log(resp);
       self.signed_in(resp.online);
       if(resp.account) {
         self.you(resp.account);
       }
-      self.get_user_attending();
+      self.get_event();
     });
 
     //
 
-    self.toggle_background_view = function() {
-      self.background_view( !self.background_view() )
+    self.get_event = function() {
+      var splitter = location.href.split('/');
+      var event_id = splitter[splitter.length - 2];
+
+      GET.get_event_by_id(event_id)
+      .then(function(resp){
+        // console.log(resp);
+        self.event(resp.event);
+        self.eventsList.push(resp.event);
+
+        self.get_event_attending();
+      });
     }
 
-    self.get_user_attending = function() {
+    self.get_event_attending = function() {
+      var splitter = location.href.split('/');
+      var event_id = splitter[splitter.length - 2];
       disable_buttons();
 
-      GET.get_user_attending(self.you().id, self.min_attending_id)
+      GET.get_event_attending(event_id, self.min_attend_id)
       .then(function(resp){
         console.log(resp);
         enable_buttons();
@@ -57,23 +68,14 @@
         resp.attending.forEach(function(attend){
           self.attendingList.push(attend);
           self.attendingIDs.push(attend.id);
-          self.attendingObj[attend.unique_value] = attend;
-
-          self.eventsList.push(attend.event_rel);
         });
 
-        self.min_attending_id = self.attendingIDs().length > 0 ?
+        self.min_attend_id = self.attendingIDs().length > 0 ?
         Math.min(...self.attendingIDs()) : 0;
       })
       .catch(function(error){
         console.log(error);
       })
-    }
-
-    self.delete_event = function(event_id) {
-      self.attendingList.remove(function(attend){
-        return attend.event_rel.id == event_id;
-      });
     }
 
   }

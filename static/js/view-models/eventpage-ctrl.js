@@ -50,9 +50,19 @@
 
       GET.search_artists(self.search_type(), query)
       .then(function(resp) {
-        console.log(resp);
-        self.artistsList(resp.artists);
-        var msg = resp.artists.length + ' results';
+        // console.log(resp);
+
+        var performer_ids = [];
+        self.event().performers.forEach(function(p){
+          performer_ids.push(p.performer_id);
+        });
+
+        var filtered = resp.artists.filter(function(a){
+          return performer_ids.indexOf(a.id) === -1
+        });
+
+        self.artistsList(filtered);
+        var msg = filtered.length + ' result(s)';
         self.search_msg(msg);
       })
       .catch(function(error){
@@ -66,7 +76,7 @@
 
       GET.get_event_by_id(event_id)
       .then(function(resp){
-        console.log(resp);
+        // console.log(resp);
         self.event(resp.event);
         self.eventsList.push(resp.event);
         self.eventsIDs.push(resp.event.id);
@@ -80,6 +90,12 @@
       });
       window.location.href = '/';
     }
+
+    self.remove_performer = function(performer_id) {
+      var new_event = self.event();
+      new_event.performers = new_event.performers.filter(function(p){ return p.performer_id !=  performer_id});
+      self.eventsList.replace(self.event(), new_event);
+    }.bind(self)
 
   }
 

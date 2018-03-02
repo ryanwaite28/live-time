@@ -17,21 +17,23 @@
 
         <div class="card">
           <div class="card-content">
-            <p class="text-center" data-bind="if: notificationsList().length === 0">
+            <p class="text-center" data-bind="if: requestsList().length === 0">
               <span>None...</span>
             </p>
-            <ul class="messages-list" data-bind="foreach: notificationsList">
+            <ul class="messages-list" data-bind="foreach: requestsList">
               <li class="message-item">
                 <div class="message-box">
-                  <a data-bind="attr: { title: $data.from_rel.username, href: '/accounts/' + $data.from_rel.username }">
-                    <img class="chip-img other-message-text" data-bind="attr: { alt: $data.from_rel.username, src: $data.from_rel.icon }">
+                  <a data-bind="attr: { title: $data.sender_rel.username, href: '/accounts/' + $data.sender_rel.username }">
+                    <img class="chip-img other-message-text" data-bind="attr: { alt: $data.sender_rel.username, src: $data.sender_rel.icon }">
                   </a>
                   <div class="message-text-box other-message-text">
                     <a title="link text" data-bind="attr: { href: $data.link || '#' }">
-                      <span class="message-span" data-bind="text: $data.message"></span>
+                      <span class="message-span" data-bind="text: $data.message + ': ' + $data.event_rel.title"></span>
                     </a>
                     <br/>
                     <span class="message-span text-grey caption-1" data-bind="text: date_formatter_short($data.date_created)"></span>
+                    <br/><br/>
+                    <span class="text-color-green cursor-class" data-bind="click: $parent.accept_request"><b>Accept</b></span> | <span class="text-color-red cursor-class" data-bind="click: $parent.decline_request"><b>Decline</b></span>
                   </div>
                 </div>
               </li>
@@ -39,8 +41,8 @@
 
             <p class="text-center" data-bind="if: end() === false">
               <br/>
-              <button class="blue btn waves-effect waves-light" type="button" name="action" data-bind="click: get_account_notifications">
-                Load Older Notifications
+              <button class="blue btn waves-effect waves-light" type="button" name="action" data-bind="click: get_account_requests">
+                Load Older Requests
               </button>
             </p>
           </div>
@@ -52,7 +54,7 @@
 
   {% include 'footer.html' %}
 
-  <script src="/static/js/view-models/notifications-ctrl.js"></script>
+  <script src="/static/js/view-models/requests-ctrl.js"></script>
 
 </body>
 

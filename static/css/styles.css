@@ -79,6 +79,14 @@ nav {
   padding-top: 50px;
 }
 
+.middle-box-3 {
+  width: 625px;
+  max-width: 100%;
+  display: block;
+  margin: auto;
+  padding-top: 50px;
+}
+
 .text-left {
   text-align: left;
 }
@@ -192,7 +200,7 @@ nav {
 }
 
 .message-text-box {
-	padding: 4px;
+	padding: 10px;
 	border-radius: 3px;
 	border: 1px solid grey;
 	box-shadow: 0px 1px 2px #f2f2f2;

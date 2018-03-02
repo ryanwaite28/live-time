@@ -122,6 +122,24 @@ const Post = function() {
     });
   }
 
+  self.send_booking_request = function(event_id, receiver_id) {
+    return new Promise(function(resolve, reject){
+      fetch('/events/' + event_id + '/send_booking_request/' + receiver_id, {method: "POST", credentials: "include"})
+      .then(function(resp){ return resp.json() })
+      .then(function(json){ return resolve(json); })
+      .catch(function(error){ return reject(error) })
+    });
+  }
+
+  self.accept_booking_request = function(event_id, sender_id) {
+    return new Promise(function(resolve, reject){
+      fetch('/events/' + event_id + '/accept_booking_request/' + sender_id, {method: "POST", credentials: "include"})
+      .then(function(resp){ return resp.json() })
+      .then(function(json){ return resolve(json); })
+      .catch(function(error){ return reject(error) })
+    });
+  }
+
 }
 
 // Create and Store New Instance In a Constant

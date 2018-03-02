@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% include '_dependencies.html' %}
+
+    <title>Live Time | Events!</title>
+  </head>
+  <body>
+
+    {% if session == True %}
+      {% include 'navbar-2.html' %}
+    {% else %}
+      {% include 'navbar-1.html' %}
+    {% endif %}
+
+    <div class="container" data-bind="css: { 'middle-box-2': event().host_id === you().id, 'middle-box': event().host_id !== you().id }">
+      <div class="row">
+
+        <div class="col s12">
+          <div class="middlr" data-bind="foreach: eventsList">
+            <event-view-widget params="root: $root, parent: $parent, event: $data, show_user_chip: true, signed_in: $parent.signed_in(), you_id: $parent.you().id"></event-view-widget>
+          </div>
+        </div>
+
+        <div class="col s12">
+          <div class="col s12 middlr" data-bind="">
+            <h4 class="text-center">Likes</h4>
+            <br/>
+
+            <p class="text-center" data-bind="if: likesList().length === 0">
+              <span>None...</span>
+            </p>
+
+            <div data-bind="foreach: likesList">
+              <div class="space-1">
+                <account-widget params="root: $root, parent: $parent, account: $data.owner_rel"></account-widget>
+                <span data-bind="if: $root.signed_in() && $data.owner_rel.id != $root.you().id">
+                    <br/>
+                    <follow-widget params="root: $root, parent: $parent, account_id: $data.owner_rel.id"></follow-widget>
+                </span>
+              </div>
+            </div>
+
+            <p class="text-center" data-bind="if: end() === false">
+              <br/>
+              <button class="blue btn waves-effect waves-light" type="button" name="action" data-bind="click: get_event_likes">
+                Load More
+              </button>
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    {% include 'footer.html' %}
+
+    {% include '_event-stream.html' %}
+
+    <script src="/static/js/view-models/event-likes-page-ctrl.js"></script>
+
+  </body>
+</html>

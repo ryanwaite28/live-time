@@ -13,6 +13,7 @@
 
     self.background_view = ko.observable(false);
 
+    self.eventsList = ko.observableArray([]);
     self.showsList = ko.observableArray([]);
     self.showsIDs = ko.observableArray([]);
     self.showsObj = {};
@@ -57,6 +58,8 @@
           self.showsList.push(show);
           self.showsIDs.push(show.id);
           self.showsObj[show.unique_value] = show;
+
+          self.eventsList.push(show.event_rel);
         });
 
         self.min_show_id = self.showsIDs().length > 0 ?
@@ -65,12 +68,6 @@
       .catch(function(error){
         console.log(error);
       })
-    }
-
-    self.delete_event = function(event_id) {
-      self.showsList.remove(function(show){
-        return show.event_rel.id == event_id;
-      });
     }
 
   }

@@ -4,14 +4,16 @@ ko.components.register('event-widget', {
     viewModel: function(params) {
       var self = this;
 
+      self.you = ko.observable(params.parent.you());
       self.you_id = ko.observable(params.parent.you().id);
       self.signed_in = ko.observable(params.parent.signed_in());
 
       self.root = ko.observable(params.root);
 
-      self.event = ko.observable(params.event || {});
+      var event = params.event.constructor === Function ? params.event() : params.event;
+      self.event = ko.observable(event);
 
-      self.event_id = ko.observable(params.event.id);
+      self.event_id = ko.observable(event.id);
 
       self.event_likes = ko.observable(params.event.likes);
       self.event_attending = ko.observable(params.event.attending);
@@ -29,9 +31,11 @@ ko.components.register('event-widget', {
         self.hide_performers( !self.hide_performers() );
       }
 
-      self.edit_event = function(event) {
-
-      }
+      self.remove_performer = function(performer_id) {
+        self.performers.remove(function(performer){
+          return performer.performer_id == performer_id
+        })
+      }.bind(self);
 
       self.delete_event = function() {
         var ask = confirm('Are you sure that you want to delete this event?');

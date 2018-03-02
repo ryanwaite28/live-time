@@ -20,7 +20,8 @@
             <event-widget params="root: $root, parent: $parent, event: $data, show_user_chip: true, signed_in: $parent.signed_in(), you_id: $parent.you().id"></event-widget>
           </div>
         </div>
-        <div class="col s12 m6" data-bind="style: { display: event().host_id === you().id ? 'block' : 'none' }">
+
+        <div class="col s12 m6" data-bind="if: event().host_id === you().id">
           <div class="col s12">
             <div class="card">
               <div class="card-content">
@@ -53,6 +54,8 @@
                     <account-widget params="root: $root, parent: $parent, account: $data"></account-widget>
                     <br/>
                     <follow-widget params="root: $root, parent: $parent, account_id: $data.id"></follow-widget>
+                    <br/>
+                    <booking-artist-venue-widget params="root: $root, parent: $parent, event: $parent.event(), account: $data"></booking-artist-venue-widget>
                   </div>
                 </div>
               </div>

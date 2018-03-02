@@ -125,6 +125,7 @@ def Check_Authorize():
 
 @app.route('/', methods=['GET'])
 def welcome():
+    # user_session.clear()
     return routes_get.welcome(request, sse)
 
 
@@ -198,6 +199,11 @@ def messages_page():
     return routes_get.messages_page(request, sse)
 
 
+@app.route('/profile/requests', methods=['GET'])
+def requests_page():
+    return routes_get.requests_page(request, sse)
+
+
 @app.route('/profile/account_settings', methods=['GET'])
 def account_settings():
     return routes_get.account_settings(request, sse)
@@ -255,6 +261,16 @@ def edit_event(event_id):
     return routes_get.edit_event(request, sse, event_id)
 
 
+@app.route('/events/<int:event_id>/likes', methods=['GET'])
+def event_likes_page(event_id):
+    return routes_get.event_likes_page(request, sse, event_id)
+
+
+@app.route('/events/<int:event_id>/attending', methods=['GET'])
+def event_attending_page(event_id):
+    return routes_get.event_attending_page(request, sse, event_id)
+
+
 
 @app.route('/get/account/<username>', methods=['GET'])
 @Authorize
@@ -297,6 +313,12 @@ def get_account_notifications(notification_id):
     return routes_get.get_account_notifications(request, sse, notification_id)
 
 
+@app.route('/account/requests/<int:request_id>', methods=['GET'])
+@AuthorizeSessionRequired
+def get_account_requests(request_id):
+    return routes_get.get_account_requests(request, sse, request_id)
+
+
 @app.route('/account/conversations', methods=['GET'])
 @AuthorizeSessionRequired
 def get_account_conversations():
@@ -318,13 +340,13 @@ def check_comment_account_like(comment_id, account_id):
 
 
 
-@app.route('/accounts/<int:account_id>/following', methods=['GET'])
+@app.route('/accounts/<int:account_id>/check_following', methods=['GET'])
 @AuthorizeSessionRequired
 def check_account_follow(account_id):
     return routes_get.check_account_follow(request, sse, account_id)
 
 
-@app.route('/events/<int:event_id>/attending', methods=['GET'])
+@app.route('/events/<int:event_id>/check_attending', methods=['GET'])
 @AuthorizeSessionRequired
 def check_event_attending(event_id):
     return routes_get.check_event_attending(request, sse, event_id)
@@ -332,8 +354,15 @@ def check_event_attending(event_id):
 
 @app.route('/events/<int:event_id>/check_booking/<int:account_id>', methods=['GET'])
 @AuthorizeSessionRequired
+def check_booking(event_id, account_id):
+    return routes_get.check_booking(request, sse, event_id, account_id)
+
+
+@app.route('/events/<int:event_id>/check_booking_request/<int:account_id>', methods=['GET'])
+@AuthorizeSessionRequired
 def check_booking_request(event_id, account_id):
     return routes_get.check_booking_request(request, sse, event_id, account_id)
+
 
 
 # the comment_id is used as a starting point for the query:
@@ -348,6 +377,19 @@ def get_event_comments(event_id, comment_id):
 @AuthorizeSessionRequired
 def get_conversation_messages(c_id, cm_id):
     return routes_get.get_conversation_messages(request, sse, c_id, cm_id)
+
+
+
+@app.route('/events/<int:event_id>/likes/<int:like_id>', methods=['GET'])
+@AuthorizeSessionRequired
+def get_event_likes(event_id, like_id):
+    return routes_get.get_event_likes(request, sse, event_id, like_id)
+
+
+@app.route('/events/<int:event_id>/attending/<int:attend_id>', methods=['GET'])
+@AuthorizeSessionRequired
+def get_event_attending(event_id, attend_id):
+    return routes_get.get_event_attending(request, sse, event_id, attend_id)
 
 
 
@@ -462,16 +504,17 @@ def send_account_message(account_id):
     return routes_post.send_account_message(request, sse, account_id)
 
 
-@app.route('/events/<int:event_id>/send_booking_request/<int:account_id>', methods=['POST'])
+@app.route('/events/<int:event_id>/send_booking_request/<int:receiver_id>', methods=['POST'])
 @AuthorizeSessionRequired
-def send_booking_request(event_id, account_id):
-    return routes_post.send_booking_request(request, sse, account_id)
+def send_booking_request(event_id, receiver_id):
+    return routes_post.send_booking_request(request, sse, event_id, receiver_id)
 
 
-@app.route('/events/<int:event_id>/cancel_booking_request/<int:account_id>', methods=['POST'])
+@app.route('/events/<int:event_id>/accept_booking_request/<int:sender_id>', methods=['POST'])
 @AuthorizeSessionRequired
-def cancel_booking_request(event_id, account_id):
-    return routes_post.cancel_booking_request(request, sse, account_id)
+def accept_booking_request(event_id, sender_id):
+    return routes_post.accept_booking_request(request, sse, event_id, sender_id)
+
 
 
 
@@ -582,6 +625,26 @@ def delete_event(event_id):
 @AuthorizeSessionRequired
 def delete_comment(comment_id):
     return routes_delete.delete_comment(request, sse, comment_id)
+
+
+@app.route('/booking/<int:booking_id>/cancel/<int:account_id>', methods=['DELETE'])
+@AuthorizeSessionRequired
+def cancel_booking(booking_id, account_id):
+    return routes_delete.cancel_booking(request, sse, booking_id, account_id)
+
+
+@app.route('/events/<int:event_id>/cancel_booking_request/<int:receiver_id>', methods=['DELETE'])
+@AuthorizeSessionRequired
+def cancel_booking_request(event_id, receiver_id):
+    return routes_delete.cancel_booking_request(request, sse, event_id, receiver_id)
+
+
+@app.route('/events/<int:event_id>/decline_booking_request/<int:sender_id>', methods=['DELETE'])
+@AuthorizeSessionRequired
+def decline_booking_request(event_id, sender_id):
+    return routes_delete.decline_booking_request(request, sse, event_id, sender_id)
+
+
 
 
 

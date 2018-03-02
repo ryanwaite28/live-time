@@ -6,7 +6,7 @@ ko.components.register('event-like-widget', {
       // console.log(params);
 
       self.event = params.event();
-      self.event_id = params.event_id();
+      self.event_id = ko.observable(params.event_id());
       self.event_likes = params.event_likes();
       self.you_id = ko.observable(params.you_id());
       self.signed_in = ko.observable(params.signed_in());
@@ -15,7 +15,7 @@ ko.components.register('event-like-widget', {
       self.liked = ko.observable(false);
 
       self.check_event_like = function() {
-        GET.check_event_account_like(self.event_id, self.you_id())
+        GET.check_event_account_like(self.event_id(), self.you_id())
         .then(function(resp) {
           // if(resp.message) { alert(resp.message); }
           if(resp.error) {
@@ -37,7 +37,7 @@ ko.components.register('event-like-widget', {
       self.toggle_like = function() {
         if(self.signed_in() === false) { return }
 
-        POST.toggle_event_like(self.event_id)
+        POST.toggle_event_like(self.event_id())
         .then(function(resp){
           // if(resp.message) { alert(resp.message); }
           if(resp.error) {
@@ -70,6 +70,6 @@ ko.components.register('event-like-widget', {
             <span data-bind="click: toggle_like, if: !liked()"> \
               <i class="far fa-heart"></i> \
             </span> \
-            <span data-bind="text: likesLength"></span> | Likes \
+            <span data-bind="text: likesLength"></span> | <a style="text-transform: none;	color: #039be5; margin-right: 0px" class="cursor-class" data-bind="attr: { title: \'Event Likes\', href: \'/events/\' + event_id() + \'/likes\' }">Likes</a> \
         </div>'
 });

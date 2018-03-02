@@ -1,3 +1,46 @@
 <div>
+  <span>Booking Status: (<span data-bind="text: booked_status_text(), css: booked_status_css()"></span>)</span>
 
+  <!-- Booked -->
+
+  <div data-bind="if: booked() === true">
+    <p>
+      <button data-bind="click: cancel_booking" title="Cancel Booking" class="red btn waves-effect waves-light" type="submit" name="action">
+        Cancel Booking
+      </button>
+    </p>
+  </div>
+
+  <!-- Not Booked -->
+
+  <div data-bind="if: booked() === false">
+    <!-- booking request exists -->
+    <div data-bind="if: booking_request_exists() === true">
+      <div data-bind="if: sender() && sender().id === you().id">
+        <p>
+          <button data-bind="click: cancel_booking_request" title="Cancel Request" class="blue btn waves-effect waves-light" type="submit" name="action">
+            Cancel Request
+          </button>
+        </p>
+      </div>
+      <div data-bind="if: receiver() && receiver().id === you().id">
+        <p>
+          <button title="Pending. Go to your requests page to accept/decline this request" class="grey btn waves-effect waves-light" type="submit" name="action">
+            Pending
+          </button>
+        </p>
+      </div>
+    </div>
+
+    <!-- booking request doesn't exists -->
+    <div data-bind="if: booking_request_exists() === false">
+      <div>
+        <p>
+          <button data-bind="click: send_booking_request" title="Send a booking request to this event's venue" class="btn waves-effect waves-light" type="submit" name="action">
+            Request Booking
+          </button>
+        </p>
+      </div>
+    </div>
+  </div>
 </div>

@@ -64,6 +64,24 @@ class Accounts(Base):
     last_loggedout      = Column(DateTime)
     unique_value        = Column(String, default = uniqueValue)
 
+
+    @property
+    def serialize_small(self):
+        return {
+            'id': self.id,
+            'type': self.type,
+            'verified': self.verified,
+            'displayname': self.displayname,
+            'username': self.username,
+            'phone': self.phone,
+            'email': self.email,
+            'booking_email': self.booking_email,
+            'icon': self.icon,
+
+            'date_created': str(self.date_created),
+            'unique_value': self.unique_value
+        }
+
     @property
     def serialize(self):
         return {
@@ -125,7 +143,7 @@ class Featured(Base):
         return {
             'id': self.id,
             'account_id': self.account_id,
-            'account_rel': self.account_rel.serialize,
+            'account_rel': self.account_rel.serialize_small,
             'date_created': str(self.date_created),
             'unique_value': self.unique_value
         }
@@ -147,9 +165,9 @@ class Follows(Base):
         return {
             'id': self.id,
             'account_id': self.account_id,
-            'account_rel': self.account_rel.serialize,
+            'account_rel': self.account_rel.serialize_small,
             'follows_id': self.follows_id,
-            'follows_rel': self.follows_rel.serialize,
+            'follows_rel': self.follows_rel.serialize_small,
             'date_created': str(self.date_created),
             'unique_value': self.unique_value
         }
@@ -185,6 +203,27 @@ class Events(Base):
     date_created        = Column(DateTime, server_default=func.now())
     unique_value        = Column(String, default = uniqueValue)
 
+
+    @property
+    def serialize_small(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'desc': self.desc,
+            'categories': self.categories,
+            'location': self.location,
+            'icon': self.icon,
+            'link': self.link,
+            'host_id': self.host_id,
+            'host_rel': self.host_rel.serialize_small,
+            'closed': self.closed,
+            'over': self.over,
+            'event_date': str(self.event_date),
+            'event_date_time': str(self.event_date_time),
+            'date_created': str(self.date_created),
+            'unique_value': self.unique_value
+        }
+
     @property
     def serialize(self):
         return {
@@ -196,7 +235,7 @@ class Events(Base):
             'icon': self.icon,
             'link': self.link,
             'host_id': self.host_id,
-            'host_rel': self.host_rel.serialize,
+            'host_rel': self.host_rel.serialize_small,
             'closed': self.closed,
             'over': self.over,
             'performers': [p.serialize for p in self.performers],
@@ -226,10 +265,12 @@ class EventPerformers(Base):
     def serialize(self):
         return {
             'id': self.id,
+
             'event_id': self.event_id,
-            'event_rel': self.event_rel.serialize,
+            'event_rel': self.event_rel.serialize_small,
+
             'performer_id': self.performer_id,
-            'performer_rel': self.performer_rel.serialize,
+            'performer_rel': self.performer_rel.serialize_small,
             'date_created': str(self.date_created),
             'unique_value': self.unique_value
         }
@@ -248,6 +289,8 @@ class EventRequests(Base):
     event_id            = Column(Integer, ForeignKey('events.id'))
     event_rel           = relationship('Events', foreign_keys=[event_id])
 
+    message             = Column(String, nullable = False)
+
     date_created        = Column(DateTime, server_default=func.now())
     unique_value        = Column(String, default = uniqueValue)
 
@@ -256,14 +299,16 @@ class EventRequests(Base):
         return {
             'id': self.id,
 
-            'sender_id': self.account_id,
-            'sender_rel': self.sender_rel.serialize,
+            'sender_id': self.sender_id,
+            'sender_rel': self.sender_rel.serialize_small,
             'receiver_id': self.receiver_id,
-            'receiver_rel': self.receiver_rel.serialize,
+            'receiver_rel': self.receiver_rel.serialize_small,
 
             'event_id': self.event_id,
-            'event_rel': self.event_rel.serialize,
-            
+            'event_rel': self.event_rel.serialize_small,
+
+            'message': self.message,
+
             'date_created': str(self.date_created),
             'unique_value': self.unique_value
         }
@@ -291,12 +336,12 @@ class EventInvites(Base):
             'id': self.id,
 
             'sender_id': self.sender_id,
-            'sender_rel': self.sender_rel.serialize,
+            'sender_rel': self.sender_rel.serialize_small,
             'receiver_id': self.receiver_id,
-            'receiver_rel': self.receiver_rel.serialize,
+            'receiver_rel': self.receiver_rel.serialize_small,
 
             'event_id': self.event_id,
-            'event_rel': self.event_rel.serialize,
+            'event_rel': self.event_rel.serialize_small,
             'date_created': str(self.date_created),
             'unique_value': self.unique_value
         }
@@ -321,9 +366,9 @@ class EventAttendees(Base):
             'id': self.id,
 
             'account_id': self.account_id,
-            'account_rel': self.account_rel.serialize,
+            'account_rel': self.account_rel.serialize_small,
             'event_id': self.event_id,
-            'event_rel': self.event_rel.serialize,
+            # 'event_rel': self.event_rel.serialize_small,
 
             'date_created': str(self.date_created),
             'unique_value': self.unique_value
@@ -353,7 +398,7 @@ class EventLikes(Base):
 
             'event_id': self.event_id,
             'owner_id': self.owner_id,
-            'owner_rel': self.owner_rel.serialize,
+            'owner_rel': self.owner_rel.serialize_small,
 
             'date_created': str(self.date_created),
             'unique_value': self.unique_value
@@ -385,7 +430,7 @@ class EventComments(Base):
 
             'event_id': self.event_id,
             'owner_id': self.owner_id,
-            'owner_rel': self.owner_rel.serialize,
+            'owner_rel': self.owner_rel.serialize_small,
 
             'text': self.text,
             'likes': len(self.likes_rel),
@@ -417,7 +462,7 @@ class CommentLikes(Base):
 
             'comment_id': self.comment_id,
             'owner_id': self.owner_id,
-            'owner_rel': self.owner_rel.serialize,
+            'owner_rel': self.owner_rel.serialize_small,
 
             'date_created': str(self.date_created),
             'unique_value': self.unique_value
@@ -453,9 +498,9 @@ class Notifications(Base):
             'target_type': self.target_type,
             'target_id': self.target_id,
             'account_id': self.account_id,
-            'account_rel': self.account_rel.serialize,
+            'account_rel': self.account_rel.serialize_small,
             'from_id': self.from_id,
-            'from_rel': self.from_rel.serialize,
+            'from_rel': self.from_rel.serialize_small,
             'message': self.message,
             'link': self.link,
             'viewed': self.viewed,
@@ -483,7 +528,7 @@ class ChatRooms(Base):
             'id': self.id,
             'title': self.title,
             'owner_id': self.owner_id,
-            'owner_rel': self.owner_rel.serialize,
+            'owner_rel': self.owner_rel.serialize_small,
             # 'members': [m.serialize for m in self.members],
             # 'messages': [m.serialize for m in self.messages],
             'date_created': str(self.date_created),
@@ -510,7 +555,7 @@ class ChatRoomMembers(Base):
             'chatroom_id': self.chatroom_id,
             'chatroom_rel': self.chatroom_rel.serialize,
             'member_id': self.member_id,
-            'member_rel': self.member_rel.serialize,
+            'member_rel': self.member_rel.serialize_small,
             'date_created': str(self.date_created),
             'unique_value': self.unique_value
         }
@@ -535,7 +580,7 @@ class ChatRoomMessages(Base):
             'chatroom_id': self.chatroom_id,
             'chatroom_rel': self.chatroom_rel.serialize,
             'owner_id': self.owner_id,
-            'owner_rel': self.owner_rel.serialize,
+            'owner_rel': self.owner_rel.serialize_small,
             'message': self.message,
             'date_created': str(self.date_created),
             'unique_value': self.unique_value
@@ -561,9 +606,9 @@ class Conversations(Base):
         return {
             'id': self.id,
             'account_A_id': self.account_A_id,
-            'account_A_rel': self.account_A_rel.serialize,
+            'account_A_rel': self.account_A_rel.serialize_small,
             'account_B_id': self.account_B_id,
-            'account_B_rel': self.account_B_rel.serialize,
+            'account_B_rel': self.account_B_rel.serialize_small,
             'date_created': str(self.date_created),
             'last_updated': str(self.last_updated),
             'unique_value': self.unique_value
@@ -589,7 +634,7 @@ class ConversationMessages(Base):
             'conversation_id': self.conversation_id,
             # 'conversation_rel': self.conversation_rel.serialize,
             'owner_id': self.owner_id,
-            'owner_rel': self.owner_rel.serialize,
+            'owner_rel': self.owner_rel.serialize_small,
             'message': self.message,
             'date_created': str(self.date_created),
             'unique_value': self.unique_value
@@ -617,9 +662,9 @@ class Messages(Base):
         return {
             'id': self.id,
             'sender_id': self.sender_id,
-            'sender_rel': self.sender_rel.serialize,
+            'sender_rel': self.sender_rel.serialize_small,
             'receiver_id': self.receiver_id,
-            'receiver_rel': self.receiver_rel.serialize,
+            'receiver_rel': self.receiver_rel.serialize_small,
             'message': self.message,
             'date_created': str(self.date_created),
             'unique_value': self.unique_value
@@ -647,9 +692,9 @@ class EventReviews(Base):
         return {
             'id': self.id,
             'event_id': self.event_id,
-            'event_rel': self.event_rel.serialize,
+            'event_rel': self.event_rel.serialize_small,
             'owner_id': self.owner_id,
-            'owner_rel': self.owner_rel.serialize,
+            'owner_rel': self.owner_rel.serialize_small,
             'rating': self.rating,
             'message': self.message,
             'date_created': str(self.date_created),
@@ -677,9 +722,9 @@ class VenueReviews(Base):
         return {
             'id': self.id,
             'account_id': self.account_id,
-            'account_rel': self.account_rel.serialize,
+            'account_rel': self.account_rel.serialize_small,
             'owner_id': self.owner_id,
-            'owner_rel': self.owner_rel.serialize,
+            'owner_rel': self.owner_rel.serialize_small,
             'rating': self.rating,
             'message': self.message,
             'date_created': str(self.date_created),
@@ -706,9 +751,9 @@ class ArtistReviews(Base):
         return {
             'id': self.id,
             'account_id': self.account_id,
-            'account_rel': self.account_rel.serialize,
+            'account_rel': self.account_rel.serialize_small,
             'owner_id': self.owner_id,
-            'owner_rel': self.owner_rel.serialize,
+            'owner_rel': self.owner_rel.serialize_small,
             'rating': self.rating,
             'message': self.message,
             'date_created': str(self.date_created),

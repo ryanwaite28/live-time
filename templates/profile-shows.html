@@ -38,7 +38,22 @@
       <div class="row">
         <div class="col s12">
 
+          <h4 class="text-center">Shows</h4>
+          <hr/>
+          <p class="text-center" data-bind="if: eventsList().length === 0">
+            <span>None...</span>
+          </p>
 
+          <div class="middlr" data-bind="foreach: eventsList">
+            <event-view-widget params="root: $root, parent: $parent, event: $data, show_user_chip: true, signed_in: $parent.signed_in(), you_id: $parent.you().id"></event-view-widget>
+          </div>
+
+          <p class="text-center" data-bind="if: end() === false">
+            <br/>
+            <button class="blue btn waves-effect waves-light" type="button" name="action" data-bind="click: get_user_shows">
+              Load Older Shows
+            </button>
+          </p>
 
         </div>
       </div>

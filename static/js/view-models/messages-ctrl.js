@@ -130,7 +130,7 @@
         // self.messagessObj[resp.new_message.unique_value] = resp.new_message;
 
         self.message_input('');
-        Materialize.toast('Message Sent!', 2000)
+        Materialize.toast('Message Sent!', 2000);
       })
     }
 

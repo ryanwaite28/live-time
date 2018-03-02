@@ -53,26 +53,49 @@
       </div>
     </div>
 
+    <div data-bind="if: signed_in() && you().type === 'ARTIST'">
+      <div class="card-action">
+        <div data-bind="">
+          <booking-artist-venue-widget params="root: $root, parent: $parent, event: event()"></booking-artist-venue-widget>
+        </div>
+      </div>
+    </div>
+
     <div class="card-action">
       <span data-bind="">
         <i class="fas fa-microphone"></i>
       </span>
       <span data-bind="text: performers().length"></span> | Artists Performing
-      <br/>
-      <div data-bind="foreach: performers">
-        <account-widget params="root: $root, parent: $parent, account: $data.performer_rel, you_id: you_id(), signed_in: signed_in()"></account-widget>
+      <div data-bind="if: performers().length > 0">
+        <br/>
+        <div data-bind="foreach: performers">
+          <div class="space-1">
+            <account-widget params="root: $root, parent: $parent, account: $data.performer_rel"></account-widget>
+            <div data-bind="if: $root.you().id !== $data.performer_rel.id">
+              <br/>
+              <follow-widget params="root: $root, parent: $parent, account_id: $data.performer_rel.id"></follow-widget>
+            </div>
+            <div data-bind="if: $root.you().id === $parent.event().host_id">
+              <br/>
+              <booking-artist-venue-widget params="root: $root, event: $parent.event(), account: $data.performer_rel, remove_performer: $parent.remove_performer"></booking-artist-venue-widget>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+
     <div class="card-action">
       <div data-bind="">
         <user-event-attending-widget params="root: $root, parent: $parent, event: event(), event_attending: event_attending(), event_id: event_id(), you_id: you_id(), signed_in: signed_in()"></user-event-attending-widget>
       </div>
     </div>
+
     <div class="card-action">
       <div data-bind="">
         <event-like-widget params="root: $root, parent: $parent, event: event(), event_likes: event_likes(), event_id: event_id(), you_id: you_id(), signed_in: signed_in()"></event-like-widget>
       </div>
     </div>
+
     <div class="card-action">
       <div>
         <comments-list-widget params="parent: $parent, event: event(), event_comments: event_comments(), event_id: event_id(), you_id: you_id(), signed_in: signed_in()"></comments-widget>

@@ -236,6 +236,30 @@ def edit_event(request, sse, event_id):
     return render_template('edit-event.html', session = logged_in())
 
 
+def event_likes_page(request, sse, event_id):
+    user_session['auth_key'] = uniqueValue()
+
+    event = db_session.query(Events).filter_by(id = event_id).first()
+
+    if event == None:
+        message = '''Event not found.'''
+        return render_template('error-page.html', session = logged_in(), message = message)
+
+    return render_template('event-likes-page.html', session = logged_in())
+
+
+def event_attending_page(request, sse, event_id):
+    user_session['auth_key'] = uniqueValue()
+
+    event = db_session.query(Events).filter_by(id = event_id).first()
+
+    if event == None:
+        message = '''Event not found.'''
+        return render_template('error-page.html', session = logged_in(), message = message)
+
+    return render_template('event-attending-page.html', session = logged_in())
+
+
 def signin(request, sse):
     user_session['auth_key'] = uniqueValue()
     return render_template('signin.html', session = logged_in())
@@ -296,6 +320,18 @@ def messages_page(request, sse):
     return render_template('messages-page.html', session = logged_in())
 
 
+def requests_page(request, sse):
+    if 'session_id' not in user_session:
+        return redirect('/')
+
+    if user_session['account_type'] == 'USER':
+        message = '''USERs do not have a requests page.'''
+        return render_template('error-page.html', session = logged_in(), message = message)
+
+    user_session['auth_key'] = uniqueValue()
+    return render_template('requests-page.html', session = logged_in())
+
+
 def account_settings(request, sse):
     if 'session_id' not in user_session:
         return redirect('/')
@@ -339,7 +375,7 @@ def get_venue_events(request, sse, account_id, event_id):
         .limit(5) \
         .all()
 
-    return jsonify(message = 'venue events', events = [e.serialize for e in events])
+    return jsonify(message = 'venue events', events = [e.serialize_small for e in events])
 
 
 def get_artist_shows(request, sse, account_id, event_performer_id):
@@ -398,6 +434,26 @@ def get_account_notifications(request, sse, notification_id):
         .all()
 
     return jsonify(message = 'account notifications', notifications = [n.serialize for n in notifications])
+
+
+
+def get_account_requests(request, sse, request_id):
+    if request_id == 0:
+        requests = db_session.query(EventRequests) \
+        .filter(EventRequests.receiver_id == user_session['account_id']) \
+        .order_by(desc(EventRequests.date_created)) \
+        .limit(5) \
+        .all()
+
+    else:
+        requests = db_session.query(EventRequests) \
+        .filter(EventRequests.receiver_id == user_session['account_id']) \
+        .filter(EventRequests.id < request_id) \
+        .order_by(desc(EventRequests.date_created)) \
+        .limit(5) \
+        .all()
+
+    return jsonify(message = 'account requests', requests = [r.serialize for r in requests])
 
 
 
@@ -502,6 +558,22 @@ def check_event_attending(request, sse, event_id):
 
 
 
+def check_booking(request, sse, event_id, account_id):
+    if 'session_id' not in user_session:
+        return jsonify(error = True, message = 'no current session')
+
+    booking = db_session.query(EventPerformers) \
+    .filter(EventPerformers.event_id == event_id) \
+    .filter(EventPerformers.performer_id == account_id) \
+    .first()
+
+    if booking:
+        return jsonify(message = 'booking exists', booked = True, booking = booking.serialize)
+    else:
+        return jsonify(message = 'no booking exists', booked = False)
+
+
+
 def check_booking_request(request, sse, event_id, account_id):
     your_id = user_session['account_id']
 
@@ -555,6 +627,58 @@ def get_event_comments(request, sse, event_id, comment_id):
 
 
 
+def get_event_likes(request, sse, event_id, like_id):
+    try:
+        if like_id == 0:
+            likes = db_session.query(EventLikes) \
+            .filter(EventLikes.event_id == event_id) \
+            .order_by(desc(EventLikes.date_created)) \
+            .limit(5) \
+            .all()
+
+        else:
+            likes = db_session.query(EventLikes) \
+            .filter(EventLikes.event_id == event_id) \
+            .filter(EventLikes.id < like_id) \
+            .order_by(desc(EventLikes.date_created)) \
+            .limit(5) \
+            .all()
+
+        return jsonify(message = 'event likes', likes = [l.serialize for l in likes])
+
+
+    except Exception as err:
+        print(err)
+        return jsonify(error = True, errorMessage = str(err), message = 'error processing...')
+
+
+
+def get_event_attending(request, sse, event_id, attend_id):
+    try:
+        if attend_id == 0:
+            attending = db_session.query(EventAttendees) \
+            .filter(EventAttendees.event_id == event_id) \
+            .order_by(desc(EventAttendees.date_created)) \
+            .limit(5) \
+            .all()
+
+        else:
+            attending = db_session.query(EventAttendees) \
+            .filter(EventAttendees.event_id == event_id) \
+            .filter(EventAttendees.id < attend_id) \
+            .order_by(desc(EventAttendees.date_created)) \
+            .limit(5) \
+            .all()
+
+        return jsonify(message = 'event attending', attending = [a.serialize for a in attending])
+
+
+    except Exception as err:
+        print(err)
+        return jsonify(error = True, errorMessage = str(err), message = 'error processing...')
+
+
+
 def search_events(request, sse, search_type, search_query):
     try:
         search_type = str(search_type).encode().lower()
@@ -577,7 +701,7 @@ def search_events(request, sse, search_type, search_query):
             .order_by(func.random()) \
             .limit(10).all()
 
-        return jsonify(message = 'events', events = [e.serialize for e in events])
+        return jsonify(message = 'events', events = [e.serialize_small for e in events])
 
 
     except Exception as err:
@@ -617,7 +741,7 @@ def search_venues(request, sse, search_type, search_query):
             .order_by(func.random()) \
             .limit(10).all()
 
-        return jsonify(message = 'venues', venues = [v.serialize for v in venues])
+        return jsonify(message = 'venues', venues = [v.serialize_small for v in venues])
 
 
     except Exception as err:
@@ -657,7 +781,7 @@ def search_artists(request, sse, search_type, search_query):
             .order_by(func.random()) \
             .limit(10).all()
 
-        return jsonify(message = 'artists', artists = [a.serialize for a in artists])
+        return jsonify(message = 'artists', artists = [a.serialize_small for a in artists])
 
 
     except Exception as err:
@@ -697,7 +821,7 @@ def search_users(request, sse, search_type, search_query):
             .order_by(func.random()) \
             .limit(10).all()
 
-        return jsonify(message = 'users', users = [u.serialize for u in users])
+        return jsonify(message = 'users', users = [u.serialize_small for u in users])
 
 
     except Exception as err:
@@ -711,7 +835,7 @@ def get_random_events(request, sse):
     try:
         events = db_session.query(Events).order_by(func.random()).limit(9).all()
 
-        return jsonify(message = 'events', events = [e.serialize for e in events])
+        return jsonify(message = 'events', events = [e.serialize_small for e in events])
 
 
     except Exception as err:
@@ -721,11 +845,17 @@ def get_random_events(request, sse):
 
 def get_random_venues(request, sse):
     try:
+        if 'account_id' in user_session:
+            ID = user_session['account_id']
+        else:
+            ID = -1
+
         venues = db_session.query(Accounts) \
+        .filter(Accounts.id != ID) \
         .filter(Accounts.type == 'VENUE') \
         .order_by(func.random()).limit(6).all()
 
-        return jsonify(message = 'venues', venues = [v.serialize for v in venues])
+        return jsonify(message = 'venues', venues = [v.serialize_small for v in venues])
 
 
     except Exception as err:
@@ -735,11 +865,17 @@ def get_random_venues(request, sse):
 
 def get_random_artists(request, sse):
     try:
+        if 'account_id' in user_session:
+            ID = user_session['account_id']
+        else:
+            ID = -1
+
         artists = db_session.query(Accounts) \
+        .filter(Accounts.id != ID) \
         .filter(Accounts.type == 'ARTIST') \
         .order_by(func.random()).limit(6).all()
 
-        return jsonify(message = 'artists', artists = [a.serialize for a in artists])
+        return jsonify(message = 'artists', artists = [a.serialize_small for a in artists])
 
 
     except Exception as err:
@@ -749,11 +885,17 @@ def get_random_artists(request, sse):
 
 def get_random_users(request, sse):
     try:
+        if 'account_id' in user_session:
+            ID = user_session['account_id']
+        else:
+            ID = -1
+
         users = db_session.query(Accounts) \
+        .filter(Accounts.id != ID) \
         .filter(Accounts.type == 'USER') \
         .order_by(func.random()).limit(6).all()
 
-        return jsonify(message = 'users', users = [u.serialize for u in users])
+        return jsonify(message = 'users', users = [u.serialize_small for u in users])
 
 
     except Exception as err:

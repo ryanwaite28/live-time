@@ -90,6 +90,36 @@ const Get = function() {
     });
   }
 
+  self.get_event_likes = function(event_id = 0, like_id = 0) {
+    return new Promise(function(resolve, reject){
+      var params = {
+        method: "GET",
+        credentials: "include",
+        header: headers_json()
+      }
+
+      fetch('/events/' + event_id + '/likes/' + like_id, params)
+      .then(function(resp){ return resp.json() })
+      .then(function(json){ return resolve(json); })
+      .catch(function(error){ return reject(error) })
+    });
+  }
+
+  self.get_event_attending = function(event_id = 0, attend_id = 0) {
+    return new Promise(function(resolve, reject){
+      var params = {
+        method: "GET",
+        credentials: "include",
+        header: headers_json()
+      }
+
+      fetch('/events/' + event_id + '/attending/' + attend_id, params)
+      .then(function(resp){ return resp.json() })
+      .then(function(json){ return resolve(json); })
+      .catch(function(error){ return reject(error) })
+    });
+  }
+
   self.get_account_notifications = function(notification_id = 0) {
     return new Promise(function(resolve, reject){
       var params = {
@@ -129,6 +159,21 @@ const Get = function() {
       }
 
       fetch('/conversation/' + c_id + '/messages/' + cm_id, params)
+      .then(function(resp){ return resp.json() })
+      .then(function(json){ return resolve(json); })
+      .catch(function(error){ return reject(error) })
+    });
+  }
+
+  self.get_account_requests = function(request_id = 0) {
+    return new Promise(function(resolve, reject){
+      var params = {
+        method: "GET",
+        credentials: "include",
+        header: headers_json()
+      }
+
+      fetch('/account/requests/' + request_id, params)
       .then(function(resp){ return resp.json() })
       .then(function(json){ return resolve(json); })
       .catch(function(error){ return reject(error) })
@@ -191,7 +236,7 @@ const Get = function() {
 
   self.check_account_follow = function(account_id) {
     return new Promise(function(resolve, reject){
-      fetch('/accounts/' + account_id + '/following', {method: "GET", credentials: "include"})
+      fetch('/accounts/' + account_id + '/check_following', {method: "GET", credentials: "include"})
       .then(function(resp){ return resp.json() })
       .then(function(json){ return resolve(json); })
       .catch(function(error){ return reject(error) })
@@ -200,7 +245,16 @@ const Get = function() {
 
   self.check_event_attending = function(event_id) {
     return new Promise(function(resolve, reject){
-      fetch('/events/' + event_id + '/attending', {method: "GET", credentials: "include"})
+      fetch('/events/' + event_id + '/check_attending', {method: "GET", credentials: "include"})
+      .then(function(resp){ return resp.json() })
+      .then(function(json){ return resolve(json); })
+      .catch(function(error){ return reject(error) })
+    });
+  }
+
+  self.check_booking = function(event_id, account_id) {
+    return new Promise(function(resolve, reject){
+      fetch('/events/' + event_id + '/check_booking/' + account_id, {method: "GET", credentials: "include"})
       .then(function(resp){ return resp.json() })
       .then(function(json){ return resolve(json); })
       .catch(function(error){ return reject(error) })
@@ -209,7 +263,7 @@ const Get = function() {
 
   self.check_booking_request = function(event_id, account_id) {
     return new Promise(function(resolve, reject){
-      fetch('/events/' + event_id + '/check_booking/' + account_id, {method: "GET", credentials: "include"})
+      fetch('/events/' + event_id + '/check_booking_request/' + account_id, {method: "GET", credentials: "include"})
       .then(function(resp){ return resp.json() })
       .then(function(json){ return resolve(json); })
       .catch(function(error){ return reject(error) })
